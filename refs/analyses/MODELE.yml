@@ -1,0 +1,89 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  ANALYSE DE LABORATOIRE — composition avant / après fermentation
+#
+#  Copiez ce fichier sous un nom parlant (ex. `2026-10-soja.yml`) et
+#  remplissez ce que vous avez. Ce modèle n'est jamais lu par les scripts.
+#
+#  ▸ Une valeur inconnue : LAISSEZ LA LIGNE VIDE. C'est prévu, et c'est
+#    préférable à un zéro inventé, qui serait un faux.
+#  ▸ Toutes les compositions sont POUR 100 g de l'échantillon tel qu'analysé.
+#  ▸ Les nombres s'écrivent avec un POINT décimal : 16.6 et non 16,6.
+#
+#  ⚠️  LE PIÈGE À CONNAÎTRE
+#  Comparer un « avant » et un « après » en valeurs pour 100 g ne veut RIEN
+#  dire tout seul : entre les deux, la masse a changé (eau reprise ou perdue,
+#  CO₂ dégagé). Les protéines peuvent « monter » de 16 à 19 g/100 g sans qu'un
+#  seul gramme de protéine soit apparu.
+#
+#  → Renseignez donc les MASSES (`masse_g`) des deux côtés. C'est elles qui
+#    permettent de repasser en masses absolues, seul terrain où la comparaison
+#    a un sens. À défaut, l'humidité des deux côtés permet de s'en sortir.
+#    Sans l'un ni l'autre, l'analyse reste consultable mais ne peut pas servir
+#    à caler les coefficients.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Ce fichier est-il un exemple pédagogique ? Laissez `false` pour une vraie
+# analyse : les exemples sont exclus des moyennes de calage.
+exemple: false
+
+reference:            # votre référence interne, ex. ANA-2026-001
+laboratoire:          # nom du labo
+date_analyse:         # AAAA-MM-JJ
+methode:              # norme ou méthode, si le rapport la précise
+
+produit:
+  nom:                # ex. Tempeh de soja nature
+  recette_code:       # votre code de recette, s'il en existe un
+  lot_id:             # votre identifiant de lot — ses poids réels pourront
+                      # être recoupés avec ceux saisis ici
+
+# ── OPTIONNEL mais très utile ────────────────────────────────────────────────
+# La matière première TELLE QU'ACHETÉE, avant trempage. Si vous la faites
+# analyser aussi, on peut alors caler séparément les pertes au trempage et à
+# la cuisson — aujourd'hui ce sont les coefficients les moins étayés.
+matiere_premiere:
+  description:        # ex. soja non dépelliculé, sac d'origine
+  masse_g:
+  humidite_g_100g:
+  composition_pour_100g:
+    matieres_grasses_g:
+    acides_gras_satures_g:
+    glucides_g:       # ⚠️ ASSIMILABLES, fibres exclues (cf. methode.md)
+    sucres_g:
+    fibres_g:
+    proteines_g:
+    sel_g:
+
+# ── AVANT FERMENTATION ───────────────────────────────────────────────────────
+# L'état juste avant l'étuve : substrat trempé, cuit, égoutté, inoculé.
+avant_fermentation:
+  description:        # ex. substrat cuit et égoutté, après inoculation
+  masse_g:            # ⚠️ indispensable au calage (cf. le piège ci-dessus)
+  humidite_g_100g:
+  composition_pour_100g:
+    matieres_grasses_g:
+    acides_gras_satures_g:
+    glucides_g:
+    sucres_g:
+    fibres_g:
+    proteines_g:
+    sel_g:
+
+# ── APRÈS FERMENTATION ───────────────────────────────────────────────────────
+# Le tempeh fini, tel qu'il sera vendu.
+apres_fermentation:
+  description:        # ex. tempeh récolté, avant tranchage
+  masse_g:            # ⚠️ indispensable au calage
+  humidite_g_100g:
+  composition_pour_100g:
+    matieres_grasses_g:
+    acides_gras_satures_g:
+    glucides_g:
+    sucres_g:
+    fibres_g:
+    proteines_g:
+    sel_g:
+
+# Tout ce qui aide à relire ça dans deux ans : durée et température
+# d'incubation, souche, anomalie du lot, ce que le labo a signalé…
+commentaire: >

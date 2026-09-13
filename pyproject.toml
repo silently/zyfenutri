@@ -1,0 +1,28 @@
+[project]
+name = "zyfenutri"
+version = "1.0.0"
+description = "Composition nutritionnelle du tempeh — le calcul, ses règles et ce qui les fonde"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# ⚠️ AUCUNE dépendance d'exécution, et c'est un choix : ce paquet doit pouvoir
+# être importé par n'importe quoi, ou lancé comme script sur une machine nue.
+dependencies = []
+
+[project.optional-dependencies]
+# `pyyaml` ne sert qu'à relire les données de référence (refs/), donc aux
+# tests et au script de confrontation — jamais au calcul lui-même.
+dev = ["pytest>=8.0", "pyyaml>=6.0"]
+
+[project.scripts]
+zyfenutri = "zyfenutri.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["zyfenutri"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

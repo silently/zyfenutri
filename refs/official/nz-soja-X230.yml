@@ -1,0 +1,46 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  New Zealand Food Composition Database — graine de soja sèche.
+
+#  Moitié « avant » du couple néo-zélandais.
+#  ⚠️ À ne PAS confondre avec X289, « Sprouts … germinated, raw, soybean », qui
+#  est un germe de soja (69 % d'eau) et ne peut pas servir de point de départ.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: nz-soja-X230
+source: New Zealand Food Composition Database
+pays: Nouvelle-Zélande
+identifiant_source: X230
+nom_publie: 'Bean, seed vegetable, dried, soy'
+produit: graine de soja sèche
+url: https://www.foodcomposition.co.nz/search/food/X230
+consulte_le: 2026-09-12
+convention_glucides: les_deux
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 1470
+    energie_kcal: 352
+    eau_g: 8.8
+    cendres_g: 4.86
+    proteines_g: 36.4
+    lipides_g: 18.7
+    acides_gras_satures_g: 2.31
+    glucides_par_difference_g: 22.0
+    glucides_assimilables_g: 9.59
+    fibres_g: 9.3
+    sucres_g: 5.23
+    amidon_g: 4.36
+    sodium_mg: 2.0
+
+notes: |
+  - 🔑 **La source la plus instructive du lot** : elle publie les glucides des
+    DEUX façons — 22,0 g par différence, 9,59 g pesés (amidon 4,36 + sucres
+    5,23). L'écart de **12,4 g** est ce qui n'est ni protéine, ni lipide, ni
+    fibre, ni amidon, ni sucre : les **oligosaccharides** du soja (raffinose,
+    stachyose) et apparentés.
+  - ⚠️ Ces 12,4 g comptent dans « glucides par différence » mais ne sont pas des
+    sucres au sens courant. Ce sont eux qui partent dans l'eau de trempage et
+    que le mycélium consomme — d'où l'importance de savoir quelle convention on
+    lit avant de comparer deux fiches.
+  - Bouclage : 18,7 + 22,0 + 9,3 + 36,4 + 8,8 + 4,86 = 100,1 g ✅

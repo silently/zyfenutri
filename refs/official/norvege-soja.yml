@@ -1,0 +1,42 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  Matvaretabellen (Norvège) — graine de soja crue.
+
+#  Moitié « avant » du couple norvégien.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: norvege-soja
+source: Matvaretabellen
+pays: Norvège
+identifiant_source: 'beans-soya-uncooked'
+nom_publie: 'Beans, soya, uncooked'
+produit: graine de soja crue
+url: https://www.matvaretabellen.no/en/beans-soya-uncooked/
+consulte_le: 2026-09-12
+convention_glucides: assimilables
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 1599
+    energie_kcal: 384
+    eau_g: 20.0
+    cendres_g: 
+    proteines_g: 35.9
+    lipides_g: 18.6
+    acides_gras_satures_g: 2.3
+    glucides_par_difference_g: 
+    glucides_assimilables_g: 10.3
+    fibres_g: 16.0
+    sucres_g: 5.5
+    amidon_g: 4.8
+    sodium_mg: 5.0
+
+notes: |
+  - ⚠️ **L'eau à 20 g interroge.** Une graine de soja sèche en contient 8 à 11 g
+    (8,54 chez l'USDA, 8,8 en Nouvelle-Zélande). À 20 g, et sans cendres
+    publiées, le bouclage donne déjà 100,8 g — il ne reste rien pour les ~5 g de
+    minéraux. Quelque chose ne va pas sur cette ligne : la traiter avec prudence.
+  - Les cendres ne sont pas publiées : le bouclage n'est pas vérifiable.
+  - ⚠️ Fibres à 16 g contre 9,3 chez l'USDA et en NZ : c'est la frontière
+    fibres / glucides qui bouge, pas le produit (cf. le guide, chapitre
+    « Valeurs nutritionnelles »). Glucides + fibres = 26,3 ici, 30,2 chez l'USDA.

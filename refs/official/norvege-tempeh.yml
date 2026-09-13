@@ -1,0 +1,40 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  Matvaretabellen (Norvège) — tempeh.
+
+#  Moitié « après » du couple norvégien.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: norvege-tempeh
+source: Matvaretabellen
+pays: Norvège
+identifiant_source: 'tempeh-soy-bean-product'
+nom_publie: 'Tempeh soy bean product'
+produit: tempeh de soja
+url: https://www.matvaretabellen.no/en/tempeh-soy-bean-product/
+consulte_le: 2026-09-12
+convention_glucides: assimilables
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 873
+    energie_kcal: 209
+    eau_g: 59.0
+    cendres_g: 
+    proteines_g: 20.3
+    lipides_g: 10.8
+    acides_gras_satures_g: 2.5
+    glucides_par_difference_g: 
+    glucides_assimilables_g: 5.5
+    fibres_g: 4.0
+    sucres_g: 0.9
+    amidon_g: 4.6
+    sodium_mg: 9.0
+
+notes: |
+  - Glucides assimilables cohérents avec leur détail : amidon 4,6 + sucres 0,9
+    = 5,5 g. Les fibres sont donc bien exclues — convention INCO.
+  - ⚠️ Amidon 4,6 g sur 5,5 g de glucides : l'essentiel des glucides restants
+    est de l'amidon, et les sucres sont tombés à 0,9 g. C'est le comportement
+    attendu — le mycélium consomme les sucres libres en premier.
+  - Les cendres ne sont pas publiées.

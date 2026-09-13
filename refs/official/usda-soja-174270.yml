@@ -1,0 +1,43 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  USDA FoodData Central — graine de soja crue.
+
+#  Moitié « avant » du couple USDA. Sa contrepartie est usda-tempeh-174272.yml,
+#  issue de la MÊME table : c'est ce qui autorise à les comparer.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: usda-soja-174270
+source: USDA FoodData Central
+pays: États-Unis
+jeu: SR Legacy
+identifiant_source: 174270
+nom_publie: 'Soybeans, mature seeds, raw'
+produit: graine de soja crue
+url: https://fdc.nal.usda.gov/food-details/174270/nutrients
+consulte_le: 2026-09-12
+convention_glucides: by_difference
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 1866
+    energie_kcal: 446
+    eau_g: 8.54
+    cendres_g: 4.87
+    proteines_g: 36.49
+    lipides_g: 19.94
+    acides_gras_satures_g: 2.884
+    glucides_par_difference_g: 30.16
+    glucides_assimilables_g: 20.86
+    fibres_g: 9.3
+    sucres_g: 7.33
+    amidon_g: 
+    sodium_mg: 2.0
+
+notes: |
+  - ⚠️ « Carbohydrate, by difference » CONTIENT les fibres. Les glucides
+    assimilables au sens INCO valent 30,16 − 9,3 = 20,86 g : c'est cette valeur
+    qu'il faut déclarer, jamais celle publiée telle quelle.
+  - L'amidon n'est pas publié. Le soja n'en contient presque pas, ce qui est le
+    point important : ses glucides assimilables sont surtout des sucres et des
+    oligosaccharides — solubles, donc lessivables et fermentescibles.
+  - Bouclage : 19,94 + 20,86 + 9,3 + 36,49 + 8,54 + 4,87 = 100,0 g ✅

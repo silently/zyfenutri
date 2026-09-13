@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+dist/
+*.egg-info/
+
+# Documentation de travail : des PDF de référence (guides de la Commission,
+# tables) qu'on n'a pas le droit de redistribuer. Ils restent sur le disque,
+# jamais dans le dépôt.
+docs/

@@ -1,0 +1,44 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  USDA FoodData Central — tempeh.
+
+#  Moitié « après » du couple USDA. Sert au calage des coefficients de
+#  `zyfenutri/transforms.py` (cf. refs/methode.md, § 3.2).
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: usda-tempeh-174272
+source: USDA FoodData Central
+pays: États-Unis
+jeu: SR Legacy
+identifiant_source: 174272
+nom_publie: Tempeh
+produit: tempeh de soja, cru
+url: https://fdc.nal.usda.gov/food-details/174272/nutrients
+consulte_le: 2026-09-12
+convention_glucides: by_difference
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 803
+    energie_kcal: 192
+    eau_g: 59.65
+    cendres_g: 1.62
+    proteines_g: 20.29
+    lipides_g: 10.8
+    acides_gras_satures_g: 2.539
+    glucides_par_difference_g: 7.64
+    glucides_assimilables_g: 
+    fibres_g: 
+    sucres_g: 
+    amidon_g: 
+    sodium_mg: 9.0
+
+notes: |
+  - ⚠️ **Ni fibres ni sucres publiés.** On ne peut donc PAS départager glucides
+    assimilables et fibres sur ce produit : seul leur total (7,64 g) est connu.
+    C'est la limite principale de ce couple.
+  - ⚠️ **Les AGS semblent faux** : 2,539 g pour 10,8 g de lipides, soit 23,5 %
+    de saturés, alors que la graine en montre 14,5 % — l'huile de soja ne peut
+    pas se saturer en fermentant. À l'échelle du lot, les AGS *augmenteraient*
+    de 54 % pendant que les lipides baissent. Ne rien caler dessus.
+  - Bouclage : 10,8 + 7,64 + 20,29 + 59,65 + 1,62 = 100,0 g ✅

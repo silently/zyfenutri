@@ -1,0 +1,79 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  ⚠️  EXEMPLE PÉDAGOGIQUE — CE N'EST PAS UNE ANALYSE DE LABORATOIRE.
+#
+#  Aucun échantillon n'a été analysé ici. Ce fichier existe pour deux
+#  raisons, et deux seulement :
+#
+#   1. montrer à quoi ressemble un fichier rempli ;
+#   2. servir de test à `check.py` et à `tests/test_refs.py`.
+#
+#  Les valeurs « avant fermentation » sont d'ordre de grandeur (soja cuit) ;
+#  les valeurs « après » ont été CALCULÉES en appliquant les coefficients
+#  par défaut de `zyfenutri` (−60 % de glucides, −5 % de lipides, protéines et
+#  fibres conservées). Le script doit donc retrouver exactement ces
+#  coefficients — c'est ce qui prouve que la chaîne de vérification marche.
+#
+#  ⚠️ Ce bloc est RECALCULÉ à chaque changement des coefficients : il ne mesure
+#  rien, il suit le modèle. Une vraie analyse, elle, ne bouge jamais — c'est
+#  tout l'intérêt d'en avoir.
+#
+#  Ne vous en servez JAMAIS comme d'une référence : `exemple: true` l'exclut
+#  des moyennes de calage.
+# ══════════════════════════════════════════════════════════════════════════════
+
+exemple: true
+
+reference: EXEMPLE-soja
+laboratoire:          # aucun : valeurs construites
+date_analyse:
+methode:
+
+produit:
+  nom: Tempeh de soja nature (illustration)
+  recette_code:
+  lot_id:
+
+matiere_premiere:
+  description:
+  masse_g:
+  humidite_g_100g:
+  composition_pour_100g:
+    matieres_grasses_g:
+    acides_gras_satures_g:
+    glucides_g:
+    sucres_g:
+    fibres_g:
+    proteines_g:
+    sel_g:
+
+avant_fermentation:
+  description: substrat de soja cuit et égoutté, après inoculation
+  masse_g: 2000
+  humidite_g_100g: 60.0
+  composition_pour_100g:
+    matieres_grasses_g: 9.0
+    acides_gras_satures_g: 1.3
+    glucides_g: 8.4
+    sucres_g: 1.5
+    fibres_g: 6.0
+    proteines_g: 16.6
+    sel_g: 0.01
+
+apres_fermentation:
+  description: tempeh récolté après 36 h d'incubation
+  masse_g: 1900
+  humidite_g_100g: 60.5
+  composition_pour_100g:
+    matieres_grasses_g: 9
+    acides_gras_satures_g: 1.3
+    glucides_g: 3.5368
+    sucres_g: 0.6316
+    fibres_g: 6.3158
+    proteines_g: 17.4737
+    sel_g: 0.0105
+
+commentaire: >
+  Fichier construit à l'envers : les valeurs « après » sortent des coefficients
+  de `zyfenutri` appliqués aux valeurs « avant ». Il ne mesure rien, il
+  vérifie que le script lit bien les fichiers et retrouve ce qu'il doit
+  retrouver. Remplacez-le par de vraies analyses.

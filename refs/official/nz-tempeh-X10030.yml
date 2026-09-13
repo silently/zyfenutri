@@ -1,0 +1,44 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  New Zealand Food Composition Database — tempeh cru.
+
+#  Moitié « après » du couple néo-zélandais.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: nz-tempeh-X10030
+source: New Zealand Food Composition Database
+pays: Nouvelle-Zélande
+identifiant_source: X10030
+nom_publie: 'Tempeh, fermented soybeans, uncooked'
+produit: tempeh de soja, cru
+url: https://www.foodcomposition.co.nz/search/food/X10030
+consulte_le: 2026-09-12
+convention_glucides: les_deux
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 724
+    energie_kcal: 173
+    eau_g: 56.2
+    cendres_g: 1.9
+    proteines_g: 18.9
+    lipides_g: 9.78
+    acides_gras_satures_g: 1.58
+    glucides_par_difference_g: 5.53
+    glucides_assimilables_g: 2.38
+    fibres_g: 7.7
+    sucres_g: 2.2
+    amidon_g: 0.18
+    sodium_mg: 2.0
+
+notes: |
+  - 🔑 **Le seul tempeh du lot qui publie tout** : fibres, sucres, amidon,
+    cendres, et les glucides des deux façons. C'est le seul qui permette de
+    suivre séparément fibres et glucides assimilables d'un bout à l'autre.
+  - ⚠️ **L'amidon s'effondre** : 4,36 g dans la graine → 0,18 g dans le tempeh.
+    Les sucres, eux, baissent moins (5,23 → 2,2). Et l'écart
+    « par différence − pesés » tombe de 12,4 à 3,15 g : les oligosaccharides ont
+    très largement disparu.
+  - ⚠️ Les AGS suivent les lipides (16,2 % contre 12,4 % dans la graine), sans
+    l'anomalie de la fiche USDA.
+  - Bouclage : 9,78 + 5,53 + 7,7 + 18,9 + 56,2 + 1,9 = 100,0 g ✅

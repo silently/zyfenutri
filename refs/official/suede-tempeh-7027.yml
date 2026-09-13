@@ -1,0 +1,43 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  Livsmedelsverket (Suède) — tempeh.
+
+#  ⚠️ **Sans contrepartie** : la table suédoise ne publie pas de graine de soja
+#  crue comparable. Cette fiche ne forme donc PAS un couple — elle sert de
+#  quatrième avis sur la composition d'un tempeh, rien de plus.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: suede-tempeh-7027
+source: Livsmedelsverket
+pays: Suède
+identifiant_source: 7027
+nom_publie: Tempeh
+produit: tempeh de soja
+url: https://soknaringsinnehall.livsmedelsverket.se/Home/FoodDetailsMeta/7027
+consulte_le: 2026-09-12
+convention_glucides: assimilables
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+pour_100g:
+    energie_kj: 865
+    energie_kcal: 207
+    eau_g: 59.6
+    cendres_g: 1.6
+    proteines_g: 18.6
+    lipides_g: 10.8
+    acides_gras_satures_g: 2.4
+    glucides_par_difference_g: 
+    glucides_assimilables_g: 8.2
+    fibres_g: 1.3
+    sucres_g: 1.1
+    amidon_g: 
+    sodium_mg: 9.0
+
+notes: |
+  - ⚠️ **Fibres à 1,3 g : la valeur la plus basse et la plus douteuse du lot**
+    (4,0 en Norvège, 6,2 chez Ciqual, 7,7 en NZ). En contrepartie ses glucides
+    assimilables sont les plus hauts (8,2). Encore la même frontière qui se
+    déplace : glucides + fibres = 9,5 g ici, 9,5 g en Norvège — identiques.
+  - Sel publié à 0,0 g alors que le sodium vaut 9 mg (soit 0,022 g de sel) :
+    c'est un arrondi de la table, pas une absence.
+  - Bouclage : 10,8 + 8,2 + 1,3 + 18,6 + 59,6 + 1,6 = 100,1 g ✅
