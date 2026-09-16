@@ -1,13 +1,16 @@
-"""Lecture de `refs/` — les analyses de laboratoire.
+"""Reading `refs/` — the laboratory analyses.
 
-Toutes les fonctions rendent des listes vides si le dossier est absent : le
-paquet reste utilisable sans lui. Deux consommateurs : `check.py` (la lecture
-qu'on regarde) et `tests/test_refs.py` (celle qui échoue).
+Every function returns empty lists when the directory is absent: the package
+stays usable without it. Two consumers: `check.py` (the reading one looks at)
+and `tests/test_refs.py` (the one that fails).
 
-L'intérêt de passer par un module commun plutôt que de relire le YAML des deux
-côtés : le **mot-à-mot français → champ du modèle** n'existe qu'à un endroit.
-Une clé mal orthographiée dans un fichier de référence serait sinon ignorée en
-silence des deux côtés, et l'analyse compterait pour rien.
+Why one shared module rather than reading the YAML on both sides: the mapping
+from the French file keys to our field names exists in one place only. A
+misspelt key in a reference file would otherwise be silently ignored on both
+sides, and the analysis would count for nothing.
+
+The file keys stay in French on purpose: the files are filled in by hand, by
+the people who run the lab analyses.
 """
 from __future__ import annotations
 
@@ -17,15 +20,16 @@ from pathlib import Path
 
 from zyfenutri.nutrients import NUTRIENTS as NUTRIENT_FIELDS
 
-#: Où chercher les données de référence : à côté du paquet, ou là où
-#: `ZYFE_NUTRI_REFS` le dit. Absent, tout rend des listes vides — le paquet
-#: reste utilisable sans ses données.
+#: Where to look for reference data: where `ZYFENUTRI_REFS` says, or next to
+#: the package. `ZYFE_NUTRI_REFS` is the former name, still honoured. When
+#: nothing is found, everything returns empty lists.
 _CANDIDATES = [
+    os.environ.get("ZYFENUTRI_REFS"),
     os.environ.get("ZYFE_NUTRI_REFS"),
     Path(__file__).resolve().parents[1] / "refs",
 ]
 
-#: Nom dans les fichiers de référence → champ du modèle.
+#: Key in the reference files → our field name.
 FIELD_BY_FR = {
     "matieres_grasses_g": "fat",
     "acides_gras_satures_g": "saturates",
@@ -51,17 +55,17 @@ def refs_dir() -> Path | None:
 
 @dataclass
 class Sample:
-    """Un état mesuré : une masse et une composition pour 100 g."""
+    """One measured state: a mass and a composition per 100 g."""
     description: str | None = None
     masse_g: float | None = None
     humidite_g_100g: float | None = None
-    #: Composition en champs du modèle (`fat_g`…), valeurs pour 100 g.
+    #: Composition keyed by our field names (`fat`…), per 100 g.
     composition: dict[str, float] = field(default_factory=dict)
 
     @property
     def usable(self) -> bool:
-        """Exploitable pour un calage : sans masse, une composition pour 100 g
-        ne se compare à rien (cf. le piège rappelé en tête des modèles)."""
+        """Usable for calibration: without a mass, a per-100 g composition
+        compares to nothing (see the trap spelt out at the top of MODELE.yml)."""
         return bool(self.masse_g) and bool(self.composition)
 
 
@@ -75,7 +79,7 @@ class Analysis:
     matiere_premiere: Sample = field(default_factory=Sample)
     avant: Sample = field(default_factory=Sample)
     apres: Sample = field(default_factory=Sample)
-    #: Clés inconnues rencontrées — une faute de frappe fait taire une valeur.
+    #: Unknown keys met while reading — a typo silences a value.
     unknown_fields: list[str] = field(default_factory=list)
 
 
@@ -91,7 +95,7 @@ def _files(subdir: str) -> list[Path]:
     directory = root / subdir
     if not directory.is_dir():
         return []
-    # `MODELE.yml` est un gabarit : il n'est jamais une donnée.
+    # `MODELE.yml` is a template, never data.
     return sorted(p for p in directory.glob("*.yml") if p.stem != "MODELE")
 
 
@@ -103,12 +107,12 @@ def _sample(raw: dict | None, where: str, unknown: list[str]) -> Sample:
             unknown.append(f"{where}.{key}")
     composition_raw = raw.get("composition_pour_100g") or {}
     composition: dict[str, float] = {}
-    for nom, valeur in composition_raw.items():
-        champ = FIELD_BY_FR.get(nom)
-        if champ is None:
-            unknown.append(f"{where}.composition_pour_100g.{nom}")
-        elif isinstance(valeur, (int, float)):
-            composition[champ] = float(valeur)
+    for key, value in composition_raw.items():
+        name = FIELD_BY_FR.get(key)
+        if name is None:
+            unknown.append(f"{where}.composition_pour_100g.{key}")
+        elif isinstance(value, (int, float)):
+            composition[name] = float(value)
     return Sample(
         description=raw.get("description"),
         masse_g=raw.get("masse_g"),
@@ -122,13 +126,13 @@ def load_analyses() -> list[Analysis]:
     for path in _files("analyses"):
         data = _read_yaml(path)
         unknown: list[str] = []
-        produit = data.get("produit") or {}
+        product = data.get("produit") or {}
         out.append(Analysis(
             path=path,
             reference=str(data.get("reference") or path.stem),
             is_example=bool(data.get("exemple")),
-            recette_code=produit.get("recette_code"),
-            lot_id=produit.get("lot_id"),
+            recette_code=product.get("recette_code"),
+            lot_id=product.get("lot_id"),
             matiere_premiere=_sample(data.get("matiere_premiere"), "matiere_premiere", unknown),
             avant=_sample(data.get("avant_fermentation"), "avant_fermentation", unknown),
             apres=_sample(data.get("apres_fermentation"), "apres_fermentation", unknown),
@@ -139,7 +143,7 @@ def load_analyses() -> list[Analysis]:
 
 @dataclass
 class Deviation:
-    """Écart entre ce que l'application prédit et ce que le labo a mesuré."""
+    """Gap between what the calculation predicts and what the lab measured."""
     field: str
     predicted: float
     measured: float
@@ -151,16 +155,15 @@ class Deviation:
 
     @property
     def within(self) -> bool:
-        """Dans la tolérance réglementaire — le seul seuil qui ait un sens ici."""
+        """Within the regulatory tolerance — the only threshold that means anything here."""
         return abs(self.predicted - self.measured) <= self.tolerance
 
 
 def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
-    """Ce que l'application prédit pour l'« après », partant de l'« avant ».
+    """What the calculation predicts for "after", starting from "before".
 
-    On IMPOSE les transformations (`fermentation` seule) au lieu de s'en
-    remettre à une catégorie : l'échantillon a déjà trempé et cuit, et aucune
-    catégorie du référentiel ne décrit cet état intermédiaire.
+    The sample has already soaked and cooked, so only fermentation is left:
+    it gets the `sample_after_cooking` role, whose pipeline is exactly that.
     """
     from zyfenutri.engine import compute
 
@@ -168,9 +171,8 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
         "harvested_g": analysis.apres.masse_g,
         "ingredients": [{
             "name": analysis.reference,
-            # No role: the sample has already soaked and cooked, so only
-            # fermentation is left. Giving it `substrate` would apply leaching
-            # a second time to a loss it has already taken.
+            # Not `substrate`: that would apply leaching a second time to a
+            # loss the sample has already taken.
             "role": "sample_after_cooking",
             "weight_g": analysis.avant.masse_g,
             "per_100g": analysis.avant.composition,
@@ -180,19 +182,19 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
 
 
 def fermentation_deviations(analysis: Analysis) -> list[Deviation]:
-    """Prédit vs mesuré, nutriment par nutriment. `[]` si non exploitable."""
+    """Predicted vs measured, nutrient by nutrient. `[]` if not usable."""
     from zyfenutri.label import tolerance
 
     if not (analysis.avant.usable and analysis.apres.usable):
         return []
-    predit = predict_after_fermentation(analysis)
+    predicted = predict_after_fermentation(analysis)
     return [
         Deviation(
-            field=champ,
-            predicted=predit[champ],
-            measured=analysis.apres.composition[champ],
-            tolerance=tolerance(champ, analysis.apres.composition[champ]),
+            field=name,
+            predicted=predicted[name],
+            measured=analysis.apres.composition[name],
+            tolerance=tolerance(name, analysis.apres.composition[name]),
         )
-        for champ in NUTRIENT_FIELDS
-        if champ in predit and champ in analysis.apres.composition
+        for name in NUTRIENT_FIELDS
+        if name in predicted and name in analysis.apres.composition
     ]

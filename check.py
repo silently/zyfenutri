@@ -1,83 +1,74 @@
 #!/usr/bin/env python3
-"""Confronte les analyses de laboratoire au calcul nutritionnel de l'application.
+"""Hold laboratory analyses up against the calculation.
 
     python check.py
 
-Il ne modifie rien : les écarts se reportent à la main, si on les juge fondés.
+Reads `refs/analyses/` through `zyfenutri.refs_data` — the SAME module as
+`tests/test_refs.py`, so the reading one looks at and the one that fails
+cannot drift apart.
 
-Lit `refs/` via `zyfenutri.refs_data` — le **même** module que
-`tests/test_refs.py`, pour que la lecture qu'on regarde et celle qui
-échoue ne puissent pas diverger.
+Three things, in this order:
 
-Trois choses, dans cet ordre :
+1. **predicted vs measured**, nutrient by nutrient, next to the **regulatory
+   tolerance** — the only threshold that says whether the estimate would
+   stand up to an inspection;
+2. what fermentation **actually** consumed, in absolute masses, against the
+   default coefficients;
+3. the tolerances on a typical tempeh, to give a sense of scale.
 
-1. **Prédit vs mesuré**, nutriment par nutriment, avec la **tolérance
-   réglementaire** en regard — le seul seuil qui dise si l'estimation serait
-   opposable au contrôle ;
-2. ce que la fermentation a **réellement** consommé, en masses absolues, face
-   aux coefficients en vigueur ;
-3. les références Ciqual et les recettes qui n'en ont pas.
-
-⚠️ **Ne modifie rien.** C'est une lecture ; c'est l'utilisateur qui décide de
-reporter une valeur dans les coefficients. La colonne « n » dit sur combien
-d'analyses repose chaque moyenne : une seule mesure ne fait pas une consigne.
+⚠️ **Changes nothing.** It is a reading: deciding to carry a value over to
+`coefficients:` is the user's call. The "n" column says how many analyses each
+average rests on — a single measurement is not a setting.
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
+from zyfenutri.label import tolerance
+from zyfenutri.nutrients import NUTRIENTS
+from zyfenutri.refs_data import fermentation_deviations, load_analyses, refs_dir
+from zyfenutri.transforms import DEFAULTS
 
-ROOT = Path(__file__).resolve().parent.parent
-
-from zyfenutri.transforms import DEFAULTS as DEFAULT_COEFFICIENTS  # noqa: E402
-from zyfenutri.label import tolerance  # noqa: E402
-from zyfenutri.nutrients import NUTRIENTS as NUTRIENT_FIELDS  # noqa: E402
-from zyfenutri.refs_data import (  # noqa: E402
-    fermentation_deviations,
-    load_analyses,
-    refs_dir,
-)
-
-#: Quel coefficient chaque nutriment vérifie, à la fermentation.
+#: Which coefficient each nutrient checks, at fermentation.
 FERMENTATION_COEFFICIENT = {
     "carbs": "fermentation_carbs",
     "sugars": "fermentation_carbs",
     "fat": "fermentation_fat",
     "saturates": "fermentation_fat",
-    "protein": None,   # attendu : 0 %, les protéines sont hydrolysées
-    "fibre": None,     # attendu : 0 % — non calé, faute de donnée
-    "salt": None,      # un minéral ne se consomme pas
+    "protein": None,   # expected 0%: protein is hydrolysed, not consumed
+    "fibre": None,     # expected 0%: not calibrated, for lack of data
+    "salt": None,      # a mineral is not consumed
 }
 
 
-def _titre(texte: str) -> None:
+def _title(text: str) -> None:
     print("\n" + "═" * 78)
-    print(f" {texte}")
+    print(f" {text}")
     print("═" * 78)
 
 
 def main() -> int:
-    racine = refs_dir()
-    if racine is None:
-        print("refs/ introuvable. Lancez ce script depuis le dépôt.")
+    if refs_dir() is None:
+        print("refs/ introuvable. Lancez ce script depuis le dépôt, "
+              "ou indiquez le dossier dans ZYFENUTRI_REFS.")
         return 1
 
     analyses = load_analyses()
 
-    _titre("Prédit par l'application vs mesuré au laboratoire")
+    _title("Prédit par le calcul vs mesuré au laboratoire")
     if not analyses:
         print("\n  Aucune analyse dans refs/analyses/.")
         print("  Copiez MODELE.yml et remplissez-le — même partiellement.")
 
-    cumul: dict[str, list[float]] = {}
+    losses: dict[str, list[float]] = {}
     for analysis in analyses:
-        marque = "  (exemple — exclu des moyennes)" if analysis.is_example else ""
-        print(f"\n▸ {analysis.reference}{marque}")
+        mark = "  (exemple — exclu des moyennes)" if analysis.is_example else ""
+        print(f"\n▸ {analysis.reference}{mark}")
 
         if not (analysis.avant.usable and analysis.apres.usable):
-            manque = [nom for nom, ech in (("avant", analysis.avant), ("après", analysis.apres))
-                      if not ech.usable]
-            print(f"    pas exploitable — il manque la masse ou la composition : {', '.join(manque)}")
+            lacking = [name for name, sample in (("avant", analysis.avant),
+                                                 ("après", analysis.apres))
+                       if not sample.usable]
+            print(f"    pas exploitable — il manque la masse ou la composition : "
+                  f"{', '.join(lacking)}")
             continue
 
         print(f"    {analysis.avant.masse_g:g} g avant → {analysis.apres.masse_g:g} g après "
@@ -85,46 +76,44 @@ def main() -> int:
         print(f"    {'nutriment':22} {'prédit':>8} {'mesuré':>8} {'écart':>8} "
               f"{'tolérance':>10}")
 
-        for ecart in fermentation_deviations(analysis):
-            verdict = "" if ecart.within else "   ⚠️ HORS TOLÉRANCE"
-            print(f"    {ecart.field:22} {ecart.predicted:8.2f} {ecart.measured:8.2f} "
-                  f"{ecart.delta:+8.2f} {ecart.tolerance:10.3f}{verdict}")
+        for deviation in fermentation_deviations(analysis):
+            verdict = "" if deviation.within else "   ⚠️ HORS TOLÉRANCE"
+            print(f"    {deviation.field:22} {deviation.predicted:8.2f} "
+                  f"{deviation.measured:8.2f} {deviation.delta:+8.2f} "
+                  f"{deviation.tolerance:10.3f}{verdict}")
 
-        # Ce que la fermentation a réellement consommé, en masses absolues.
-        for champ in NUTRIENT_FIELDS:
-            avant = analysis.avant.composition.get(champ)
-            apres = analysis.apres.composition.get(champ)
-            if avant is None or apres is None or avant <= 0:
+        # What fermentation actually consumed, in absolute masses.
+        for name in NUTRIENTS:
+            before = analysis.avant.composition.get(name)
+            after = analysis.apres.composition.get(name)
+            if before is None or after is None or before <= 0:
                 continue
-            masse_avant = analysis.avant.masse_g * avant / 100
-            masse_apres = analysis.apres.masse_g * apres / 100
-            if masse_avant <= 0:
-                continue
-            perte = (1 - masse_apres / masse_avant) * 100
+            mass_before = analysis.avant.masse_g * before / 100
+            mass_after = analysis.apres.masse_g * after / 100
             if not analysis.is_example:
-                cumul.setdefault(champ, []).append(perte)
+                losses.setdefault(name, []).append((1 - mass_after / mass_before) * 100)
 
-    if cumul:
-        _titre("Ce que la fermentation a réellement consommé (analyses réelles)")
-        print(f"\n  {'nutriment':22} {'n':>3} {'mesuré':>9} {'en vigueur':>12}")
-        for champ, valeurs in cumul.items():
-            cle = FERMENTATION_COEFFICIENT.get(champ)
-            attendu = DEFAULT_COEFFICIENTS.get(cle) if cle else 0.0
-            moyenne = sum(valeurs) / len(valeurs)
-            print(f"  {champ:22} {len(valeurs):3d} {moyenne:+8.1f} % {attendu:+11.1f} %")
+    if losses:
+        _title("Ce que la fermentation a réellement consommé (analyses réelles)")
+        print(f"\n  {'nutriment':22} {'n':>3} {'mesuré':>9} {'par défaut':>12}")
+        for name, values in losses.items():
+            key = FERMENTATION_COEFFICIENT.get(name)
+            expected = DEFAULTS.get(key) if key else 0.0
+            mean = sum(values) / len(values)
+            print(f"  {name:22} {len(values):3d} {mean:+8.1f} % {expected:+11.1f} %")
         print("\n  ⚠️  Rien n'est appliqué automatiquement. Si vous jugez l'écart fondé,")
-        print("      reportez la valeur dans les coefficients.")
+        print("      passez la valeur dans le bloc `coefficients:` du document.")
 
-    # Un exemple de lecture des tolérances, pour situer les ordres de grandeur.
-    _titre("Tolérances réglementaires, pour situer")
+    _title("Tolérances réglementaires, pour situer")
     print("\n  Sur un tempeh de légumineuses typique :")
-    for champ, valeur in (("protein_g", 18.0), ("carbohydrates_g", 12.0),
-                          ("fibre_g", 6.0), ("fat_g", 5.0), ("salt_g", 0.02)):
-        t = tolerance(champ, valeur)
-        print(f"    {champ:22} {valeur:5.2f} g  →  ± {t:6.3f} g  ({t / valeur * 100:.0f} %)")
-    print("\n  Seules les protéines tombent dans la bande ± 20 % — et c'est le")
-    print("  nutriment qu'un contrôle dosera en premier sur un produit vendu")
-    print("  pour sa richesse en protéines.")
+    for name, value in (("protein", 18.0), ("carbs", 12.0), ("fibre", 6.0),
+                        ("fat", 5.0), ("salt", 0.02)):
+        margin = tolerance(name, value)
+        print(f"    {name:22} {value:5.2f} g  →  ± {margin:6.3f} g  "
+              f"({margin / value * 100:.0f} %)")
+    print("\n  Entre 10 et 40 g, la bande est de ± 20 % : c'est la plus serrée, et")
+    print("  c'est celle des protéines — le nutriment qu'un contrôle dosera en")
+    print("  premier. En dessous, la tolérance absolue est bien plus large.")
     return 0
 
 

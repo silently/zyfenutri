@@ -9,3 +9,5 @@ dist/
 # tables) qu'on n'a pas le droit de redistribuer. Ils restent sur le disque,
 # jamais dans le dépôt.
 docs/
+
+.DS_Store
