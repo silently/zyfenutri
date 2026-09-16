@@ -1,18 +1,17 @@
 [project]
 name = "zyfenutri"
-version = "1.0.0"
+version = "2.0.0"
 description = "Composition nutritionnelle du tempeh — le calcul, ses règles et ce qui les fonde"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-# ⚠️ AUCUNE dépendance d'exécution, et c'est un choix : ce paquet doit pouvoir
-# être importé par n'importe quoi, ou lancé comme script sur une machine nue.
-dependencies = []
+# La bibliothèque elle-même (`compute`) n'importe rien d'autre que la stdlib.
+# PyYAML ne sert qu'à la ligne de commande, pour lire et écrire des documents
+# YAML — du JSON passe sans lui.
+dependencies = ["pyyaml>=6.0"]
 
 [project.optional-dependencies]
-# `pyyaml` ne sert qu'à relire les données de référence (refs/), donc aux
-# tests et au script de confrontation — jamais au calcul lui-même.
-dev = ["pytest>=8.0", "pyyaml>=6.0"]
+dev = ["pytest>=8.0"]
 
 [project.scripts]
 zyfenutri = "zyfenutri.__main__:main"

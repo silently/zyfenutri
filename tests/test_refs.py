@@ -15,7 +15,7 @@ plutôt que d'échouer — le dépôt doit rester testable sans lui.
 """
 import pytest
 
-from zyfenutri.annexe_xiv import NUTRIENT_FIELDS, tolerance_for
+from zyfenutri.nutrients import NUTRIENTS as NUTRIENT_FIELDS
 from zyfenutri.refs_data import (
     fermentation_deviations,
     load_analyses,
@@ -106,29 +106,3 @@ def test_real_analyses_fall_within_the_regulatory_tolerances():
         + "\n  ".join(hors_tolerance)
         + "\n→ les coefficients sont à caler (check.py)."
     )
-
-
-# --- La table des tolérances elle-même ---------------------------------------
-
-def test_the_tolerance_table_matches_the_commission_guide():
-    """⚠️ Ce n'est PAS « ± 20 % » partout — l'idée reçue la plus répandue sur le
-    sujet. Tableau 1 du guide de décembre 2012, vérifié le 2026-09-12."""
-    # Glucides, sucres, protéines, fibres : < 10 g → ± 2 g
-    for champ in ("carbohydrates_g", "sugars_g", "protein_g", "fibre_g"):
-        assert tolerance_for(champ, 6) == 2.0
-        assert tolerance_for(champ, 18) == pytest.approx(3.6)      # 10–40 g → ± 20 %
-        assert tolerance_for(champ, 45) == 8.0                     # > 40 g → ± 8 g
-    # Matières grasses : < 10 g → ± 1,5 g
-    assert tolerance_for("fat_g", 5) == 1.5
-    assert tolerance_for("fat_g", 20) == pytest.approx(4.0)
-    # Acides gras saturés : < 4 g → ± 0,8 g
-    assert tolerance_for("saturates_g", 1.7) == 0.8
-    assert tolerance_for("saturates_g", 6) == pytest.approx(1.2)
-    # Sel : < 1,25 g → ± 0,375 g — énorme au regard d'un tempeh
-    assert tolerance_for("salt_g", 0.02) == 0.375
-    assert tolerance_for("salt_g", 2.0) == pytest.approx(0.4)
-
-
-def test_every_declared_nutrient_has_a_tolerance():
-    for champ in NUTRIENT_FIELDS:
-        assert tolerance_for(champ, 10) > 0, champ

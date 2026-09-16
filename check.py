@@ -29,8 +29,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-from zyfenutri.engine import DEFAULT_COEFFICIENTS  # noqa: E402
-from zyfenutri.annexe_xiv import NUTRIENT_FIELDS, tolerance_for  # noqa: E402
+from zyfenutri.transforms import DEFAULTS as DEFAULT_COEFFICIENTS  # noqa: E402
+from zyfenutri.label import tolerance  # noqa: E402
+from zyfenutri.nutrients import NUTRIENTS as NUTRIENT_FIELDS  # noqa: E402
 from zyfenutri.refs_data import (  # noqa: E402
     fermentation_deviations,
     load_analyses,
@@ -39,13 +40,13 @@ from zyfenutri.refs_data import (  # noqa: E402
 
 #: Quel coefficient chaque nutriment vérifie, à la fermentation.
 FERMENTATION_COEFFICIENT = {
-    "carbohydrates_g": "nutrition_fermentation_carbs_pct",
-    "sugars_g": "nutrition_fermentation_carbs_pct",
-    "fat_g": "nutrition_fermentation_fat_pct",
-    "saturates_g": "nutrition_fermentation_fat_pct",
-    "protein_g": None,   # attendu : 0 %, les protéines sont hydrolysées
-    "fibre_g": None,     # attendu : 0 % — cf. « ce qui reste à améliorer »
-    "salt_g": None,      # un minéral ne se consomme pas
+    "carbs": "fermentation_carbs",
+    "sugars": "fermentation_carbs",
+    "fat": "fermentation_fat",
+    "saturates": "fermentation_fat",
+    "protein": None,   # attendu : 0 %, les protéines sont hydrolysées
+    "fibre": None,     # attendu : 0 % — non calé, faute de donnée
+    "salt": None,      # un minéral ne se consomme pas
 }
 
 
@@ -119,7 +120,7 @@ def main() -> int:
     print("\n  Sur un tempeh de légumineuses typique :")
     for champ, valeur in (("protein_g", 18.0), ("carbohydrates_g", 12.0),
                           ("fibre_g", 6.0), ("fat_g", 5.0), ("salt_g", 0.02)):
-        t = tolerance_for(champ, valeur)
+        t = tolerance(champ, valeur)
         print(f"    {champ:22} {valeur:5.2f} g  →  ± {t:6.3f} g  ({t / valeur * 100:.0f} %)")
     print("\n  Seules les protéines tombent dans la bande ± 20 % — et c'est le")
     print("  nutriment qu'un contrôle dosera en premier sur un produit vendu")

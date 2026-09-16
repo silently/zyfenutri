@@ -1,78 +1,72 @@
-"""Le moteur en ligne de commande : du JSON entre, du JSON sort.
+"""Command line: one document in, one document out.
 
-    echo '{"harvest_weight_g": 1750, "ingredients": [...]}' | python -m zyfenutri
+    zyfenutri batch.yml               # YAML on stdout
+    zyfenutri batch.yml --json
+    cat batch.yml | zyfenutri
+    zyfenutri batch.yml -o sheet.yml
 
-C'est l'interface à utiliser quand importer le paquet n'est pas possible ou
-pas souhaitable : **aucun serveur, aucun port, aucune requête HTTP** — un
-processus, une entrée standard, une sortie standard. Le découplage est celui du
-système d'exploitation, ce qui est à la fois le plus simple et le plus solide :
-l'appelant n'a même pas à partager l'interpréteur Python.
+No server, no port, no HTTP. A process, standard input, standard output — the
+decoupling is the operating system's, which is both the simplest and the most
+robust. The caller need not even share our Python interpreter.
 
-Codes de sortie : **0** calcul abouti · **2** entrée invalide (le message part
-sur stderr, et le JSON de sortie porte `error`).
+Exit codes: 0 done, 2 the document could not be read.
 """
 from __future__ import annotations
 
 import argparse
-import dataclasses
 import json
 import sys
+from pathlib import Path
 
-from zyfenutri import __version__
-from zyfenutri.annexe_xiv import declared_values
-from zyfenutri.engine import estimate_batch_nutrition
+from zyfenutri import __version__, compute
 
 
-def calculer(payload: dict) -> dict:
-    """Le calcul, sur un dictionnaire déjà lu. Sans effet de bord."""
-    resultat = estimate_batch_nutrition(
-        harvest_weight_g=payload.get("harvest_weight_g"),
-        ingredients=payload.get("ingredients") or [],
-        coefficients=payload.get("coefficients"),
-    )
-    sortie = dataclasses.asdict(resultat)
-    # Les neuf valeurs telles qu'elles s'écrivent sur l'étiquette : c'est
-    # souvent tout ce que l'appelant veut, et les recalculer chez lui serait
-    # dupliquer la règle d'arrondi.
-    sortie["declared"] = declared_values({
-        **resultat.per_100g,
-        "energy_kj": resultat.energy_kj,
-        "energy_kcal": resultat.energy_kcal,
-    })
-    sortie["version"] = __version__
-    return sortie
+def _load(text: str) -> dict:
+    """Read YAML if PyYAML is around, JSON otherwise. JSON is valid YAML, so
+    a JSON document always works either way."""
+    try:
+        import yaml
+        return yaml.safe_load(text) or {}
+    except ImportError:
+        return json.loads(text)
+
+
+def _dump(data: dict, as_json: bool) -> str:
+    if not as_json:
+        try:
+            import yaml
+            return yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=100)
+        except ImportError:
+            pass
+    return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="zyfenutri",
-        description="Composition nutritionnelle d'un lot de tempeh (JSON sur stdin).")
+        description="Composition nutritionnelle d'un lot de tempeh.")
+    parser.add_argument("document", nargs="?",
+                        help="fichier YAML ou JSON (défaut : entrée standard)")
+    parser.add_argument("-o", "--output", help="écrire le résultat dans ce fichier")
+    parser.add_argument("--json", action="store_true", help="sortie JSON plutôt que YAML")
     parser.add_argument("--version", action="version", version=__version__)
-    parser.add_argument("--indent", type=int, default=None,
-                        help="indentation du JSON de sortie (défaut : compact)")
     args = parser.parse_args(argv)
 
-    brut = sys.stdin.read()
+    text = Path(args.document).read_text(encoding="utf-8") if args.document else sys.stdin.read()
     try:
-        payload = json.loads(brut)
-    except json.JSONDecodeError as exc:
-        print(f"entrée illisible : {exc}", file=sys.stderr)
-        json.dump({"error": f"JSON invalide : {exc}"}, sys.stdout)
+        document = _load(text)
+    except Exception as exc:                        # noqa: BLE001 - any parser error
+        print(f"document illisible : {exc}", file=sys.stderr)
         return 2
-    if not isinstance(payload, dict):
-        print("l'entrée doit être un objet JSON", file=sys.stderr)
-        json.dump({"error": "l'entrée doit être un objet JSON"}, sys.stdout)
+    if not isinstance(document, dict):
+        print("le document doit être un objet (une liste de clés)", file=sys.stderr)
         return 2
 
-    try:
-        sortie = calculer(payload)
-    except (TypeError, ValueError, KeyError) as exc:
-        print(f"entrée invalide : {exc}", file=sys.stderr)
-        json.dump({"error": str(exc)}, sys.stdout)
-        return 2
-
-    json.dump(sortie, sys.stdout, ensure_ascii=False, indent=args.indent)
-    sys.stdout.write("\n")
+    rendu = _dump(compute(document), args.json)
+    if args.output:
+        Path(args.output).write_text(rendu, encoding="utf-8")
+    else:
+        sys.stdout.write(rendu)
     return 0
 
 

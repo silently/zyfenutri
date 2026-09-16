@@ -1,61 +1,40 @@
-"""**zyfenutri** — composition nutritionnelle du tempeh.
+"""**zyfenutri** — nutritional composition of tempeh.
 
-Le calcul qui transforme *ce qu'on a mis dans le lot* en *ce qu'on écrit sur
-l'étiquette*. Pas de serveur, pas de base de données, pas de dépendance : une
-bibliothèque pure et un script.
+The calculation that turns *what went into a batch* into *what may be written
+on the label*. A library with no dependencies, and a command-line script.
 
-    from zyfenutri import estimate, declared_values
+    from zyfenutri import compute
 
-    resultat = estimate(
-        harvest_weight_g=1750,
-        ingredients=[{
-            "input_type_name": "Soja", "category": "substrate",
-            "net_weight_g": 1000, "composition": {...},
-        }],
-    )
+    result = compute({
+        "harvested_g": 1750,
+        "ingredients": [
+            {"name": "Soja", "role": "substrate", "weight_g": 1000,
+             "per_100g": {"fat": 20, "saturates": 2.9, "carbs": 15,
+                          "sugars": 5.7, "fibre": 15, "protein": 40, "salt": 0.01}},
+        ],
+    })
+    print(result["label"])      # what is written
+    print(result["steps"])      # how it got there
 
-En ligne de commande, le même calcul lit du JSON sur l'entrée standard :
+Same thing from a file:
 
-    echo '{"harvest_weight_g": 1750, "ingredients": [...]}' | python -m zyfenutri
+    zyfenutri batch.yml
 
-⚠️ **Ce paquet ne décide de rien.** Il applique des règles documentées à des
-données qu'on lui donne, et rend la chaîne de calcul déroulée (`steps`) pour
-qu'elle soit contestable. La méthode et ce qui la fonde sont dans
-`refs/methode.md` — c'est ce document qu'on présente à un contrôle.
+This package decides nothing. It applies documented rules to data it is given,
+and returns the chain it followed so that it can be checked, and argued with.
+The method, and what backs it, is in `refs/methode.md`.
 """
-from zyfenutri.annexe_xiv import (
-    KCAL_PER_G,
-    KJ_PER_G,
-    NUTRIENT_FIELDS,
-    NUTRIENT_LABELS,
-    declared_value,
-    declared_values,
-    energy_kcal,
-    energy_kj,
-    tolerance_for,
-)
-from zyfenutri.engine import (
-    DEFAULT_COEFFICIENTS,
-    EXCLUS,
-    PIPELINE,
-    BatchNutrition,
-    IngredientContribution,
-    estimate_batch_nutrition as estimate,
-)
-from zyfenutri.sheet import (
-    MASS_BALANCE_MAX_G,
-    MASS_BALANCE_SUSPECT_G,
-    check_nutrients,
-    mass_balance,
-)
+from zyfenutri.checks import MASS_BALANCE_MAX_G, MASS_BALANCE_SUSPECT_G, check, mass_balance
+from zyfenutri.engine import compute
+from zyfenutri.label import KCAL_PER_G, KJ_PER_G, declared, declared_label, energy, tolerance
+from zyfenutri.nutrients import LABELS, NUTRIENTS
+from zyfenutri.transforms import DEFAULTS, EXCLUDED, PIPELINE
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 
 __all__ = [
-    "estimate", "BatchNutrition", "IngredientContribution",
-    "DEFAULT_COEFFICIENTS", "PIPELINE", "EXCLUS",
-    "NUTRIENT_FIELDS", "NUTRIENT_LABELS", "KJ_PER_G", "KCAL_PER_G",
-    "energy_kj", "energy_kcal", "declared_value", "declared_values",
-    "tolerance_for", "mass_balance", "check_nutrients",
-    "MASS_BALANCE_MAX_G", "MASS_BALANCE_SUSPECT_G", "__version__",
+    "compute", "NUTRIENTS", "LABELS", "DEFAULTS", "PIPELINE", "EXCLUDED",
+    "energy", "declared", "declared_label", "tolerance",
+    "mass_balance", "check", "MASS_BALANCE_MAX_G", "MASS_BALANCE_SUSPECT_G",
+    "KJ_PER_G", "KCAL_PER_G", "__version__",
 ]

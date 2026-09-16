@@ -15,7 +15,7 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from zyfenutri.annexe_xiv import NUTRIENT_FIELDS
+from zyfenutri.nutrients import NUTRIENTS as NUTRIENT_FIELDS
 
 #: Où chercher les données de référence : à côté du paquet, ou là où
 #: `ZYFE_NUTRI_REFS` le dit. Absent, tout rend des listes vides — le paquet
@@ -27,13 +27,13 @@ _CANDIDATES = [
 
 #: Nom dans les fichiers de référence → champ du modèle.
 FIELD_BY_FR = {
-    "matieres_grasses_g": "fat_g",
-    "acides_gras_satures_g": "saturates_g",
-    "glucides_g": "carbohydrates_g",
-    "sucres_g": "sugars_g",
-    "fibres_g": "fibre_g",
-    "proteines_g": "protein_g",
-    "sel_g": "salt_g",
+    "matieres_grasses_g": "fat",
+    "acides_gras_satures_g": "saturates",
+    "glucides_g": "carbs",
+    "sucres_g": "sugars",
+    "fibres_g": "fibre",
+    "proteines_g": "protein",
+    "sel_g": "salt",
 }
 
 _SAMPLE_KEYS = {"description", "masse_g", "humidite_g_100g", "composition_pour_100g"}
@@ -162,30 +162,26 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
     remettre à une catégorie : l'échantillon a déjà trempé et cuit, et aucune
     catégorie du référentiel ne décrit cet état intermédiaire.
     """
-    from zyfenutri.engine import estimate_batch_nutrition
+    from zyfenutri.engine import compute
 
-    result = estimate_batch_nutrition(
-        harvest_weight_g=analysis.apres.masse_g,
-        ingredients=[{
-            "input_type_name": analysis.reference,
-            "category": None,
-            "spec_identifier": None,
-            "net_weight_g": analysis.avant.masse_g,
-            "gross_weight_g": None,
-            "dehulled": False,
-            # L'échantillon a déjà trempé et cuit : seule la FERMENTATION reste
-            # à appliquer. Lui remettre le lessivage compterait deux fois une
-            # perte déjà subie.
-            "transformations": ("fermentation",),
-            "composition": analysis.avant.composition,
+    result = compute({
+        "harvested_g": analysis.apres.masse_g,
+        "ingredients": [{
+            "name": analysis.reference,
+            # No role: the sample has already soaked and cooked, so only
+            # fermentation is left. Giving it `substrate` would apply leaching
+            # a second time to a loss it has already taken.
+            "role": "sample_after_cooking",
+            "weight_g": analysis.avant.masse_g,
+            "per_100g": analysis.avant.composition,
         }],
-    )
-    return {k: v for k, v in result.per_100g.items() if v is not None}
+    })
+    return {k: v for k, v in result["per_100g"].items() if v is not None}
 
 
 def fermentation_deviations(analysis: Analysis) -> list[Deviation]:
     """Prédit vs mesuré, nutriment par nutriment. `[]` si non exploitable."""
-    from zyfenutri.annexe_xiv import tolerance_for
+    from zyfenutri.label import tolerance
 
     if not (analysis.avant.usable and analysis.apres.usable):
         return []
@@ -195,7 +191,7 @@ def fermentation_deviations(analysis: Analysis) -> list[Deviation]:
             field=champ,
             predicted=predit[champ],
             measured=analysis.apres.composition[champ],
-            tolerance=tolerance_for(champ, analysis.apres.composition[champ]),
+            tolerance=tolerance(champ, analysis.apres.composition[champ]),
         )
         for champ in NUTRIENT_FIELDS
         if champ in predit and champ in analysis.apres.composition
