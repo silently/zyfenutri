@@ -181,7 +181,7 @@ def _steps(counted: list[dict], coefficients: dict[str, float],
     if any(not l["transforms"] for l in counted):
         out.append("Acidifiant pré-inoculation : ajouté après cuisson, compté au prorata")
     if harvested_g:
-        out.append(f"T5 · Ramené à 100 g : ÷ {harvested_g:g} g "
+        out.append(f"T5 · Ramené à 100 g de produit fini : ÷ {harvested_g:g} g "
                    f"{'PRÉDITS par le facteur de rendement' if estimated else 'récoltés'}. "
                    "C'est cette division qui porte l'eau reprise")
         out.append("Énergie calculée depuis les macros (annexe XIV), jamais recopiée")
