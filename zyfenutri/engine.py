@@ -60,14 +60,11 @@ def _ingredient(raw: dict, document: dict, missing: list[str]) -> tuple[dict, In
 
     steps = tf.PIPELINE.get(role, ())
     transforms: list[tf.Transform] = []
+    # The weight before any transform, hulls included: what the hulls weighed
+    # is in the yield factor, not here.
     raw_mass = float(weight or 0.0)
-    raw_weight = raw.get("raw_weight_g")
-    # Dehulling only counts when it was WEIGHED: the hull mass is the gap
-    # between gross and net, never an assumption.
-    if ("dehulling" in steps and raw.get("dehulled") and weight
-            and raw_weight is not None and raw_weight > weight):
-        transforms.append(tf.Dehulling.from_weights(raw_weight, weight))
-        raw_mass = float(raw_weight)
+    if "dehulling" in steps and raw.get("dehulled"):
+        transforms.append(tf.Dehulling())
     if "roasting" in steps and (raw.get("roasted") or raw.get("roasting_intensity") is not None):
         transforms.append(_step(tf.Roasting, raw.get("roasting_intensity"),
                                 "Torréfaction (intensité inconnue)", missing,
@@ -152,6 +149,9 @@ def compute(document: dict) -> dict:
     if balance is not None and balance > MASS_BALANCE_SUSPECT_G:
         warnings.append(f"macronutrients add up to {balance:g} g per 100 g: "
                         "almost nothing left for water and ash")
+    if any(raw.get("raw_weight_g") is not None for raw in document.get("ingredients") or []):
+        warnings.append("raw_weight_g is no longer read: weight_g is the weight before any "
+                        "transform, hulls included, and their loss is in the yield factor")
     if document.get("soaking_hours") is not None:
         warnings.append("soaking_hours is no longer read: soaking is taken as one night, "
                         "10 to 15 h")

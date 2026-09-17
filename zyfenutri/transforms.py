@@ -178,18 +178,23 @@ def minus(value: float | None, amount: float) -> float | None:
 
 
 # --- Dehulling ---
+#
+# Hulls removed. Not a setting, and no mass here: the hulls' mass is carried by
+# the yield factor, like every other change of mass. This transform only says
+# which nutrients left with them, per 100 g of seed as weighed with its hulls.
 
+# The hull is 8-10 % of a soybean [1, p. 60]: 7.9 % dehulled by hand, 9.5 %
+# mechanically (Smith 1964, [12, p. 189]).
+HULL_FRACTION = 0.09
 # Hull composition, g per 100 g of hull: protein 8.8, carbohydrates 86, fat
 # 1.0, ash 4.3 (Cowan 1969, cited in [12, p. 188]). Smith 1964 finds hulls at
 # 11.7-12.5 % protein, holding 3 % of the seed's protein [12, p. 189].
 HULL_PROTEIN = 0.088
 HULL_FAT = 0.010
-# The hull is 8-10 % of the seed and holds half of its fibre [1, p. 60]; "a
-# large proportion of the crude fiber lost is lost in the hulls" [12, p. 188].
-# Taken as a share of the SHEET's fibre, so it holds whatever the fibre method.
-# HYPOTHESIS: the share scales with the hull fraction, around 9 %.
+# The hull holds half of the seed's fibre [1, p. 60]; "a large proportion of
+# the crude fiber lost is lost in the hulls" [12, p. 188]. Taken as a share of
+# the SHEET's fibre, so it holds whatever the fibre method.
 HULL_FIBRE_SHARE = 0.5
-HULL_REFERENCE_FRACTION = 0.09
 # HYPOTHESIS: the hull's other carbohydrates are not sugars or starch.
 # Hull ash 4.3 % [12, p. 188] over seed ash 4.86-4.87 % (refs/official, NZ
 # and USDA). HYPOTHESIS: sodium follows ash.
@@ -198,24 +203,14 @@ HULL_MINERALS_RATIO = 4.3 / 4.87
 
 @dataclass(frozen=True, slots=True)
 class Dehulling:
-    """Hulls removed. `hull_fraction` is the share of raw mass that left."""
-    hull_fraction: float
-
-    def __post_init__(self) -> None:
-        if not 0 <= self.hull_fraction < 1:
-            raise ValueError("a hull fraction lies between 0 and 1")
-
-    @classmethod
-    def from_weights(cls, raw_g: float, dehulled_g: float) -> Dehulling:
-        """From the two weighings: before and after dehulling."""
-        return cls(1 - dehulled_g / raw_g)
+    """Hulls removed: what leaves with them, not their mass."""
 
     @property
     def label(self) -> str:
-        return f"Dépelliculage ({self.hull_fraction * 100:.0f} % de pellicule)"
+        return "Dépelliculage"
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
-        hull_g = 100 * self.hull_fraction      # per 100 g of raw seed
+        hull_g = 100 * HULL_FRACTION      # per 100 g of seed with its hulls
         fat = minus(facts.fat, hull_g * HULL_FAT)
         keep_fat = None if fat is None or not facts.fat else fat / facts.fat
         # GAP: the germ (3 % of a soybean [1, p. 60]) is often lost too; not
@@ -224,10 +219,9 @@ class Dehulling:
             facts,
             fat=fat,
             saturates=scaled(facts.saturates, keep_fat if facts.fat else 1.0),
-            fibre=scaled(facts.fibre, 1 - min(1.0, HULL_FIBRE_SHARE * self.hull_fraction
-                                              / HULL_REFERENCE_FRACTION)),
+            fibre=scaled(facts.fibre, 1 - HULL_FIBRE_SHARE),
             protein=minus(facts.protein, hull_g * HULL_PROTEIN),
-            salt=scaled(facts.salt, 1 - self.hull_fraction * HULL_MINERALS_RATIO),
+            salt=scaled(facts.salt, 1 - HULL_FRACTION * HULL_MINERALS_RATIO),
         )
 
 
@@ -463,8 +457,8 @@ class Unknown:
 COEFFICIENTS = {
     "hull_protein": HULL_PROTEIN,
     "hull_fat": HULL_FAT,
+    "hull_fraction": HULL_FRACTION,
     "hull_fibre_share": HULL_FIBRE_SHARE,
-    "hull_reference_fraction": HULL_REFERENCE_FRACTION,
     "hull_minerals_ratio": HULL_MINERALS_RATIO,
     "soaking_sugars_kept": SOAKING_SUGARS_KEPT,
     "soaking_starch_kept": SOAKING_STARCH_KEPT,

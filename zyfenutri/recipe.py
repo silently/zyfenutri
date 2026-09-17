@@ -2,7 +2,7 @@
 
     Recipe(name="Tempeh de soja", ingredients=(
         Ingredient(name="Soja", facts=soy, raw_mass=1000, yield_factor=1.75,
-                   transforms=(Dehulling(0.09), Soaking(), Cooking(30), Fermentation(36))),
+                   transforms=(Dehulling(), Soaking(), Cooking(30), Fermentation(36))),
         Ingredient(name="Vinaigre", facts=vinegar, raw_mass=50),
     )).facts()
 

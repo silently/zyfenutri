@@ -23,7 +23,7 @@ coefficient pour chaque nutriment. Chacun est commenté dans
 
 | Transformation | Ce qui est sourcé | Ce qui reste hypothèse | Lacune (`None`) |
 |---|---|---|---|
-| **Dépelliculage** | pellicule à 8,8 % de protéines, 1 % de lipides, 4,3 % de cendres [12, p. 188] ; moitié des fibres [1, p. 60] | proportionnalité à la part de pellicule ; sodium comme les cendres | germe |
+| **Dépelliculage** — sans réglage ; sa perte de **masse** est dans le facteur de rendement | pellicule à 9 % de la graine [1, p. 60], [12, p. 189], à 8,8 % de protéines, 1 % de lipides, 4,3 % de cendres [12, p. 188] ; moitié des fibres [1, p. 60] | sodium comme les cendres ; mêmes proportions pour d'autres graines | germe |
 | **Trempage** — **toujours une nuit, 10 à 15 h** | sucres −27 % (saccharose, 25 °C [14]) ; protéines −3 % [14] ; minéraux −5 %, au rythme des solides ([14], [13]) | lipides −1,2 % (moitié des −2,5 % à 24 h [12, p. 193]) ; azote non protéique ≈ moitié de l'azote perdu ; fibres et amidon conservés ; sodium comme les cendres | température ; acidification |
 | **Cuisson** | sucres −44 % (reste des −59 % de Shallenberger [12], après le trempage de [14]) ; protéines ~8 % ([12], [15]) ; minéraux −2 % ([15]) | fibres et amidon conservés ; τ = 20 min | — |
 | **Fermentation** | **lipides −12 % de 26 à 60 h, −59 % à 120 h, −67 % à 180 h** [16] ; part saturée des lipides +7,9 points, **calée sur `official/`** ; protéines 1-4 % ([16], [9]) ; minéraux conservés [16] ; sucres −17 % à 48 h [12, p. 194] ; amidon −75 % [8] | fibres conservées (elles montent en général [12], [15]) ; formes linéaires entre les points | sucres et amidon au-delà de 48 h ; protéines au-delà de 72 h ; lipides au-delà de 180 h ; température |

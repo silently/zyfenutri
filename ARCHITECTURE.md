@@ -127,7 +127,7 @@ toute prête.
 def cooking(minutes: float) -> Transform: ...   # la fabrique
 def fermentation(hours: float) -> Transform: ...
 
-pipeline: list[Transform] = [dehulling(hull_share=0.08), cooking(minutes=30), fermentation(hours=36)]
+pipeline: list[Transform] = [Dehulling(), Soaking(), cooking(minutes=30), fermentation(hours=36)]
 prepared = process(raw, pipeline)
 ```
 
@@ -279,7 +279,7 @@ disent **ce qu'il contient**. On divise l'un par l'autre, une fois.
 
 | Classe | Réglage | Connu aujourd'hui |
 |---|---|---|
-| `Dehulling(hull_fraction)` — ou `Dehulling.from_weights(brut, dépelliculé)` | part de pellicule, 0 à 1 | tout |
+| `Dehulling()` | aucun : pellicule typique du soja, 9 % ; sa **masse** est dans le facteur de rendement | tout |
 | `Soaking()` | aucun : toujours **une nuit, 10 à 15 h** | tout |
 | `Cooking(minutes)` | durée en minutes | tout |
 | `Fermentation(hours)` | durée en heures | tout jusqu'à 48 h ; protéines jusqu'à 72 h |

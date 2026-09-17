@@ -96,19 +96,27 @@ def test_what_is_left_out_says_why(role, reason):
 
 # --- Dehulling ----------------------------------------------------------------
 
-def test_dehulling_is_applied_when_both_weights_are_known():
-    result = compute({"harvested_g": 2000, **PROCESS, "ingredients": [
-        {"name": "Soja", "role": "substrate", "weight_g": 1000,
-         "raw_weight_g": 1100, "dehulled": True, "per_100g": SOY}]})
-    assert result["ingredients"][0]["transforms"][0].startswith("Dépelliculage")
-
-
-def test_dehulling_needs_both_weights():
-    """The hull mass is the gap between gross and net — never an assumption."""
+def test_a_dehulled_substrate_goes_through_dehulling():
     result = compute({"harvested_g": 2000, **PROCESS, "ingredients": [
         {"name": "Soja", "role": "substrate", "weight_g": 1000,
          "dehulled": True, "per_100g": SOY}]})
-    assert not result["ingredients"][0]["transforms"][0].startswith("Dépelliculage")
+    assert result["ingredients"][0]["transforms"][0] == "Dépelliculage"
+
+
+def test_hulls_weigh_nothing_here():
+    """Their mass is in the yield factor: the weight before dehulling is the
+    raw mass, and the prediction multiplies it by the yield."""
+    result = compute({**PROCESS, "ingredients": [
+        {"name": "Soja", "role": "substrate", "weight_g": 1000, "yield": 1.75,
+         "dehulled": True, "per_100g": SOY}]})
+    assert result["harvested_g"] == 1750
+
+
+def test_a_raw_weight_is_no_longer_read():
+    result = one_substrate(harvested_g=2000, ingredients=[
+        {"name": "Soja", "role": "substrate", "weight_g": 1000, "raw_weight_g": 1100,
+         "dehulled": True, "per_100g": SOY}])
+    assert any("raw_weight_g" in w for w in result["warnings"])
 
 
 # --- The harvest weight -------------------------------------------------------

@@ -11,7 +11,7 @@ def tempeh(soy, vinegar):
                             fibre=18.0, protein=37.0, salt=0.01)
     return Recipe(name="Tempeh de soja", ingredients=(
         Ingredient(name="Soja", facts=soy, raw_mass=1000, yield_factor=1.75,
-                   transforms=(Dehulling(0.09), Soaking(), Cooking(30), Fermentation(36))),
+                   transforms=(Dehulling(), Soaking(), Cooking(30), Fermentation(36))),
         Ingredient(name="Kinako", facts=kinako, raw_mass=10,
                    transforms=(Roasting(2), Fermentation(36))),
         Ingredient(name="Vinaigre", facts=vinegar, raw_mass=50),
@@ -26,7 +26,7 @@ def test_what_is_known_comes_through(soy):
     """Fat is known through dehulling, soaking and cooking."""
     recipe = Recipe(name="Soja cuit", ingredients=(
         Ingredient(name="Soja", facts=soy, raw_mass=1000, yield_factor=2.0,
-                   transforms=(Dehulling(0.09), Soaking(), Cooking(30))),))
+                   transforms=(Dehulling(), Soaking(), Cooking(30))),))
     assert recipe.facts().fat is not None
 
 
@@ -57,7 +57,7 @@ def test_a_weighed_product_mass_is_used(soy):
 
 
 def test_steps_describe_the_chain(tempeh):
-    assert tempeh.steps()[0] == ("Soja : Dépelliculage (9 % de pellicule) → Trempage (une nuit)"
+    assert tempeh.steps()[0] == ("Soja : Dépelliculage → Trempage (une nuit)"
                                  " → Cuisson 30 min → Fermentation 36 h")
     assert tempeh.steps()[2] == "Vinaigre : tel quel"
 

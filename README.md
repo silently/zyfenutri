@@ -44,9 +44,8 @@ fermentation_hours: 36     # durée d'incubation
 ingredients:
   - name: Soja
     role: substrate        # substrate · support · acid · soaking_acid · starter
-    weight_g: 1000         # poids net, celui qui part au trempage
-    raw_weight_g: 1100     # facultatif — l'écart avec le net est la pellicule
-    dehulled: true
+    weight_g: 1000         # poids AVANT toute transformation, pellicule comprise
+    dehulled: true         # dépelliculé : sa perte de masse est dans le rendement
     per_100g:
       fat: 20
       saturates: 2.9
@@ -105,7 +104,7 @@ label:                     # les mêmes, telles qu'elles s'écrivent
 
 steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
-  - "Soja : Dépelliculage (9 % de pellicule) → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Soja : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
 
 missing:                   # ce qui empêche d'étiqueter, en clair
@@ -127,7 +126,7 @@ fois** par le poids de tempeh.
 
 | `role` | Transformations |
 |---|---|
-| `substrate` | dépelliculage *(si les deux poids sont donnés)* → trempage *(toujours une nuit, 10 à 15 h)* → cuisson → fermentation |
+| `substrate` | dépelliculage *(si `dehulled`)* → trempage *(toujours une nuit, 10 à 15 h)* → cuisson → fermentation |
 | `support` | torréfaction *(si `roasting_intensity`)* → fermentation |
 | `acid` | aucune — ajouté après cuisson, compté au prorata de sa masse |
 | `soaking_acid` | **exclu** — il part avec l'eau de trempage, qui est jetée |

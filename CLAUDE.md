@@ -35,9 +35,9 @@ compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]}) -
 zyfenutri lot.yml
 ```
 
-⚠️ **Personne n'utilise encore ce contrat** : il peut évoluer librement. La
-version suit le versionnage sémantique (correctif, ajout compatible, rupture),
-dans `pyproject.toml` et `zyfenutri/__init__.py`. Dès qu'un consommateur existera, ajouter une clé de sortie
+⚠️ **Personne n'utilise encore ce contrat** : il peut évoluer librement, et on
+reste en **1.x** tant que c'est le cas — une rupture fait monter la version
+mineure, pas la majeure. Version dans `pyproject.toml` et `zyfenutri/__init__.py`. Dès qu'un consommateur existera, ajouter une clé de sortie
 restera sans risque ; en renommer une, en supprimer une, ou changer le sens
 d'un rôle cassera des consommateurs qu'on ne voit pas d'ici, et demandera une
 version majeure.
