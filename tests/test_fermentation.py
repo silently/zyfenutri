@@ -57,10 +57,10 @@ def test_sucrose_drops_by_a_sixth_in_48_hours(soy):
     assert Fermentation(48)(soy).sugars / soy.sugars == pytest.approx(0.83)
 
 
-def test_starch_is_mostly_consumed_by_48_hours(soy):
-    """[8, p. 624-625]: soybean starch 0.4 → 0.1 %, field bean −74 %."""
-    out = Fermentation(48)(soy)
-    assert (out.carbs - out.sugars) / (soy.carbs - soy.sugars) == pytest.approx(0.25)
+def test_about_a_third_of_the_starch_is_consumed(soy):
+    """[15]: 62-76 % of nitrogen-free extract kept for faba bean, chickpea and pea."""
+    out = Fermentation(37.5)(soy)
+    assert (out.carbs - out.sugars) / (soy.carbs - soy.sugars) == pytest.approx(0.69)
 
 
 def test_carbs_beyond_48_hours_are_unknown(soy):

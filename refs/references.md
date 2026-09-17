@@ -371,3 +371,23 @@ oligosporus* ». *LWT — Food Science and Technology* 119 (2020) 108880.
   la graine crue ; protéines (Bradford) et sucres (DNS) dosés dans un extrait
   aqueux, en mg/mL et g/L, pas en masse. Aucun coefficient n'est calable
   dessus.
+
+### [18] Boge, 2007 — *Composition, sensory attributes, and flavor of dry- and oil-roasted soynuts after roasting and during storage*
+
+E. Boge. *Composition, sensory attributes, and flavor of dry- and oil-roasted
+soynuts after roasting and during storage*. Mémoire de master, Iowa State
+University, 2007. <https://doi.org/10.31274/rtd-180813-16199>
+
+- **Statut :** lu, par passages (méthode p. 26-27, sucres p. 33-34, tableaux 5
+  et 6 p. 42-43). **Accès libre** (dépôt de l'université).
+- **Fichier :** `docs/Boge2007-roasted-soynuts-thesis.pdf`
+- **Pages :** page imprimée = page du PDF **− 3**.
+- **Ce qu'on en tire :** cinq variétés de soja, trempées 20-24 h à 4 °C, puis
+  **grillées à sec** (tambour, 3 h, sans réglage de température) ou **frites**
+  (177 °C, 9 min). Fructose, glucose, saccharose, raffinose et stachyose, crus
+  et torréfiés [tableau 6, p. 43] : le saccharose ne baisse pas de façon
+  significative ; seul le fructose baisse, et seulement à la friture.
+- **Réserves :** teneurs en matière sèche et **dégraissée** ; la torréfaction
+  rend les sucres plus faciles à extraire, ce qui peut masquer une petite
+  perte ; soja trempé avant torréfaction, et non farine de soja sec comme le
+  kinako ; fibres non mesurées.

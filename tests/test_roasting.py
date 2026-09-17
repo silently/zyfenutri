@@ -15,6 +15,11 @@ def test_is_a_transform_without_setting():
     assert step.label == "Torréfaction"
 
 
-@pytest.mark.skip(reason="GAP: sugar loss on a darker roast to source")
-def test_a_dark_roast_loses_sugars():
-    """Maillard consumes reducing sugars; no measure yet."""
+def test_even_a_strong_roast_keeps_the_sugars(soy):
+    """[18, table 6]: sucrose not significantly lower after 3 h of drum roasting."""
+    assert Roasting()(soy).sugars == soy.sugars
+
+
+@pytest.mark.skip(reason="TODO important : fibres après une torréfaction forte (produits de Maillard)")
+def test_a_strong_roast_and_fibre():
+    """Maillard products may be counted as fibre; no measure yet."""

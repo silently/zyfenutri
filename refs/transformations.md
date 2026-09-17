@@ -26,7 +26,7 @@ coefficient pour chaque nutriment. Chacun est commenté dans
 | **Dépelliculage** — sans réglage ; sa perte de **masse** est dans le facteur de rendement | pellicule à 9 % de la graine [1, p. 60], [12, p. 189], à 8,8 % de protéines, 1 % de lipides, 4,3 % de cendres [12, p. 188] ; moitié des fibres [1, p. 60] | sodium comme les cendres ; mêmes proportions pour d'autres graines | germe |
 | **Trempage** — **toujours une nuit, 10 à 15 h** | sucres −27 % (saccharose, 25 °C [14]) ; protéines −3 % [14] ; minéraux −5 %, au rythme des solides ([14], [13]) | lipides −1,2 % (moitié des −2,5 % à 24 h [12, p. 193]) ; azote non protéique ≈ moitié de l'azote perdu ; fibres et amidon conservés ; sodium comme les cendres | température ; acidification |
 | **Cuisson** | sucres −44 % (reste des −59 % de Shallenberger [12], après le trempage de [14]) ; protéines ~8 % ([12], [15]) ; minéraux −2 % ([15]) | fibres et amidon conservés ; τ = 20 min | — |
-| **Fermentation** | **lipides −12 % de 26 à 60 h, −59 % à 120 h, −67 % à 180 h** [16] ; part saturée des lipides +7,9 points, **calée sur `official/`** ; protéines 1-4 % ([16], [9]) ; minéraux conservés [16] ; sucres −17 % à 48 h [12, p. 194] ; amidon −75 % [8] | fibres conservées (elles montent en général [12], [15]) ; formes linéaires entre les points | sucres et amidon au-delà de 48 h ; protéines au-delà de 72 h ; lipides au-delà de 180 h ; température |
+| **Fermentation** | **lipides −12 % de 26 à 60 h, −59 % à 120 h, −67 % à 180 h** [16] ; part saturée des lipides +7,9 points, **calée sur `official/`** ; protéines 1-4 % ([16], [9]) ; minéraux conservés [16] ; sucres −17 % à 48 h [12, p. 194] ; amidon −31 % à 37,5 h, −39 % à 48 h ([15], borne haute) | fibres conservées (elles montent en général [12], [15]) ; formes linéaires entre les points | sucres et amidon au-delà de 48 h ; protéines au-delà de 72 h ; lipides au-delà de 180 h ; température |
 | **Torréfaction** — oui ou non, sans intensité | 110 °C, 10 min : glucides totaux, protéines, lipides et cendres inchangés en matière sèche [13] | sucres et fibres inchangés ; une torréfaction plus poussée traitée comme la légère | effet d'une torréfaction forte sur les sucres (Maillard) |
 
 **Contrôle de cohérence, pas une validation.** Graine néo-zélandaise, 12 h de
@@ -55,8 +55,9 @@ Les trois précédentes sont lues : Ruiz-Terán & Owens 1996 [16], Wang et al. 1
 | **2** | **Robinson R. J., Kao C. (1977).** Tempeh and miso from chickpea, horse bean and soybean. *Cereal Chemistry* 54, 1192-1197. | Composition de tempehs de **pois chiche, féverole et soja**, citée par [15] : un second bilan hors soja, pour recouper [15], dont le protocole (graines concassées, trempage chaud) perd beaucoup de lipides. Les archives anciennes de *Cereal Chemistry* sont peut-être en accès libre. |
 | **3** | **Smith A. K., Rackis J. J., Hesseltine C. W., Robbins D. J., Booth A. N. (1964).** Tempeh: nutritive value in relation to processing. *Cereal Chemistry* 41, 173. | Les pertes d'azote et de solides **étape par étape**, que [12] ne reprend qu'en résumé : de quoi séparer vraiment protéines au trempage et à la cuisson (aujourd'hui −3 % et −8 %, par différence). Même archive. |
 
-**Aucune source n'a été trouvée pour une torréfaction forte** : la
-torréfaction est traitée en oui/non, comme la torréfaction légère de [13].
+**Torréfaction forte** : [18] montre que les sucres ne baissent pas de façon
+mesurable ; le TODO restant porte sur les fibres et sur le kinako lui-même
+(voir « Manque complètement »).
 
 ### À affiner — une valeur existe, mais elle est fragile
 
@@ -82,7 +83,17 @@ torréfaction est traitée en oui/non, comme la torréfaction légère de [13].
   chiche, pois et féverole (§ 0 ter), mais il n'y a **aucune donnée pour la
   lentille, les céréales ni les oléagineux**, et [3] montre que le plafond de
   perte au trempage varie de 16 à 70 % selon la graine.
-- **Torréfaction forte** : modélisée comme une torréfaction légère (aucun changement) ; l'effet de Maillard sur les sucres n'est pas mesuré.
+- ⚠️ **TODO important — torréfaction forte.** Le kinako est souvent torréfié
+  fort, et la torréfaction est traitée en oui/non, sans aucun changement.
+  - **Sucres : risque en grande partie levé.** Même une torréfaction de 3 h au
+    tambour ne baisse pas le saccharose de façon mesurable ; Maillard ne
+    consomme que les sucres réducteurs, moins d'un dixième des sucres du soja
+    [18]. Reste à confirmer sur une **farine de soja sec** (kinako), et non sur
+    du soja trempé puis grillé.
+  - **Fibres : inconnu.** Les produits de Maillard (mélanoïdines) peuvent être
+    comptés dans les fibres ; aucune mesure lue.
+  - **Poids réel** : le kinako ne pèse que quelques grammes par lot, l'effet
+    sur l'étiquette reste faible.
 - **Au-delà des durées connues** : fermentation de plus de 48 h (72 h pour les
   protéines). Le trempage, lui, est toujours d'une nuit (10 à 15 h).
 - **La température** du trempage et de la fermentation : premier facteur selon
@@ -94,6 +105,48 @@ torréfaction est traitée en oui/non, comme la torréfaction légère de [13].
   [10, p. 1728].
 - **Les bornes Codex** (protéines ≥ 15 %, lipides ≥ 7 %…) comme avertissements
   dans `compute()`.
+
+## 0 quater. Les substrats visés, et ce qui ne tient pas encore pour eux
+
+Substrats prévus : **soja, orge, lentilles, pois chiche, pois cassés**. Presque
+tous les coefficients viennent du soja, qui a peu d'amidon et une pellicule de
+9 %.
+
+| Transformation | Tient hors soja ? |
+|---|---|
+| Dépelliculage | ⚠️ **propre au soja** : 9 % de pellicule et composition de Cowan 1969. La pellicule du pois chiche, de la lentille ou de l'orge n'est pas la même. Les pois cassés sont vendus dépelliculés : ne pas l'appliquer. |
+| Trempage | en partie : raisonne par fractions, mais [3] montre un plafond de perte de 16 à 70 % selon la graine |
+| Cuisson | inconnu hors soja ; la lentille cuit 1 min chez [17], là où τ = 20 min |
+| Fermentation — amidon | **recalé sur trois légumineuses amylacées** [15] (voir ci-dessous) |
+| Torréfaction | sans objet pour les substrats |
+
+**L'amidon à la fermentation — recalé.** L'ancien coefficient (−75 % à 48 h)
+venait d'un soja presque sans amidon et d'une féverole citée de seconde main
+[8]. Sur une légumineuse amylacée, il ne laissait que ~44 % des glucides de la
+graine au tempeh, contre 62-76 % d'extrait non azoté conservé mesurés par
+[15]. Le coefficient est maintenant calé sur [15] : **−31 % d'amidon à 37,5 h,
+−39 % à 48 h** (prolongé en ligne droite). Les pois cassés, pois chiches et
+lentilles gardent ~69 % de leurs glucides (trempage, cuisson 30 min,
+fermentation 36 h).
+
+- **C'est une borne haute de la perte** : tout l'extrait non azoté perdu est
+  attribué à l'amidon de la fermentation, alors qu'une partie part à l'eau.
+- **Le soja n'y perd presque rien** : son amidon est faible. Contrôle sur les
+  couples officiels : glucides NZ 3,0 g (table 2,4), Norvège 3,2 g (table 5,5,
+  encore 0,2 g hors tolérance).
+- **La taille de la graine n'est pas un réglage** : [3] donne le même rythme
+  de fuite au trempage pour des graines de tailles très différentes, et aucune
+  source lue ne mesure l'effet du calibre à la cuisson.
+
+**La souche.** La fermentation est calée sur ***R. oligosporus*** (celle de [15]
+et [16], et celle utilisée en pratique). Avec *R. oryzae*, les acides gras
+baissent nettement plus au-delà de ~40 h à 30 °C : à 46 h, ~−34 % en teneur
+contre ~−6 % pour *R. oligosporus* [2, tableau 1]. Non modélisé.
+
+**L'orge** n'a aucune donnée : pellicule (orge vêtue ou perlée), trempage,
+cuisson, fermentation d'une céréale.
+
+---
 
 ## 0 ter. Quatre légumineuses, un même comportement [15]
 
@@ -135,7 +188,7 @@ l'ordre des lectures : certains « à combler » y sont désormais comblés.
 | **Trempage** | légumineuses, certaines céréales | **toujours une nuit, 10 à 15 h** ; température, acidifié ou non, graine entière, fendue ou concassée |
 | **Cuisson** | tous | durée ; eau jetée, vapeur ou absorption |
 | **Fermentation** | tous | durée, température |
-| **Torréfaction** | supports (kinako…), oléagineux | durée, température |
+| **Torréfaction** — oui ou non | 110 °C, 10 min : glucides totaux, protéines, lipides, cendres inchangés [13] ; torréfaction forte (3 h au tambour, ou friture) : saccharose inchangé, seuls les sucres réducteurs baissent, en quantité minime [18] | fibres inchangées | fibres après une torréfaction forte |
 
 **Elle suffit** pour les sept valeurs déclarées. Les autres opérations d'un
 atelier ne changent aucune masse de nutriment, ou sont déjà prises en compte

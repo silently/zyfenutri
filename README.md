@@ -1,51 +1,52 @@
 # zyfenutri
 
-Le calcul qui transforme *ce qu'on a mis dans un lot de tempeh* en *ce qu'on a
-le droit d'écrire sur l'étiquette*.
+*Version française : [README.fr.md](README.fr.md)*
 
-Une bibliothèque Python et un script. Pas de serveur, pas de base de données,
-pas de port à ouvrir.
+The calculation that turns *what went into a batch of tempeh* into *what may be
+written on the label*.
 
-## Pourquoi ce dépôt existe
+A Python library and a script. No server, no database, no port to open.
 
-Le règlement européen 1169/2011, en son **article 31 § 4**, met le **calcul** à
-égalité avec l'analyse de laboratoire pour établir une déclaration
-nutritionnelle. Encore faut-il que ce calcul soit *documenté et reproductible*.
+## Why this repository exists
 
-D'où ce dépôt : des règles écrites, les données publiques qui les fondent, et un
-moteur qui rend **la chaîne déroulée** de ce qu'il a fait — pour qu'elle soit
-vérifiable, et contestable.
+European Regulation 1169/2011, in its **Article 31(4)**, puts **calculation** on
+an equal footing with laboratory analysis for establishing a nutrition
+declaration. The calculation still has to be *documented and reproducible*.
 
-## Un document entre, un document sort
+Hence this repository: written rules, the public data behind them, and an
+engine that returns **the full chain** of what it did — so that it can be
+checked, and argued with.
 
-C'est tout le protocole. Le même document, que vous passiez par un fichier, par
-un tube, ou par un appel Python.
+## One document in, one document out
+
+That is the whole protocol. The same document, whether you go through a file,
+a pipe, or a Python call.
 
 ```bash
-zyfenutri lot.yml                 # le résultat en YAML, sur la sortie standard
-zyfenutri lot.yml -o fiche.yml    # ou dans un fichier
-cat lot.yml | zyfenutri           # ou par un tube
-zyfenutri lot.yml --json          # ou en JSON, si c'est plus commode
+zyfenutri batch.yml                 # the result as YAML, on standard output
+zyfenutri batch.yml -o sheet.yml    # or in a file
+cat batch.yml | zyfenutri           # or through a pipe
+zyfenutri batch.yml --json          # or as JSON, if that is handier
 ```
 
 ```python
 from zyfenutri import compute
-resultat = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]})
+result = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]})
 ```
 
-### Ce qu'on lui donne
+### What goes in
 
 ```yaml
-recipe: Tempeh de soja nature
-harvested_g: 1750          # ce qu'on a PESÉ à la récolte
-cooking_minutes: 30        # durée de cuisson des substrats
-fermentation_hours: 36     # durée d'incubation
+recipe: Plain soy tempeh
+harvested_g: 1750          # what was WEIGHED at harvest
+cooking_minutes: 30        # cooking time of the substrates
+fermentation_hours: 36     # incubation time
 
 ingredients:
-  - name: Soja
+  - name: Soybeans
     role: substrate        # substrate · support · acid · soaking_acid · starter
-    weight_g: 1000         # poids AVANT toute transformation, pellicule comprise
-    dehulled: true         # dépelliculé : sa perte de masse est dans le rendement
+    weight_g: 1000         # weight BEFORE any transform, hulls included
+    dehulled: true         # dehulled: its loss of mass is in the yield
     per_100g:
       fat: 20
       saturates: 2.9
@@ -58,139 +59,137 @@ ingredients:
   - name: Kinako
     role: support
     weight_g: 10
-    roasted: true          # torréfié : oui ou non
+    roasted: true          # roasted: yes or no
     per_100g: {fat: 25, saturates: 3.6, carbs: 14, sugars: 10, fibre: 18, protein: 37, salt: 0.01}
 
-  - name: Vinaigre de cidre
+  - name: Cider vinegar
     role: acid
     weight_g: 50
     per_100g: {fat: 0, saturates: 0, carbs: 0.93, sugars: 0.4, fibre: 0, protein: 0, salt: 0.013}
 
   - name: Starter
-    role: starter          # exclu du calcul : quelques grammes pour des kilos
+    role: starter          # left out: a few grams for several kilos
 ```
 
-Les compositions sont **pour 100 g**, dans l'unité de la table dont vous les
-tirez.
+Compositions are **per 100 g**, in the unit of the table you take them from.
 
-⚠️ **Ce qui manque ne bloque pas le calcul, mais rend inconnu ce qui en dépend.**
-Un ingrédient sans composition ou sans poids, une durée absente, une
-transformation qui ne sait pas encore traiter un nutriment : la valeur du
-produit ressort `null`, et `missing` dit pourquoi. **Jamais de zéro, jamais de
-somme partielle.**
+⚠️ **What is missing does not stop the calculation, but makes unknown whatever
+depends on it.** An ingredient without a composition or a weight, a missing
+duration, a transform that cannot yet handle a nutrient: the product's value
+comes out `null`, and `missing` says why. **Never a zero, never a partial
+sum.**
 
-> **Sans pesée ?** Omettez `harvested_g` et donnez un `yield: 1.75` au substrat :
-> le poids de tempeh sera **prédit**. C'est ce qui permet de chiffrer une recette
-> avant de l'avoir faite. ⚠️ Le résultat est alors marqué `complete: false` — on
-> n'étiquette pas un produit avec un dénominateur lui-même estimé.
+> **Not weighed?** Leave out `harvested_g` and give the substrate a
+> `yield: 1.75`: the tempeh weight will be **predicted**. That is what lets a
+> recipe be costed before it has been made. ⚠️ The result is then marked
+> `complete: false` — a product is not labelled with a denominator that is
+> itself an estimate.
 
-### Ce qu'il rend
+### What comes out
 
 ```yaml
-recipe: Tempeh de soja nature
+recipe: Plain soy tempeh
 harvested_g: 1750
-complete: false            # pas encore : des transformations ont des lacunes
+complete: false            # not yet: some transforms have gaps
 
-per_100g:                  # les valeurs calculées ; null = inconnu
+per_100g:                  # the computed values; null = unknown
   fat: 10.3
   carbs: null
   energy_kj: null
   ...
 
-label:                     # les mêmes, telles qu'elles s'écrivent
+label:                     # the same, as they are written
   fat: 10 g
   energy: null
   ...
 
-steps:                     # la fiche de calcul, à montrer si on la conteste
+steps:                     # the calculation sheet, in French, to show when challenged
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
   - "Soja : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
 
-missing:                   # ce qui empêche d'étiqueter, en clair
+missing:                   # what stands in the way of a label, in plain words
   - "carbs unknown in the product: an ingredient or a transform does not know it yet"
-warnings: []               # ce qui n'empêche pas, mais mérite un œil
-coefficients: {...}        # chaque coefficient des transformations ; null = lacune
+warnings: []               # what does not stand in the way, but deserves a look
+coefficients: {...}        # every coefficient of the transforms; null = gap
 ```
 
-## Ce que le moteur fait
+## What the engine does
 
-Il applique à chaque ingrédient les transformations qu'il subit réellement,
-en restant rapporté à **100 g d'ingrédient brut**, puis divise **une seule
-fois** par le poids de tempeh.
+It applies to each ingredient the transforms it actually goes through, staying
+expressed per **100 g of raw ingredient**, then divides **once** by the weight
+of tempeh.
 
-> ⚠️ C'est cette division finale, et elle seule, qui porte l'eau reprise au
-> trempage. Un lot qui double de poids en s'hydratant voit toutes ses valeurs
-> divisées par deux, sans qu'aucun coefficient n'ait à le dire. Ajouter un
-> « facteur d'hydratation » par-dessus compterait l'eau deux fois.
+> ⚠️ That final division, and it alone, carries the water taken up while
+> soaking. A batch that doubles in weight by taking up water sees all its values
+> halved, without any coefficient having to say so. Adding a "hydration factor"
+> on top would count water twice.
 
-| `role` | Transformations |
+| `role` | Transforms |
 |---|---|
-| `substrate` | dépelliculage *(si `dehulled`)* → trempage *(toujours une nuit, 10 à 15 h)* → cuisson → fermentation |
-| `support` | torréfaction *(si `roasted`)* → fermentation |
-| `acid` | aucune — ajouté après cuisson, compté au prorata de sa masse |
-| `soaking_acid` | **exclu** — il part avec l'eau de trempage, qui est jetée |
-| `starter` | **exclu** — quelques grammes pour plusieurs kilos |
+| `substrate` | dehulling *(if `dehulled`)* → soaking *(always one night, 10 to 15 h)* → cooking → fermentation |
+| `support` | roasting *(if `roasted`)* → fermentation |
+| `acid` | none — added after cooking, counted pro rata of its mass |
+| `soaking_acid` | **left out** — it leaves with the soaking water, which is thrown away |
+| `starter` | **left out** — a few grams for several kilos |
 
-Les deux exclusions **sous-déclarent** légèrement le produit : c'est le sens
-prudent, celui qui n'expose pas.
+Both exclusions slightly **under-declare** the product: the safe direction, the
+one that does not expose you.
 
-Les coefficients ne se passent plus dans le document : chacun vit dans
-`zyfenutri/transforms.py`, avec sa source ou la mention d'une lacune. Ce qu'on
-sait de chaque transformation, et ce qui manque, est dans
-**[`refs/transformations.md`](refs/transformations.md)**. La méthode et le droit
-sont dans **[`refs/methode.md`](refs/methode.md)**, le document qu'on présente à
-un contrôle.
+Coefficients are no longer passed in the document: each one lives in
+`zyfenutri/transforms.py`, with its source or the mention of a gap. What is
+known about each transform, and what is missing, is in
+**[`refs/transformations.md`](refs/transformations.md)**. The method and the law
+are in **[`refs/methode.md`](refs/methode.md)**, the document shown at an
+inspection. Both are in French.
 
-> ⚠️ **État actuel.** Un tempeh de soja décrit en entier (durées, poids,
-> fiches) sort complet. Plusieurs coefficients restent des hypothèses, et
-> aucun n'est encore validé par une analyse de laboratoire
-> (`refs/transformations.md`, § 0). Ce qui est à affiner, ce qui manque,
-> et les trois publications à obtenir en priorité :
-> `refs/transformations.md`, § 0 bis.
+> ⚠️ **Current state.** A soy tempeh described in full (durations, weights,
+> sheets) comes out complete. Several coefficients are still hypotheses, and
+> none has yet been validated by a laboratory analysis
+> (`refs/transformations.md`, § 0). What needs refining, what is missing, and
+> the three publications to obtain first: `refs/transformations.md`, § 0 bis.
 
-## Pour qui écrit du code
+## For those who write code
 
-Le calcul repose sur trois briques — la **fiche** (`NutritionFacts`), la
-**transformation** (`Transform`) et le **mélange** (`mix`). Leurs types, leurs
-signatures et ce qui les justifie sont dans
-**[`ARCHITECTURE.md`](ARCHITECTURE.md)**.
+The calculation rests on three building blocks — the **sheet**
+(`NutritionFacts`), the **transform** (`Transform`) and the **mix** (`mix`).
+Their types, their signatures and what justifies them are in
+**[`ARCHITECTURE.md`](ARCHITECTURE.md)** (in French).
 
-## Les données de référence
+## Reference data
 
-`refs/official/` contient des compositions **publiées par des tables
-nationales**, recopiées telles quelles : trois couples graine → tempeh (USDA,
-Nouvelle-Zélande, Norvège) qui servent à caler les coefficients.
+`refs/official/` holds compositions **published by national food composition
+tables**, copied as they are: three seed → tempeh pairs (USDA, New Zealand,
+Norway) used to calibrate the coefficients.
 
-> ⚠️ Chaque fiche déclare sa **convention de glucides** et porte ses défauts dans
-> ses `notes`. Une donnée de référence dont on tait les faiblesses n'en est pas
-> une.
+> ⚠️ Each sheet states its **carbohydrate convention** and carries its flaws in
+> its `notes`. Reference data whose weaknesses are kept quiet is not reference
+> data.
 
-`refs/analyses/` accueille des analyses de laboratoire, s'il en arrive.
+`refs/analyses/` is for laboratory analyses, should any arrive.
 
 ```bash
-python check.py      # confronte les analyses au calcul — ne modifie rien
+python check.py      # holds the analyses up against the calculation — changes nothing
 ```
 
-## Ce que ce dépôt ne fait pas
+## What this repository does not do
 
-Il **ne décide pas** : il applique des règles à des données qu'on lui donne.
+It **does not decide**: it applies rules to data it is given.
 
-Il **ne connaît aucun produit** : ni recette, ni fournisseur, ni lot. On lui
-passe des masses et des compositions, il rend des valeurs pour 100 g.
+It **knows no product**: no recipe, no supplier, no batch. It is given masses
+and compositions, and returns values per 100 g.
 
-Il **ne lève jamais d'exception sur une donnée manquante** : il le dit dans
-`missing`, et `complete` répond à la seule question qui compte — est-ce que ça
-peut aller sur un emballage ?
+It **never raises an exception on missing data**: it says so in `missing`, and
+`complete` answers the only question that matters — can this go on a package?
 
-## Installation et tests
+## Installation and tests
 
 ```bash
 pip install -e ".[dev]" && pytest
 ```
 
-Seule dépendance : **PyYAML**, et uniquement pour lire et écrire du YAML en
-ligne de commande. `compute()` n'importe que la bibliothèque standard.
+Single dependency: **PyYAML**, and only to read and write YAML on the command
+line. `compute()` imports nothing but the standard library.
 
 ## Licence
 

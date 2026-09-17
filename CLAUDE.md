@@ -10,13 +10,18 @@ le droit d'écrire sur l'étiquette*. Bibliothèque Python + script. Dépôt
 
 | Quoi | Langue |
 |---|---|
-| Les `.md` (README, méthode, ce fichier), les messages de commit | **français** |
+| `README.md` | **anglais** |
+| `README.fr.md`, les autres `.md` (méthode, ce fichier…), les messages de commit | **français** |
 | Les commentaires et docstrings **dans le code** | **anglais** |
 | Les messages rendus à l'utilisateur (`steps`, libellés d'étiquette) | **français** |
 
 ⚠️ Le dépôt est public et le code a vocation à être lu par des gens qui ne
 parlent pas français. La **documentation**, elle, s'adresse d'abord à
 l'exploitation qui s'en sert, et au contrôle sanitaire français.
+
+⚠️ **Les deux README se maintiennent ensemble.** `README.md` (anglais) et
+`README.fr.md` (français) disent la même chose : toute modification de l'un se
+reporte dans l'autre, dans le même commit.
 
 ⚠️ `steps` est rendu en français **à dessein** : c'est la fiche de calcul qu'on
 présente à la DDPP. Ce n'est pas une inconséquence avec la règle ci-dessus.

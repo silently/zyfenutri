@@ -361,10 +361,16 @@ FERMENTATION_SATURATED_SHARE_GAIN = ((0.0, 0.0), (26.0, 0.079), (60.0, 0.079))
 # (Shallenberger 1976, cited in [12, p. 194]). HYPOTHESIS: linear. Beyond 48 h: GAP.
 FERMENTATION_SUGARS_LOST = ((0.0, 0.0), (48.0, 0.17))
 
-# Starch: soybean 0.4 → 0.1 % of dry matter over 48-72 h, field bean −74 %
-# (cited in [8, p. 624-625]); the NZ pair falls from 4.36 to 0.18 g
-# (refs/official). HYPOTHESIS: linear, 75 % consumed by 48 h. Beyond: GAP.
-FERMENTATION_STARCH_LOST = ((0.0, 0.0), (48.0, 0.75))
+# Starch. From dehulled seed to tempeh, nitrogen-free extract — starch for the
+# most part in these legumes — keeps 62 % (faba bean), 70 % (chickpea) and
+# 76 % (pea) of its mass after 35-40 h of fermentation [15, tables 1-2,
+# computed]: 69 % on average. Soaking and cooking leave starch in the seed
+# here, so all of it is charged to fermentation — an upper bound, since some
+# leaves in the water. Earlier readings (soybean 0.4 → 0.1 % of dry matter,
+# field bean −74 %, cited in [8, p. 624-625]) come from a starch-poor seed or
+# a single secondary source.
+# HYPOTHESIS: linear, extended to 48 h. Beyond 48 h: GAP.
+FERMENTATION_STARCH_LOST = ((0.0, 0.0), (37.5, 0.31), (48.0, 0.39))
 
 # HYPOTHESIS: fibre held constant. It rises in most studies — mould mycelium
 # is fibre-rich (Steinkraus 1960 +58 %, Murata 1967 up to +34 %), one falling
@@ -393,6 +399,8 @@ class Fermentation:
         fat = scaled(facts.fat, lost(FERMENTATION_FAT_LOST, t))
         # GAP: product temperature matters as much as time [2], [7], but no
         # source ties the losses to it yet — not a setting until one does.
+        # Calibrated on R. oligosporus ([15], [16]). R. oryzae loses far more
+        # fatty acids past ~40 h at 30 °C [2, table 1]: not modelled.
         return NutritionFacts(
             fat=fat,
             saturates=saturated(facts, fat, interpolated(FERMENTATION_SATURATED_SHARE_GAIN, t)),
@@ -410,10 +418,14 @@ class Fermentation:
 #
 # Roasting mostly drives off water, which is not on the sheet. The only
 # measured roast (110 °C, 10 min) leaves total carbohydrates, protein, fat and
-# ash of soybean flour unchanged on dry basis [13, table 1]. Roasting is
-# therefore taken to change none of the seven values.
-# HYPOTHESIS: sugars and fibre, not measured apart, are unchanged too.
-# GAP: a darker roast; Maillard consumes reducing sugars, how much is unknown.
+# ash of soybean flour unchanged on dry basis [13, table 1]. A strong roast
+# does not lower the sugars either: sucrose 2.94 g raw, 3.44 dry-roasted
+# (drum, 3 h), 3.38 oil-roasted (177 °C), not significantly different; only
+# the reducing sugar fructose falls, and only when oil-roasted, 0.23 → 0.21 g
+# [18, table 6, p. 43]. Maillard consumes reducing sugars, under a tenth of
+# soybean sugars [18, table 5, p. 42]. Roasting is therefore taken to change
+# none of the seven values.
+# HYPOTHESIS: fibre is unchanged — Maillard products may be measured as fibre.
 ROASTING_SUGARS_KEPT = 1.0
 ROASTING_FIBRE_KEPT = 1.0
 
