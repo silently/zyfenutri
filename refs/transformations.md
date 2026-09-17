@@ -24,8 +24,8 @@ coefficient pour chaque nutriment. Chacun est commenté dans
 | Transformation | Ce qui est sourcé | Ce qui reste hypothèse | Lacune (`None`) |
 |---|---|---|---|
 | **Dépelliculage** | pellicule à 8,8 % de protéines, 1 % de lipides, 4,3 % de cendres [12, p. 188] ; moitié des fibres [1, p. 60] | proportionnalité à la part de pellicule ; sodium comme les cendres | germe |
-| **Trempage** | sucres [3] ; lipides −2,5 % à 24 h [12, p. 193] ; protéines −6 % et minéraux −5 % à 24 h, à rythme régulier ([13], [14], [12]) | fibres et amidon conservés ; sodium comme les cendres | tout au-delà de 24 h ; température |
-| **Cuisson** | sucres −7 % (reste des −59 % de Shallenberger) ; protéines ~4 % [12, p. 192] ; minéraux −24 %, **calé sur `official/`** | fibres et amidon conservés ; τ = 20 min | — |
+| **Trempage** — **toujours une nuit, 10 à 15 h** | sucres −56 % (raffinose, 12 h [3]) ; protéines −6 % [12, p. 189, 192] ; minéraux −5 %, au rythme des solides ([12, p. 188], [13]) | lipides −1,2 % (moitié des −2,5 % à 24 h [12, p. 193]) ; fibres et amidon conservés ; sodium comme les cendres | température ; acidification |
+| **Cuisson** | sucres −7 % (reste des −59 % de Shallenberger) ; protéines ~6 % ([12], [15]) ; minéraux −2 % ([15]) | fibres et amidon conservés ; τ = 20 min | — |
 | **Fermentation** | lipides −11 % à 32-48 h ([9], [7], [2], Van Buren 1972 dans [12]) ; protéines 1-4 % ([9], Smith dans [12]) ; sucres −17 % à 48 h [12, p. 194] ; amidon −75 % [8] | fibres conservées (elles montent en général [12, p. 195]) ; formes linéaires | tout au-delà de 48 h (72 h pour les protéines) ; température |
 | **Torréfaction** | intensité 1 (110 °C, 10 min) : rien ne bouge en matière sèche [13] | sucres et fibres conservés à l'intensité 1 ; lipides, protéines, sel conservés | sucres et fibres aux intensités 2 et 3 |
 
@@ -35,7 +35,7 @@ tempeh ; les valeurs de la table pour le tempeh sont entre parenthèses :
 
 | | lipides | glucides | sucres | fibres | protéines |
 |---|---|---|---|---|---|
-| calcul | 9,4 | 2,2 | 1,1 | 5,3 | 19,2 |
+| calcul | 9,4 | 2,2 | 1,1 | 5,3 | 18,3 |
 | tempeh NZ | (9,8) | (2,4) | (2,2) | (7,7) | (18,9) |
 
 ⚠️ Ce n'est **pas** une validation : le coefficient de l'amidon s'appuie en
@@ -49,23 +49,24 @@ Seule une analyse de laboratoire validera.
 | | Publication | Ce qu'elle débloque |
 |---|---|---|
 | **1** | **Ruiz-Terán F., Owens J. D. (1996).** Chemical and enzymic changes during the fermentation of bacteria-free soya bean tempe. *Journal of the Science of Food and Agriculture* 71, 523-530. <https://doi.org/10.1002/(SICI)1097-0010(199608)71:4<523::AID-JSFA613>3.0.CO;2-R> | Le **bilan de matière de la fermentation**, source primaire de trois coefficients qui reposent aujourd'hui sur des revues : lipides (3 % de la matière sèche selon [9], 30 % des lipides selon [10]), glucides, protéines. C'est l'étape qui change le plus la composition. |
-| **2** | **Ashenafi M., Busse M. (1991).** Production of tempeh from various indigenous Ethiopian beans. *World Journal of Microbiology & Biotechnology* 7(1), 72-79. | **Soja, pois chiche, féverole et pois** fermentés sous le même protocole [10, p. 1731-1733]. Tous nos coefficients sont calés sur le soja : c'est le premier test de « une transformation pour tous les substrats ». |
-| **3** | **[14] Wang H. L., Swain E., Hesseltine C. W., Heath H. D. (1979).** Hydration of whole soybeans affects solids losses and cooking quality. *Journal of Food Science* 44, 1510-1513. <https://doi.org/10.1111/j.1365-2621.1979.tb06474.x> | Les pertes de solides et de protéines au trempage **selon la durée et la température**. Permet de prolonger `Soaking` au-delà de 24 h et d'y ajouter la température, premier facteur selon son résumé. |
+| **2** | **Erkan S. B., Gürler H. N., Bilgin D. G., Germec M., Turhan I. (2020).** Production and characterization of tempehs from different sources of legume by *Rhizopus oligosporus*. *LWT* 119, 108880. <https://doi.org/10.1016/j.lwt.2019.108880> | Des tempehs de **lentille**, pois chiche, haricots et fèves [10, p. 1731]. [15] a montré que les fractions se comportent pareil sur quatre légumineuses ; la **lentille**, le substrat visé, n'y est pas. |
+| **3** | **[14] Wang H. L., Swain E., Hesseltine C. W., Heath H. D. (1979).** Hydration of whole soybeans affects solids losses and cooking quality. *Journal of Food Science* 44, 1510-1513. <https://doi.org/10.1111/j.1365-2621.1979.tb06474.x> | Les pertes de solides, de protéines et de sucres au trempage **mesurées, selon la durée et la température**. Remplacerait les parts retenues pour une nuit, qui mêlent plusieurs sources, et dirait l'effet de la température, premier facteur selon son résumé. |
 
 Les trois sont payantes. La liste complète des lectures, par priorité, est
-tenue hors dépôt (`docs/A-LIRE.md`).
+tenue hors dépôt (`docs/A-LIRE.md`). Ashenafi & Busse 1991, qui occupait la
+2ᵉ place, est lu : c'est [15].
 
 ### À affiner — une valeur existe, mais elle est fragile
 
 | Point | Aujourd'hui | Pourquoi c'est fragile |
 |---|---|---|
-| Protéines au trempage et à la cuisson | −6 % et −4 % | les sources vont de ~1 % à ~10 % au trempage ([12], [13], [14]) ; l'**acidification**, qui limite les pertes [1, p. 74], n'est pas prise en compte |
-| Lipides à la fermentation | −11 % de 32 à 48 h | ± 5 points entre les lectures ; seulement des sources secondaires ou des teneurs en matière sèche |
+| Protéines au trempage et à la cuisson | −6 % chacun | la perte de la graine au tempeh va de 14 à 23 % selon les sources ([12], [15]) ; l'**acidification**, qui limite les pertes [1, p. 74], n'est pas prise en compte |
+| ⚠️ **Lipides** | −1,2 % au trempage, −11 % à la fermentation | **le plus gros écart** : [15] mesure 47 à 70 % de lipides perdus de la graine au tempeh, après 24 h de trempage à 30 °C sur graines concassées ; les tempehs des tables (9,8-10,8 g) vont dans le sens d'une faible perte. Le modèle ne vaut que pour un trempage d'une nuit à température ambiante |
 | Sucres au trempage | calés sur le raffinose [3] | le saccharose n'est pas mesuré ; le résumé de [14] suggère une perte plus modérée |
 | Sucres à la cuisson | −7 % | déduit de deux études différentes (Shallenberger et [3]) |
 | Amidon à la fermentation | −75 % à 48 h | deux données secondaires, forme linéaire supposée |
-| Minéraux à la cuisson | −24 % | calé sur les couples de `official/`, pas mesuré ; sodium supposé suivre les cendres |
-| Fibres | conservées au trempage, à la cuisson et à la fermentation | dépend de la méthode de la table (oligosaccharides comptés ou non) ; le mycélium en ajoute probablement [12, p. 195] |
+| Minéraux | −5 % au trempage, −2 % à la cuisson | [15] mesure 92-98 % des cendres conservées ; les couples de `official/` suggèrent 58-75 % : les deux ne concordent pas ; sodium supposé suivre les cendres |
+| Fibres | conservées au trempage, à la cuisson et à la fermentation | dépend de la méthode de la table (oligosaccharides comptés ou non) ; les fibres brutes gagnent 15 à 31 % de la graine au tempeh [15] : le modèle sous-déclare |
 | Pellicule | moitié des fibres ; protéines et lipides de Cowan 1969 | composition d'une seule étude ; proportionnalité à la part de pellicule supposée |
 | Formes dans le temps | lignes droites, τ de 20 min pour la cuisson | hypothèses de forme, pas de cinétique mesurée hors [3] |
 | Validation | contrôle de cohérence avec le couple NZ | **aucune analyse de laboratoire** : rien n'est validé |
@@ -73,13 +74,14 @@ tenue hors dépôt (`docs/A-LIRE.md`).
 
 ### Manque complètement — aucune valeur
 
-- **Substrats autres que le soja** : lentille, pois chiche, céréales,
-  oléagineux. Les transformations raisonnent par fractions (sucres, amidon…),
-  mais tous les coefficients viennent du soja, et [3] montre que le plafond de
+- **Substrats autres que le soja** : les coefficients viennent du soja. [15]
+  montre que les fractions se comportent de la même façon sur soja, pois
+  chiche, pois et féverole (§ 0 ter), mais il n'y a **aucune donnée pour la
+  lentille, les céréales ni les oléagineux**, et [3] montre que le plafond de
   perte au trempage varie de 16 à 70 % selon la graine.
 - **Torréfaction aux intensités 2 et 3** : sucres et fibres inconnus.
-- **Au-delà des durées connues** : trempage de plus de 24 h ; fermentation de
-  plus de 48 h (72 h pour les protéines).
+- **Au-delà des durées connues** : fermentation de plus de 48 h (72 h pour les
+  protéines). Le trempage, lui, est toujours d'une nuit (10 à 15 h).
 - **La température** du trempage et de la fermentation : premier facteur selon
   [14] et [2], ce n'est pas un réglage.
 - **L'acidification** du trempage ou de la cuisson.
@@ -89,6 +91,31 @@ tenue hors dépôt (`docs/A-LIRE.md`).
   [10, p. 1728].
 - **Les bornes Codex** (protéines ≥ 15 %, lipides ≥ 7 %…) comme avertissements
   dans `compute()`.
+
+## 0 ter. Quatre légumineuses, un même comportement [15]
+
+Poids [tableau 1, p. 73] × matière sèche × teneur [tableau 2, p. 76] donne la
+part **conservée en masse**, de la graine dépelliculée crue au tempeh (calcul
+fait ici). Protocole : graines concassées, trempage 24 h à 30 °C, cuisson dans
+l'eau de trempage, fermentation 35-40 h à 30 °C, sans acidification.
+
+| | rendement | matière sèche | protéines | lipides | fibres brutes | cendres | extrait non azoté |
+|---|---|---|---|---|---|---|---|
+| soja | 2,00 | 73 % | 81 % | 53 % | 116 % | 93 % | 68 % |
+| pois chiche | 1,72 | 72 % | 77 % | 48 % | 115 % | 98 % | 70 % |
+| pois | 1,82 | 80 % | 91 % | 50 % | 131 % | 97 % | 76 % |
+| féverole | 1,76 | 78 % | 82 % | 30 % | 125 % | 92 % | 62 % |
+
+**Ce que ça établit.** Pour une même fraction, le comportement est le même d'une
+graine à l'autre : protéines ~80 %, cendres ~95 %, extrait non azoté ~70 %,
+fibres en hausse. C'est l'argument le plus fort, à ce jour, pour des
+transformations qui raisonnent **par fraction et non par espèce**. Seuls les
+lipides varient beaucoup (30 à 53 %), et d'autant plus que la graine en
+contient peu.
+
+**Ce que ça ne permet pas.** Isoler une étape : le tableau ne donne que la
+graine crue et le tempeh. Et ce protocole (graines concassées, trempage long
+et chaud) perd plus qu'un trempage d'une nuit de graines entières.
 
 ---
 
@@ -102,7 +129,7 @@ l'ordre des lectures : certains « à combler » y sont désormais comblés.
 | Transformation | Substrats concernés | Réglages envisagés |
 |---|---|---|
 | **Dépelliculage** | légumineuses, certains oléagineux | voie sèche ou humide ; part de pellicule |
-| **Trempage** | légumineuses, certaines céréales | durée, température, acidifié ou non ; graine entière, fendue ou concassée |
+| **Trempage** | légumineuses, certaines céréales | **toujours une nuit, 10 à 15 h** ; température, acidifié ou non, graine entière, fendue ou concassée |
 | **Cuisson** | tous | durée ; eau jetée, vapeur ou absorption |
 | **Fermentation** | tous | durée, température |
 | **Torréfaction** | supports (kinako…), oléagineux | durée, température |
@@ -163,14 +190,9 @@ fiche de l'ingrédient qui porte la différence. Cette transformation n'est plus
 une simple `Retention` (un facteur par nutriment) : elle implémente directement
 le protocole `Transform`, comme le dépelliculage.
 
-**État :** implémentée dans `transforms.Soaking(hours)`.
-
-| Fraction | Perte max | τ | Origine |
-|---|---|---|---|
-| sucres | 58 % | 3,5 h | raffinose du soja [3, tableau II, p. 431], ajusté ; le raffinose remplace le saccharose (**hypothèse**) |
-| amidon | 0 % | — | **hypothèse** : insoluble |
-| protéines | 3 % | 3,5 h | perte max : **hypothèse** ; τ repris de [3] |
-| minéraux (sel) | 35 % | 3,5 h | perte max : **hypothèse** ; τ repris de [3] |
+**État :** implémentée dans `transforms.Soaking()`, **pour une nuit (10 à
+15 h)** : le trempage n'est pas un réglage. L'état chiffré est au § 0 ; le
+tableau ci-dessous garde la cinétique de [3] qui a servi à fixer les sucres.
 
 **Ce que [3] établit pour le trempage** (graines entières, 22 °C, raffinose,
 3 h puis 12 h) :

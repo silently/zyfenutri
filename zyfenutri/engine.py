@@ -1,7 +1,8 @@
 """The calculation: one document in, one document out.
 
     from zyfenutri import compute
-    result = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]})
+    result = compute({"harvested_g": 1750, "cooking_minutes": 30, "fermentation_hours": 36,
+                      "ingredients": [...]})
 
 Input and output are plain dictionaries, which is also exactly what YAML and
 JSON give you. The document is read into a `recipe.Recipe`, and the recipe's
@@ -72,8 +73,7 @@ def _ingredient(raw: dict, document: dict, missing: list[str]) -> tuple[dict, In
                                 "Torréfaction (intensité inconnue)", missing,
                                 f"roasting intensity for {name} (roasting_intensity: 1 to 3)"))
     if "soaking" in steps:
-        transforms.append(_step(tf.Soaking, document.get("soaking_hours"),
-                                "Trempage (durée inconnue)", missing, "soaking time (soaking_hours)"))
+        transforms.append(tf.Soaking())
     if "cooking" in steps:
         transforms.append(_step(tf.Cooking, document.get("cooking_minutes"),
                                 "Cuisson (durée inconnue)", missing, "cooking time (cooking_minutes)"))
@@ -152,6 +152,9 @@ def compute(document: dict) -> dict:
     if balance is not None and balance > MASS_BALANCE_SUSPECT_G:
         warnings.append(f"macronutrients add up to {balance:g} g per 100 g: "
                         "almost nothing left for water and ash")
+    if document.get("soaking_hours") is not None:
+        warnings.append("soaking_hours is no longer read: soaking is taken as one night, "
+                        "10 to 15 h")
     if document.get("coefficients"):
         warnings.append("coefficients are no longer read from the document: "
                         "they live in zyfenutri/transforms.py, each with its source")

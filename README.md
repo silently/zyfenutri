@@ -38,7 +38,6 @@ resultat = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients"
 ```yaml
 recipe: Tempeh de soja nature
 harvested_g: 1750          # ce qu'on a PESÉ à la récolte
-soaking_hours: 12          # durée du trempage des substrats
 cooking_minutes: 30        # durée de cuisson des substrats
 fermentation_hours: 36     # durée d'incubation
 
@@ -106,7 +105,7 @@ label:                     # les mêmes, telles qu'elles s'écrivent
 
 steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
-  - "Soja : Dépelliculage (9 % de pellicule) → Trempage 12 h → Cuisson 30 min → Fermentation 36 h"
+  - "Soja : Dépelliculage (9 % de pellicule) → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
 
 missing:                   # ce qui empêche d'étiqueter, en clair
@@ -128,7 +127,7 @@ fois** par le poids de tempeh.
 
 | `role` | Transformations |
 |---|---|
-| `substrate` | dépelliculage *(si les deux poids sont donnés)* → trempage → cuisson → fermentation |
+| `substrate` | dépelliculage *(si les deux poids sont donnés)* → trempage *(toujours une nuit, 10 à 15 h)* → cuisson → fermentation |
 | `support` | torréfaction *(si `roasting_intensity`)* → fermentation |
 | `acid` | aucune — ajouté après cuisson, compté au prorata de sa masse |
 | `soaking_acid` | **exclu** — il part avec l'eau de trempage, qui est jetée |

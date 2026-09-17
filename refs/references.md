@@ -300,3 +300,28 @@ soybeans affects solids losses and cooking quality ». *Journal of Food Science*
 - **À lire :** il mesure la perte de solides en fonction de la durée et de la
   température, ce qui permettrait de caler le trempage au-delà de 24 h et d'en
   faire dépendre la température.
+
+### [15] Ashenafi & Busse, 1991 — *Production of tempeh from various indigenous Ethiopian beans*
+
+M. Ashenafi, M. Busse. « Production of tempeh from various indigenous Ethiopian
+beans ». *World Journal of Microbiology and Biotechnology* 7 (1991) 72-79.
+
+- **Statut :** lu.
+- **Fichier :** `docs/ProductionoftempehfromvariousindigenousEthiopianbeans_WorldJournalofMicrobiologyandBiotechnology772-79.pdf`
+- **Pages :** page imprimée = page du PDF **+ 71**.
+- **Ce qu'on en tire :** **féverole, pois, pois chiche et soja** sous le même
+  protocole, dépelliculés et concassés : trempage 24 h à 30 °C (acidifié ou
+  non), cuisson dans l'eau de trempage, fermentation 35-40 h à 30 °C.
+  - poids à chaque étape [tableau 1, p. 73] ;
+  - matière sèche et composition en matière sèche, graine crue et tempeh
+    [tableau 2, p. 76] ;
+  - la température du produit monte de 10 à 12 °C au-dessus de l'étuve
+    [p. 75].
+- **Le calcul qui en fait la valeur** : poids × matière sèche × teneur donne
+  des **masses absolues**, graine crue → tempeh, pour quatre graines (fait ici,
+  voir `transformations.md`, § 0 ter).
+- **Réserves :** graines **concassées** et trempage **long et chaud**, qui
+  perdent plus qu'un trempage d'une nuit de graines entières ; méthodes
+  « brutes » (fibres brutes, extrait non azoté par différence) ; une seule
+  série, sans répétition publiée ; la matière sèche du tempeh n'est donnée
+  qu'une fois pour les deux variantes, acidifiée ou non.

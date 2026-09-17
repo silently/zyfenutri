@@ -7,7 +7,6 @@ from pathlib import Path
 DOCUMENT = {
     "recipe": "Tempeh de soja nature",
     "harvested_g": 1750,
-    "soaking_hours": 12,
     "cooking_minutes": 30,
     "fermentation_hours": 36,
     "ingredients": [{

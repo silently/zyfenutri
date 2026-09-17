@@ -7,7 +7,7 @@ SOY = {"fat": 20.0, "saturates": 3.0, "carbs": 30.0, "sugars": 7.0,
        "fibre": 20.0, "protein": 36.0, "salt": 0.02}
 RICE = {"fat": 1.0, "saturates": 0.3, "carbs": 80.0, "sugars": 0.5,
         "fibre": 2.0, "protein": 6.0, "salt": 0.0}
-PROCESS = {"soaking_hours": 12, "cooking_minutes": 30, "fermentation_hours": 36}
+PROCESS = {"cooking_minutes": 30, "fermentation_hours": 36}
 
 
 def one_substrate(**document):
@@ -41,7 +41,7 @@ def test_water_is_never_counted_twice():
 
 def test_a_substrate_soaks_cooks_and_ferments():
     line = one_substrate(harvested_g=2000)["ingredients"][0]
-    assert line["transforms"] == ["Trempage 12 h", "Cuisson 30 min", "Fermentation 36 h"]
+    assert line["transforms"] == ["Trempage (une nuit)", "Cuisson 30 min", "Fermentation 36 h"]
 
 
 def test_a_support_ferments_but_never_soaks():
@@ -143,12 +143,12 @@ def test_only_substrates_carry_a_yield_factor():
 # --- Unknowns cascade ---------------------------------------------------------
 
 def test_a_missing_setting_makes_everything_unknown():
-    """No soaking time: the soaking cannot be computed, so nothing after it."""
-    result = compute({"harvested_g": 2000, "cooking_minutes": 30, "fermentation_hours": 36,
+    """No cooking time: the cooking cannot be computed, so nothing after it."""
+    result = compute({"harvested_g": 2000, "fermentation_hours": 36,
                       "ingredients": [{"name": "Soja", "role": "substrate",
                                        "weight_g": 1000, "per_100g": SOY}]})
     assert all(v is None for v in result["per_100g"].values())
-    assert any("soaking_hours" in m for m in result["missing"])
+    assert any("cooking_minutes" in m for m in result["missing"])
     assert result["complete"] is False
 
 
@@ -188,21 +188,27 @@ def test_energy_is_missing_when_a_macro_is():
 
 
 def test_an_invalid_setting_is_reported_not_raised():
-    result = one_substrate(harvested_g=2000, soaking_hours=-3)
-    assert any("invalid soaking time" in m for m in result["missing"])
+    result = one_substrate(harvested_g=2000, cooking_minutes=-3)
+    assert any("invalid cooking time" in m for m in result["missing"])
+
+
+def test_a_soaking_time_is_no_longer_read():
+    """Soaking is always one night, 10 to 15 h."""
+    result = one_substrate(harvested_g=2000, soaking_hours=30)
+    assert any("one night" in w for w in result["warnings"])
 
 
 # --- What comes out -----------------------------------------------------------
 
 def test_the_steps_are_returned_so_the_result_can_be_argued_with():
     joined = " ".join(one_substrate(harvested_g=2000)["steps"])
-    assert "Trempage 12 h" in joined and "Fermentation 36 h" in joined
+    assert "Trempage (une nuit)" in joined and "Fermentation 36 h" in joined
     assert "÷ 2000 g récoltés" in joined
 
 
 def test_coefficients_are_shown_and_no_longer_read():
     result = one_substrate(harvested_g=2000, coefficients={"leaching_carbs": 45})
-    assert result["coefficients"]["soaking_sugars"] == [0.58, 3.5]
+    assert result["coefficients"]["soaking_sugars_kept"] == 0.44
     assert any("no longer read" in w for w in result["warnings"])
 
 

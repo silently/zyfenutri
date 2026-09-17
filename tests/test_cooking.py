@@ -25,10 +25,10 @@ def test_starch_and_fibre_stay(soy):
 
 
 def test_protein_and_minerals_leach(soy):
-    """[12, p. 192]: ~4 % of protein; minerals ~24 %, calibrated on refs/official."""
+    """[12], [15]: ~6 % of protein; minerals ~2 % ([15]: ash 92-98 % kept overall)."""
     out = Cooking(120)(soy)
-    assert out.protein / soy.protein == pytest.approx(0.96, abs=0.001)
-    assert out.salt / soy.salt == pytest.approx(0.76, abs=0.001)
+    assert out.protein / soy.protein == pytest.approx(0.94, abs=0.001)
+    assert out.salt / soy.salt == pytest.approx(0.98, abs=0.001)
 
 
 def test_is_a_transform():

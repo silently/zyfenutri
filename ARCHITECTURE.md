@@ -119,22 +119,22 @@ une fiche brute. La passer dans un trempage ferait subir les pertes deux fois.
 
 ### Les transformations à paramètre
 
-Le trempage dépend de sa durée, la fermentation aussi. Le paramètre **ne
+La cuisson dépend de sa durée, la fermentation aussi. Le paramètre **ne
 s'ajoute pas à l'appel** : une **fabrique** le reçoit et rend une transformation
 toute prête.
 
 ```python
-def soaking(hours: float) -> Transform: ...     # la fabrique
+def cooking(minutes: float) -> Transform: ...   # la fabrique
 def fermentation(hours: float) -> Transform: ...
 
-pipeline: list[Transform] = [dehulling(hull_share=0.08), soaking(hours=12), fermentation(hours=36)]
+pipeline: list[Transform] = [dehulling(hull_share=0.08), cooking(minutes=30), fermentation(hours=36)]
 prepared = process(raw, pipeline)
 ```
 
 | Pourquoi une fabrique | |
 |---|---|
 | **une seule signature** à l'exécution | `(NutritionFacts) -> NutritionFacts`, quelle que soit la transformation. Une chaîne n'est qu'une liste, et `process` n'a pas à savoir quels réglages existent |
-| **le réglage est lié une fois** | la durée est fixée à la construction, visible dans `label` (« Trempage 12 h »), et la chaîne se relit telle qu'elle a été appliquée |
+| **le réglage est lié une fois** | la durée est fixée à la construction, visible dans `label` (« Cuisson 30 min »), et la chaîne se relit telle qu'elle a été appliquée |
 | **une transformation sans paramètre** | est une fabrique sans argument, ou une constante |
 
 Les transformations réelles, et la manière dont leurs pertes dépendent de la
@@ -280,7 +280,7 @@ disent **ce qu'il contient**. On divise l'un par l'autre, une fois.
 | Classe | Réglage | Connu aujourd'hui |
 |---|---|---|
 | `Dehulling(hull_fraction)` — ou `Dehulling.from_weights(brut, dépelliculé)` | part de pellicule, 0 à 1 | tout |
-| `Soaking(hours)` | durée en heures | tout ; lipides jusqu'à 24 h |
+| `Soaking()` | aucun : toujours **une nuit, 10 à 15 h** | tout |
 | `Cooking(minutes)` | durée en minutes | tout |
 | `Fermentation(hours)` | durée en heures | tout jusqu'à 48 h ; protéines jusqu'à 72 h |
 | `Roasting(intensity)` | 1, 2 ou 3 | tout à l'intensité 1 ; lipides, protéines, sel au-delà |
@@ -294,9 +294,11 @@ lacune vaut `None`, et le nutriment ressort **inconnu**. Tant que les lacunes
 existent, un nutriment qui en traverse une ressort inconnu : c'est voulu.
 Aujourd'hui, seule la torréfaction en a encore (sucres, fibres). Combler une lacune se fait en changeant une constante.
 
-Les pertes au trempage et à la cuisson ont la forme
-`conservé = 1 − perte_max × (1 − e^(−t/τ))` (`retained`), et les glucides y
-sont découpés en sucres et amidon (`split_carbs`).
+Le trempage est toujours **une nuit (10 à 15 h)** : ce n'est pas un réglage,
+et ses coefficients sont des parts conservées après une nuit. Les pertes à la
+cuisson ont la forme `conservé = 1 − perte_max × (1 − e^(−t/τ))` (`retained`).
+Dans les deux cas, les glucides sont découpés en sucres et amidon
+(`split_carbs`).
 
 ### La recette — `Ingredient` et `Recipe`
 

@@ -110,7 +110,7 @@ def process(facts: NutritionFacts, transforms: Iterable[Transform]) -> Nutrition
 # comes out unknown rather than guessed. Filling a gap is a data change, not a
 # code change.
 #
-# Rates are (maximum loss, time constant) — see `retained`. What dissolves is
+# Cooking rates are (maximum loss, time constant) — see `retained`. What dissolves is
 # modelled by fraction, not by species: carbs are split into sugars (soluble)
 # and starch (≈ carbs − sugars, insoluble), so ONE transform serves soy and
 # lentil alike. Details: refs/transformations.md.
@@ -222,84 +222,81 @@ class Dehulling:
         )
 
 
-# --- Soaking (hours, room temperature, water thrown away) ---
+# --- Soaking (one night, 10 to 15 h, room temperature, water thrown away) ---
+#
+# Tempeh soybeans soak overnight. Soaking is therefore not a setting: every
+# coefficient below is the share KEPT after one night, 10 to 15 h.
 
-# [3, table II, p. 431]: soybean raffinose 60.1 → 40.1 (3 h) → 26.3 mg/g (12 h),
-# fitted. Across 5 legumes τ = 3.1-3.8 h, but the ceiling spans 16-70 %.
+# [3, table II, p. 431]: soybean raffinose 60.1 → 26.3 mg/g after 12 h, i.e.
+# 44 % kept; the fitted curve keeps 43-45 % between 10 and 15 h.
 # HYPOTHESIS: raffinose stands in for sucrose. [3, p. 433] finds bigger sugars
 # leach slower; Shallenberger 1976 measures sucrose −59 % over soaking and
 # cooking, raffinose −52 % [12, p. 194]: same order.
-SOAKING_SUGARS: Loss = (0.58, 3.5)
+SOAKING_SUGARS_KEPT = 0.44
 # HYPOTHESIS: starch is insoluble and stays in the seed.
-SOAKING_STARCH: Loss = (0.0, 3.5)
-# Solids leach at a steady rate throughout soaking, faster when warm; the
-# protein share of what leaches grows with time [14, abstract]. Soaking loses
-# ~5 % of solids (4.9 % [12, p. 188]; dry solids 100 → 95.1 [1, p. 80]).
-# Protein, dry basis, 25 °C: 46.0 → 43.9 % at 24 h, 35.8 % at 72 h [13, table 1];
-# with 5 % of solids gone, ~10 % of protein lost at 24 h. Smith 1964 gives
-# ~6.5 % (dehulling and soaking, hulls aside) [12, p. 189]; the overall ~12 %
-# of [12, p. 192] leaves ~6 % once hulls and cooking are counted.
-# Retained: 6 % at 24 h, linear. Plain water: acidified soaking loses less
-# [1, p. 74] — GAP. Beyond 24 h: GAP (losses keep growing [13], [14]).
-SOAKING_PROTEIN_LOST = ((0.0, 0.0), (24.0, 0.06))
-# Ash stays at 3.5-3.6 % of dry matter from 0 to 72 h [13, table 1]: minerals
-# leave at the pace of solids, ~5 % by 24 h (see above). HYPOTHESIS: sodium
-# follows ash; linear. Beyond 24 h: GAP. (Unsalted tempeh declares "< 0,01 g".)
-SOAKING_MINERALS_LOST = ((0.0, 0.0), (24.0, 0.05))
+SOAKING_STARCH_KEPT = 1.0
+# Protein: ~12 % goes before fermentation [12, p. 192] — ~2 % with the hulls,
+# ~4 % at cooking — leaving ~6 % to soaking; Smith 1964 gives ~6.5 %
+# (dehulling and soaking, hulls aside) [12, p. 189]. [13, table 1] suggests
+# ~10 % by 24 h at 25 °C. Plain water: acidified soaking loses less
+# [1, p. 74] — GAP.
+SOAKING_PROTEIN_KEPT = 0.94
+# Minerals leave at the pace of solids: ash stays at 3.5-3.6 % of dry matter
+# while soaking [13, table 1], and soaking loses ~5 % of solids (4.9 %
+# [12, p. 188]; dry solids 100 → 95.1 [1, p. 80]). HYPOTHESIS: sodium
+# follows ash. (Unsalted tempeh declares "< 0,01 g" either way.)
+SOAKING_MINERALS_KEPT = 0.95
 # HYPOTHESIS: fibre stays. True for insoluble fibre; a sheet whose fibre
 # counts oligosaccharides would lose some (refs/transformations.md, § 2).
-SOAKING_FIBRE: Loss = (0.0, 3.5)
-# 24 h in room-temperature water: fat −2.5 %; longer soaks lose much more,
-# faster in warm water [12, p. 193]. Beyond 24 h: GAP.
-SOAKING_FAT_LOST = ((0.0, 0.0), (24.0, 0.025))
+SOAKING_FIBRE_KEPT = 1.0
+# Fat −2.5 % after 24 h in room-temperature water [12, p. 193].
+# HYPOTHESIS: linear, so ~1.2 % for one night.
+SOAKING_FAT_KEPT = 0.988
 
 
 @dataclass(frozen=True, slots=True)
 class Soaking:
-    """Soaking in water that is thrown away."""
-    hours: float
-
-    def __post_init__(self) -> None:
-        if self.hours < 0:
-            raise ValueError("a soaking time cannot be negative")
+    """Soaking overnight (10 to 15 h) in water that is thrown away."""
 
     @property
     def label(self) -> str:
-        return f"Trempage {self.hours:g} h"
+        return "Trempage (une nuit)"
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
-        t = self.hours
-        keep_fat = lost(SOAKING_FAT_LOST, t)
         return replace(
             facts,
-            fat=scaled(facts.fat, keep_fat),
-            saturates=scaled(facts.saturates, keep_fat),
-            **split_carbs(facts, retained(SOAKING_SUGARS, t), retained(SOAKING_STARCH, t)),
-            fibre=scaled(facts.fibre, retained(SOAKING_FIBRE, t)),
-            protein=scaled(facts.protein, lost(SOAKING_PROTEIN_LOST, t)),
-            salt=scaled(facts.salt, lost(SOAKING_MINERALS_LOST, t)),
+            fat=scaled(facts.fat, SOAKING_FAT_KEPT),
+            saturates=scaled(facts.saturates, SOAKING_FAT_KEPT),
+            **split_carbs(facts, SOAKING_SUGARS_KEPT, SOAKING_STARCH_KEPT),
+            fibre=scaled(facts.fibre, SOAKING_FIBRE_KEPT),
+            protein=scaled(facts.protein, SOAKING_PROTEIN_KEPT),
+            salt=scaled(facts.salt, SOAKING_MINERALS_KEPT),
         )
 
 
 # --- Cooking (minutes, boiling water thrown away) ---
 
 # Sucrose −59 % over soaking and cooking (Shallenberger 1976, [12, p. 194]);
-# soaking alone takes ~56 % (SOAKING_SUGARS at 12 h), leaving ~7 % to cooking.
+# soaking alone takes ~56 % (SOAKING_SUGARS_KEPT), leaving ~7 % to cooking.
 # HYPOTHESIS: τ = 20 min, i.e. done within the usual 20-60 min [10, p. 1721].
 COOKING_SUGARS: Loss = (0.07, 20.0)
 # HYPOTHESIS: starch is insoluble and stays. Van Veen & Schaefer 1950 find no
 # starch left in cooked beans [12, p. 195], but soybeans hold little [12, p. 194].
 COOKING_STARCH: Loss = (0.0, 20.0)
-# ~12 % of protein goes before fermentation [12, p. 192]: ~2 % with the hulls
-# (HULL_PROTEIN), ~6 % at soaking, leaving ~4 %. Smith 1964 alone measures
-# 10.0 % at cooking [12, p. 189]: an upper reading. HYPOTHESIS: τ = 20 min.
-COOKING_PROTEIN: Loss = (0.04, 20.0)
-# Calibrated on refs/official: tables keep 58-75 % of ash from seed to tempeh,
-# tempeh ash sits 3-9 % below the seed's on dry basis [12, p. 196]; ~72 % kept
-# overall. Hulls take ~8 %, soaking ~5 %, fermentation none: cooking ~24 %.
+# Protein lost from seed to tempeh: ~14 % [12, p. 192, with fermentation],
+# 16.7 % on average over eight studies [12, p. 188], 19.7 % for Smith 1964
+# [12, p. 189]; 8-23 % for dehulled cracked soybean, chickpea, pea and faba bean
+# [15, tables 1-2, computed]. Taking ~15 %: ~2 % with the hulls, ~6 % at
+# soaking, ~1.6 % at fermentation, leaving ~6 % to cooking.
 # HYPOTHESIS: τ = 20 min.
-COOKING_MINERALS: Loss = (0.24, 20.0)
-# HYPOTHESIS: fibre stays (see SOAKING_FIBRE).
+COOKING_PROTEIN: Loss = (0.06, 20.0)
+# Ash kept from dehulled seed to tempeh: 92-98 % for four legumes
+# [15, tables 1-2, computed]; tempeh ash close to the seed's [12, p. 196].
+# Soaking takes ~5 %, fermentation none: cooking ~2 %. (The refs/official
+# pairs suggest far more, 25-42 %; set aside for a measured balance.)
+# HYPOTHESIS: τ = 20 min.
+COOKING_MINERALS: Loss = (0.02, 20.0)
+# HYPOTHESIS: fibre stays (see SOAKING_FIBRE_KEPT).
 COOKING_FIBRE: Loss = (0.0, 20.0)
 
 
@@ -346,6 +343,10 @@ FERMENTATION_PROTEIN_LOST = ((0.0, 0.0), (28.0, 0.011), (46.0, 0.022), (72.0, 0.
 #   → 7 % and 16 % lost;
 # - [11, p. 268-269]: "a slight decrease in lipids". Other studies range from
 #   0.8 to 24.5 % [12, p. 193], and [10, p. 1733] quotes 30 %.
+# ⚠️ From seed to tempeh, [15] finds 47-70 % of fat gone for four legumes, but
+#   after 24 h of soaking at 30 °C on cracked beans; longer, warmer soaks lose
+#   much more fat [12, p. 193]. The tables' tempehs (refs/official: 9.8-10.8 g)
+#   agree with a small loss. This estimate holds for an overnight soak only.
 # HYPOTHESIS: linear up to 32 h. Beyond 48 h: GAP — senescence burns fat fast
 # ([9, p. 797]: 12 % of dry matter, almost all lipid, by 180 h).
 FERMENTATION_FAT_LOST = ((0.0, 0.0), (32.0, 0.11), (48.0, 0.11))
@@ -359,10 +360,12 @@ FERMENTATION_SUGARS_LOST = ((0.0, 0.0), (48.0, 0.17))
 # (refs/official). HYPOTHESIS: linear, 75 % consumed by 48 h. Beyond: GAP.
 FERMENTATION_STARCH_LOST = ((0.0, 0.0), (48.0, 0.75))
 
-# HYPOTHESIS: fibre held constant. Most studies find it rising — mould
-# mycelium is fibre-rich (Steinkraus 1960 +58 %, Murata 1967 up to +34 %),
-# one falling (Wang 1968 −21 %) [12, p. 195]. Holding it under-declares, the
-# safe direction.
+# HYPOTHESIS: fibre held constant. It rises in most studies — mould mycelium
+# is fibre-rich (Steinkraus 1960 +58 %, Murata 1967 up to +34 %), one falling
+# (Wang 1968 −21 %) [12, p. 195] — and crude fibre gains 15-31 % in mass from
+# seed to tempeh for four legumes [15, tables 1-2, computed]. Crude fibre is
+# not dietary fibre, so no figure is carried over: holding it under-declares,
+# the safe direction.
 FERMENTATION_FIBRE_KEPT = 1.0
 
 
@@ -453,12 +456,12 @@ COEFFICIENTS = {
     "hull_fibre_share": HULL_FIBRE_SHARE,
     "hull_reference_fraction": HULL_REFERENCE_FRACTION,
     "hull_minerals_ratio": HULL_MINERALS_RATIO,
-    "soaking_sugars": SOAKING_SUGARS,
-    "soaking_starch": SOAKING_STARCH,
-    "soaking_protein_lost": SOAKING_PROTEIN_LOST,
-    "soaking_minerals_lost": SOAKING_MINERALS_LOST,
-    "soaking_fibre": SOAKING_FIBRE,
-    "soaking_fat_lost": SOAKING_FAT_LOST,
+    "soaking_sugars_kept": SOAKING_SUGARS_KEPT,
+    "soaking_starch_kept": SOAKING_STARCH_KEPT,
+    "soaking_protein_kept": SOAKING_PROTEIN_KEPT,
+    "soaking_minerals_kept": SOAKING_MINERALS_KEPT,
+    "soaking_fibre_kept": SOAKING_FIBRE_KEPT,
+    "soaking_fat_kept": SOAKING_FAT_KEPT,
     "cooking_sugars": COOKING_SUGARS,
     "cooking_starch": COOKING_STARCH,
     "cooking_protein": COOKING_PROTEIN,

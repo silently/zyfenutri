@@ -47,7 +47,7 @@ version majeure.
 traduction. Ne pas les retirer.
 
 ⚠️ **Une valeur inconnue se propage.** Un ingrédient sans composition ou sans
-poids, un réglage absent (`soaking_hours`…), une lacune d'une transformation :
+poids, un réglage absent (`cooking_minutes`…), une lacune d'une transformation :
 la valeur du produit est `None`, jamais une somme partielle.
 
 ⚠️ **`compute()` ne lève jamais sur une donnée manquante.** Il le dit dans
