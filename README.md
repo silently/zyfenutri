@@ -90,26 +90,38 @@ sum.**
 ```yaml
 recipe: Plain soy tempeh
 harvested_g: 1750
-complete: false            # not yet: some transforms have gaps
+complete: true             # every value is known (see the current state below)
 
 per_100g:                  # the computed values; null = unknown
-  fat: 10.3
-  carbs: null
-  energy_kj: null
-  ...
+  fat: 10.02
+  saturates: 2.24
+  carbs: 5.19
+  sugars: 1.43
+  fibre: 4.39
+  protein: 20.27
+  salt: 0.01
+  energy_kj: 838.7
+  energy_kcal: 200.8
 
 label:                     # the same, as they are written
+  energy: 839 kJ / 201 kcal
   fat: 10 g
-  energy: null
-  ...
+  saturates: 2,2 g
+  carbs: 5,2 g
+  sugars: 1,4 g
+  fibre: 4,4 g
+  protein: 20 g
+  salt: < 0,01 g
 
 steps:                     # the calculation sheet, in French, to show when challenged
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
-  - "Soja : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Soybeans : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Kinako : Torréfaction → Fermentation 36 h"
+  - "Cider vinegar : tel quel"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
+  - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing:                   # what stands in the way of a label, in plain words
-  - "carbs unknown in the product: an ingredient or a transform does not know it yet"
+missing: []                # what stands in the way of a label, in plain words — here, nothing
 warnings: []               # what does not stand in the way, but deserves a look
 coefficients: {...}        # every coefficient of the transforms; null = gap
 ```
@@ -144,8 +156,8 @@ are in **[`refs/methode.md`](refs/methode.md)**, the document shown at an
 inspection. Both are in French.
 
 > ⚠️ **Current state.** A soy tempeh described in full (durations, weights,
-> sheets) comes out complete. Several coefficients are still hypotheses, and
-> none has yet been validated by a laboratory analysis
+> sheets) comes out complete, as in the example above. Several coefficients
+> are still hypotheses, and none has yet been validated by a laboratory analysis
 > (`refs/transformations.md`, § 0). What needs refining, what is missing, and
 > the three publications to obtain first: `refs/transformations.md`, § 0 bis.
 

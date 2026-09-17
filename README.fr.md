@@ -91,26 +91,38 @@ somme partielle.**
 ```yaml
 recipe: Tempeh de soja nature
 harvested_g: 1750
-complete: false            # pas encore : des transformations ont des lacunes
+complete: true             # toutes les valeurs sont connues (voir l'état actuel plus bas)
 
 per_100g:                  # les valeurs calculées ; null = inconnu
-  fat: 10.3
-  carbs: null
-  energy_kj: null
-  ...
+  fat: 10.02
+  saturates: 2.24
+  carbs: 5.19
+  sugars: 1.43
+  fibre: 4.39
+  protein: 20.27
+  salt: 0.01
+  energy_kj: 838.7
+  energy_kcal: 200.8
 
 label:                     # les mêmes, telles qu'elles s'écrivent
+  energy: 839 kJ / 201 kcal
   fat: 10 g
-  energy: null
-  ...
+  saturates: 2,2 g
+  carbs: 5,2 g
+  sugars: 1,4 g
+  fibre: 4,4 g
+  protein: 20 g
+  salt: < 0,01 g
 
 steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
   - "Soja : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Kinako : Torréfaction → Fermentation 36 h"
+  - "Vinaigre de cidre : tel quel"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
+  - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing:                   # ce qui empêche d'étiqueter, en clair
-  - "carbs unknown in the product: an ingredient or a transform does not know it yet"
+missing: []                # ce qui empêche d'étiqueter, en clair — ici, rien
 warnings: []               # ce qui n'empêche pas, mais mérite un œil
 coefficients: {...}        # chaque coefficient des transformations ; null = lacune
 ```
@@ -145,7 +157,8 @@ sont dans **[`refs/methode.md`](refs/methode.md)**, le document qu'on présente 
 un contrôle.
 
 > ⚠️ **État actuel.** Un tempeh de soja décrit en entier (durées, poids,
-> fiches) sort complet. Plusieurs coefficients restent des hypothèses, et
+> fiches) sort complet, comme l'exemple ci-dessus. Plusieurs coefficients
+> restent des hypothèses, et
 > aucun n'est encore validé par une analyse de laboratoire
 > (`refs/transformations.md`, § 0). Ce qui est à affiner, ce qui manque,
 > et les trois publications à obtenir en priorité :
