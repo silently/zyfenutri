@@ -14,8 +14,8 @@ def test_fat_does_not_dissolve(soy):
 
 
 def test_sugars_lose_what_soaking_left_to_leach(soy):
-    """[12, p. 194]: −59 % over soaking and cooking, ~56 % of it at soaking."""
-    assert Cooking(120)(soy).sugars / soy.sugars == pytest.approx(0.93, abs=0.001)
+    """[12, p. 194]: −59 % over soaking and cooking; soaking keeps 73 % [14]."""
+    assert Cooking(120)(soy).sugars / soy.sugars == pytest.approx(0.56, abs=0.005)
 
 
 def test_starch_and_fibre_stay(soy):
@@ -25,9 +25,9 @@ def test_starch_and_fibre_stay(soy):
 
 
 def test_protein_and_minerals_leach(soy):
-    """[12], [15]: ~6 % of protein; minerals ~2 % ([15]: ash 92-98 % kept overall)."""
+    """[12], [15]: ~8 % of protein; minerals ~2 % ([15]: ash 92-98 % kept overall)."""
     out = Cooking(120)(soy)
-    assert out.protein / soy.protein == pytest.approx(0.94, abs=0.001)
+    assert out.protein / soy.protein == pytest.approx(0.92, abs=0.001)
     assert out.salt / soy.salt == pytest.approx(0.98, abs=0.001)
 
 

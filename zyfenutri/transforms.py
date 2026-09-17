@@ -163,6 +163,15 @@ def lost(points: tuple[tuple[float, float], ...], x: float) -> float | None:
     return None if share is None else 1 - share
 
 
+def saturated(facts: NutritionFacts, fat: float | None, share_gain: float | None) -> float | None:
+    """Saturates once their share of fat has risen by `share_gain`, capped at fat."""
+    if facts.saturates is None or fat is None or share_gain is None:
+        return None
+    if not facts.fat:
+        return facts.saturates
+    return min(fat, fat * (facts.saturates / facts.fat + share_gain))
+
+
 def minus(value: float | None, amount: float) -> float | None:
     """`value − amount`; unknown if the sheet cannot spare that much."""
     return None if value is None or amount > value else value - amount
@@ -227,24 +236,24 @@ class Dehulling:
 # Tempeh soybeans soak overnight. Soaking is therefore not a setting: every
 # coefficient below is the share KEPT after one night, 10 to 15 h.
 
-# [3, table II, p. 431]: soybean raffinose 60.1 → 26.3 mg/g after 12 h, i.e.
-# 44 % kept; the fitted curve keeps 43-45 % between 10 and 15 h.
-# HYPOTHESIS: raffinose stands in for sucrose. [3, p. 433] finds bigger sugars
-# leach slower; Shallenberger 1976 measures sucrose −59 % over soaking and
-# cooking, raffinose −52 % [12, p. 194]: same order.
-SOAKING_SUGARS_KEPT = 0.44
+# Sucrose left in whole soybeans soaked at 25 °C: 86.6 % at 6 h, 74.6 % at
+# 12 h, 58.2 % at 18 h; fructose 76.9 % at 12 h [14, table 2, p. 1512].
+# Sucrose and fructose (7.27 g/100 g, [14, p. 1512]) weighted over 10-15 h:
+# ~73 % kept. Raffinose falls faster in [3] (44 % left at 12 h, 22 °C).
+SOAKING_SUGARS_KEPT = 0.73
 # HYPOTHESIS: starch is insoluble and stays in the seed.
 SOAKING_STARCH_KEPT = 1.0
-# Protein: ~12 % goes before fermentation [12, p. 192] — ~2 % with the hulls,
-# ~4 % at cooking — leaving ~6 % to soaking; Smith 1964 gives ~6.5 %
-# (dehulling and soaking, hulls aside) [12, p. 189]. [13, table 1] suggests
-# ~10 % by 24 h at 25 °C. Plain water: acidified soaking loses less
-# [1, p. 74] — GAP.
-SOAKING_PROTEIN_KEPT = 0.94
-# Minerals leave at the pace of solids: ash stays at 3.5-3.6 % of dry matter
-# while soaking [13, table 1], and soaking loses ~5 % of solids (4.9 %
-# [12, p. 188]; dry solids 100 → 95.1 [1, p. 80]). HYPOTHESIS: sodium
-# follows ash. (Unsalted tempeh declares "< 0,01 g" either way.)
+# Soluble (Lowry) protein in the soak water, 25 °C: 0.62 g at 12 h, 0.71 g at
+# 18 h per 100 g of soybeans [14, table 1, p. 1511], ~1.7 % of protein. About
+# half of the nitrogen leached is non-protein (Lo et al. 1968, cited in
+# [14, p. 1510]): ~3 % of nitrogen-based protein. Plain water: acidified
+# soaking loses less [1, p. 74] — GAP.
+SOAKING_PROTEIN_KEPT = 0.97
+# Solids in the soak water, 25 °C: 4.40 g at 12 h, 5.00 g at 18 h per 100 g of
+# soybeans [14, table 1, p. 1511]; 4.9 % [12, p. 188]. Ash stays at 3.5-3.6 %
+# of dry matter while soaking [13, table 1]: minerals leave at the pace of
+# solids, ~5 %. HYPOTHESIS: sodium follows ash. (Unsalted tempeh declares
+# "< 0,01 g" either way.)
 SOAKING_MINERALS_KEPT = 0.95
 # HYPOTHESIS: fibre stays. True for insoluble fibre; a sheet whose fibre
 # counts oligosaccharides would lose some (refs/transformations.md, § 2).
@@ -277,19 +286,20 @@ class Soaking:
 # --- Cooking (minutes, boiling water thrown away) ---
 
 # Sucrose −59 % over soaking and cooking (Shallenberger 1976, [12, p. 194]);
-# soaking alone takes ~56 % (SOAKING_SUGARS_KEPT), leaving ~7 % to cooking.
+# soaking keeps ~73 % (SOAKING_SUGARS_KEPT), so cooking keeps 41/73, ~56 %.
 # HYPOTHESIS: τ = 20 min, i.e. done within the usual 20-60 min [10, p. 1721].
-COOKING_SUGARS: Loss = (0.07, 20.0)
+COOKING_SUGARS: Loss = (0.44, 20.0)
 # HYPOTHESIS: starch is insoluble and stays. Van Veen & Schaefer 1950 find no
 # starch left in cooked beans [12, p. 195], but soybeans hold little [12, p. 194].
 COOKING_STARCH: Loss = (0.0, 20.0)
 # Protein lost from seed to tempeh: ~14 % [12, p. 192, with fermentation],
 # 16.7 % on average over eight studies [12, p. 188], 19.7 % for Smith 1964
 # [12, p. 189]; 8-23 % for dehulled cracked soybean, chickpea, pea and faba bean
-# [15, tables 1-2, computed]. Taking ~15 %: ~2 % with the hulls, ~6 % at
-# soaking, ~1.6 % at fermentation, leaving ~6 % to cooking.
+# [15, tables 1-2, computed]. Taking ~14 %: ~2 % with the hulls, ~3 % at
+# soaking, ~1.5 % at fermentation, leaving ~8 % to cooking — below the 10 %
+# Smith measures at that step [12, p. 189].
 # HYPOTHESIS: τ = 20 min.
-COOKING_PROTEIN: Loss = (0.06, 20.0)
+COOKING_PROTEIN: Loss = (0.08, 20.0)
 # Ash kept from dehulled seed to tempeh: 92-98 % for four legumes
 # [15, tables 1-2, computed]; tempeh ash close to the seed's [12, p. 196].
 # Soaking takes ~5 %, fermentation none: cooking ~2 %. (The refs/official
@@ -327,29 +337,31 @@ class Cooking:
 
 # --- Fermentation (hours) ---
 
-# Share of protein oxidised, i.e. lost: 5, 10 and 20 g per kg of initial dry
-# cotyledons at 28, 46 and 72 h [9, p. 797, citing Ruiz-Terán & Owens 1996],
-# over protein at 45 % of dry matter [6, table 2]. Smith 1964 measures 1.7 %
-# of nitrogen [12, p. 189]; Steinkraus and Murata find total nitrogen constant
-# [12, p. 192]. Beyond 72 h: unknown.
+# Share of protein oxidised, i.e. lost: 0.5 % of initial dry matter by 32 h
+# [16, p. 523], and 5, 10 and 20 g per kg of initial dry cotyledons at 28, 46
+# and 72 h [9, p. 797], over protein at 45 % of dry matter [6, table 2]. Smith
+# 1964 measures 1.7 % of nitrogen [12, p. 189]. Beyond 72 h: GAP.
 FERMENTATION_PROTEIN_LOST = ((0.0, 0.0), (28.0, 0.011), (46.0, 0.022), (72.0, 0.044))
 
-# Share of fat lost, around 30 °C. Readings agree within their noise:
-# - 3 % of initial dry matter by 32 h [9, p. 797], over crude lipid at 28.1 %
-#   of dry matter in dehulled cooked soybeans [7, table 1] → 11 % of fat;
-# - 36 h: total fat −9.7 % (Van Buren et al. 1972, cited in [12, p. 188]);
-# - 46-48 h: fat as % of dry matter barely moves ([7, table 1]: 28.2 → 29.1;
-#   [2, table 1]: 22.4 → 21.0) while ~10 % of dry matter goes ([6, p. 2238]),
-#   → 7 % and 16 % lost;
-# - [11, p. 268-269]: "a slight decrease in lipids". Other studies range from
-#   0.8 to 24.5 % [12, p. 193], and [10, p. 1733] quotes 30 %.
-# ⚠️ From seed to tempeh, [15] finds 47-70 % of fat gone for four legumes, but
-#   after 24 h of soaking at 30 °C on cracked beans; longer, warmer soaks lose
-#   much more fat [12, p. 193]. The tables' tempehs (refs/official: 9.8-10.8 g)
-#   agree with a small loss. This estimate holds for an overnight soak only.
-# HYPOTHESIS: linear up to 32 h. Beyond 48 h: GAP — senescence burns fat fast
-# ([9, p. 797]: 12 % of dry matter, almost all lipid, by 180 h).
-FERMENTATION_FAT_LOST = ((0.0, 0.0), (32.0, 0.11), (48.0, 0.11))
+# Crude lipid per kg of initial dry matter, bacteria-free tempe, 30 °C [16,
+# table 1, p. 529]: 243 (0 h), 228 (12 h), 211 (26 h), 215 (36 h), 216 (60 h),
+# 99 (120 h), 89 (156 h), 81 g (180 h). Mature tempe loses ~12 % (26-60 h,
+# averaged), then senescence burns fat fast. Corroborated: Van Buren 1972
+# −9.7 % at 36 h [12, p. 188]; [7] and [2] once dry matter is accounted for.
+# [10, p. 1733] misquotes this study as 30 %. Acidified autoclaved cotyledons,
+# overnight-type process; [15] finds far more after a 24 h soak at 30 °C on
+# cracked beans. Beyond 180 h: GAP.
+FERMENTATION_FAT_LOST = ((0.0, 0.0), (12.0, 0.06), (26.0, 0.12), (60.0, 0.12),
+                         (120.0, 0.59), (156.0, 0.63), (180.0, 0.67))
+
+# Saturated share of fat, seed → tempeh, in points: +9.1 (USDA), +3.8 (NZ),
+# +10.8 (Norway); +7.9 on average. Calibrated on refs/official. Taken whole by
+# mature tempe, from 26 h, like fat [16]. It implies more saturated fat in mass
+# than the seed held: mould mycelium making its own lipids would explain it,
+# no source says so. Kept because under-declaring saturates is the unsafe
+# direction. [2] finds the share falling with R. oligosporus in the lab.
+# HYPOTHESIS: linear up to 26 h. Beyond 60 h: GAP.
+FERMENTATION_SATURATED_SHARE_GAIN = ((0.0, 0.0), (26.0, 0.079), (60.0, 0.079))
 
 # Sucrose −17 % over 48 h of fermentation, the decrease continuing afterwards
 # (Shallenberger 1976, cited in [12, p. 194]). HYPOTHESIS: linear. Beyond 48 h: GAP.
@@ -384,20 +396,18 @@ class Fermentation:
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
         t = self.hours
-        keep_fat = lost(FERMENTATION_FAT_LOST, t)
+        fat = scaled(facts.fat, lost(FERMENTATION_FAT_LOST, t))
         # GAP: product temperature matters as much as time [2], [7], but no
         # source ties the losses to it yet — not a setting until one does.
         return NutritionFacts(
-            fat=scaled(facts.fat, keep_fat),
-            # HYPOTHESIS: saturates follow fat. [2] shows the saturated share
-            # drifting both ways depending on the strain.
-            saturates=scaled(facts.saturates, keep_fat),
+            fat=fat,
+            saturates=saturated(facts, fat, interpolated(FERMENTATION_SATURATED_SHARE_GAIN, t)),
             **split_carbs(facts, lost(FERMENTATION_SUGARS_LOST, t),
                           lost(FERMENTATION_STARCH_LOST, t)),
             fibre=scaled(facts.fibre, FERMENTATION_FIBRE_KEPT),
             protein=scaled(facts.protein, lost(FERMENTATION_PROTEIN_LOST, t)),
-            # Minerals are not consumed: ash content rises as dry matter goes
-            # [10, p. 1733] and barely moves overall [12, p. 196].
+            # Minerals are not consumed: ash stays constant throughout
+            # fermentation [16, p. 526].
             salt=facts.salt,
         )
 
@@ -469,6 +479,7 @@ COEFFICIENTS = {
     "cooking_fibre": COOKING_FIBRE,
     "fermentation_protein_lost": FERMENTATION_PROTEIN_LOST,
     "fermentation_fat_lost": FERMENTATION_FAT_LOST,
+    "fermentation_saturated_share_gain": FERMENTATION_SATURATED_SHARE_GAIN,
     "fermentation_sugars_lost": FERMENTATION_SUGARS_LOST,
     "fermentation_starch_lost": FERMENTATION_STARCH_LOST,
     "fermentation_fibre_kept": FERMENTATION_FIBRE_KEPT,

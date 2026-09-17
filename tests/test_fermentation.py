@@ -1,7 +1,7 @@
 """Fermentation: what the mould breathes away."""
 import pytest
 
-from zyfenutri import Fermentation, Transform
+from zyfenutri import Fermentation, NutritionFacts, Transform
 
 
 def test_protein_is_barely_lost(soy):
@@ -21,24 +21,35 @@ def test_minerals_are_not_consumed(soy):
     assert Fermentation(36)(soy).salt == soy.salt
 
 
-def test_fat_loses_about_a_tenth_by_32_hours(soy):
-    """[9, p. 797] over [7, table 1]: 3 % of dry matter, ~11 % of fat."""
-    assert Fermentation(32)(soy).fat / soy.fat == pytest.approx(0.89)
+def test_mature_tempe_loses_about_an_eighth_of_its_fat(soy):
+    """[16, table 1]: crude lipid 243 → 211-216 g/kg of initial dry matter, 26-60 h."""
+    assert Fermentation(32)(soy).fat / soy.fat == pytest.approx(0.88)
 
 
 def test_fat_loss_holds_until_48_hours(soy):
-    """[2] and [7] at 46-48 h, with ~10 % of dry matter lost [6]."""
+    """[16, table 1]: no change from 26 to 60 h."""
     assert Fermentation(48)(soy).fat == Fermentation(32)(soy).fat
 
 
-def test_fat_beyond_48_hours_is_unknown(soy):
-    """GAP: senescence burns fat fast [9, p. 797]."""
-    assert Fermentation(60)(soy).fat is None
+def test_senescence_burns_fat(soy):
+    """[16, table 1]: 99 g/kg left at 120 h, 81 g/kg at 180 h."""
+    assert Fermentation(120)(soy).fat / soy.fat == pytest.approx(0.41)
+    assert Fermentation(200)(soy).fat is None
 
 
-def test_saturates_follow_fat(soy):
+def test_the_saturated_share_of_fat_rises(soy):
+    """Calibrated on refs/official: +3.8 to +10.8 points, +7.9 on average."""
     out = Fermentation(36)(soy)
-    assert out.saturates / soy.saturates == pytest.approx(out.fat / soy.fat)
+    assert out.saturates / out.fat == pytest.approx(soy.saturates / soy.fat + 0.079)
+
+
+def test_saturates_never_exceed_fat():
+    out = Fermentation(36)(NutritionFacts(fat=10.0, saturates=9.8))
+    assert out.saturates <= out.fat
+
+
+def test_saturates_beyond_60_hours_are_unknown(soy):
+    assert Fermentation(120)(soy).saturates is None
 
 
 def test_sucrose_drops_by_a_sixth_in_48_hours(soy):

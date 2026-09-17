@@ -208,7 +208,7 @@ def test_the_steps_are_returned_so_the_result_can_be_argued_with():
 
 def test_coefficients_are_shown_and_no_longer_read():
     result = one_substrate(harvested_g=2000, coefficients={"leaching_carbs": 45})
-    assert result["coefficients"]["soaking_sugars_kept"] == 0.44
+    assert result["coefficients"]["soaking_sugars_kept"] == 0.73
     assert any("no longer read" in w for w in result["warnings"])
 
 

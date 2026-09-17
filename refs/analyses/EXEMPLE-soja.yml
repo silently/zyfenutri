@@ -64,8 +64,8 @@ apres_fermentation:
   masse_g: 1900
   humidite_g_100g: 60.5
   composition_pour_100g:
-    matieres_grasses_g: 8.4316
-    acides_gras_satures_g: 1.2179
+    matieres_grasses_g: 8.3368
+    acides_gras_satures_g: 1.8628
     glucides_g: 4.5553
     sucres_g: 1.3776
     fibres_g: 6.3158

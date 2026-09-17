@@ -79,9 +79,10 @@ l'annexe XIV. Elle ne se recopie jamais d'une table. Et les **kcal ne sont pas
 les kJ ÷ 4,184** : l'annexe donne deux jeux de coefficients indépendants, et
 convertir ferait diverger les deux chiffres de l'étiquette.
 
-⚠️ **Les « dont » suivent leur total.** Les AGS n'ont pas de règle propre, les
-sucres non plus au-delà de celle des glucides. Une valeur « dont » supérieure à
-son total n'a aucun sens physique.
+⚠️ **Une valeur « dont » ne dépasse jamais son total.** Par défaut, les AGS
+suivent les lipides ; seule exception, la fermentation, où leur part augmente
+(calée sur `refs/official/`). Les sucres ont leur propre règle, découpée de
+l'amidon. Une valeur « dont » supérieure à son total n'a aucun sens physique.
 
 ---
 

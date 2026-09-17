@@ -291,15 +291,18 @@ H. L. Wang, E. Swain, C. W. Hesseltine, H. D. Heath. « Hydration of whole
 soybeans affects solids losses and cooking quality ». *Journal of Food Science*
 44 (1979) 1510-1513. <https://doi.org/10.1111/j.1365-2621.1979.tb06474.x>
 
-- **Statut :** résumé (via OpenAlex). Payant.
-- **Ce qu'on en tire (tendances) :** les solides partent **à un rythme
-  régulier** pendant tout le trempage, plus vite à chaud ; la température est
-  le premier facteur ; la part de protéines dans ce qui part augmente avec la
-  durée et la température ; une partie seulement des sucres solubles est
-  retirée après une nuit à 25 °C.
-- **À lire :** il mesure la perte de solides en fonction de la durée et de la
-  température, ce qui permettrait de caler le trempage au-delà de 24 h et d'en
-  faire dépendre la température.
+- **Statut :** lu.
+- **Fichier :** `docs/Journal of Food Science - September 1979 - WANG - HYDRATION OF WHOLE SOYBEANS AFFECTS SOLIDS LOSSES AND COOKING QUALITY.pdf`
+- **Pages :** page imprimée = page du PDF **+ 1509**.
+- **Ce qu'on en tire :** soja **entier**, trempé 2 à 24 h à 20, 25, 30 et 37 °C :
+  - solides et protéines solubles passés dans l'eau, par durée et température
+    [tableau 1, p. 1511] ;
+  - saccharose, fructose, raffinose et stachyose **restant dans la graine** à
+    25 °C [tableau 2, p. 1512] ;
+  - une partie des sucres disparus n'est pas dans l'eau : des enzymes de la
+    graine les hydrolysent [p. 1512].
+- **Réserves :** protéines dosées par Lowry (protéines solubles), pas par
+  l'azote ; une seule variété (SRF-200) ; graines entières non dépelliculées.
 
 ### [15] Ashenafi & Busse, 1991 — *Production of tempeh from various indigenous Ethiopian beans*
 
@@ -325,3 +328,46 @@ beans ». *World Journal of Microbiology and Biotechnology* 7 (1991) 72-79.
   « brutes » (fibres brutes, extrait non azoté par différence) ; une seule
   série, sans répétition publiée ; la matière sèche du tempeh n'est donnée
   qu'une fois pour les deux variantes, acidifiée ou non.
+
+### [16] Ruiz-Terán & Owens, 1996 — *Chemical and Enzymic Changes During the Fermentation of Bacteria-Free Soya Bean Tempe*
+
+F. Ruiz-Terán, J. D. Owens. « Chemical and Enzymic Changes During the
+Fermentation of Bacteria-Free Soya Bean Tempe ». *Journal of the Science of Food
+and Agriculture* 71 (1996) 523-530.
+<https://doi.org/10.1002/(SICI)1097-0010(199608)71:4<523::AID-JSFA613>3.0.CO;2-R>
+
+- **Statut :** lu.
+- **Fichier :** `docs/J Sci Food Agric - August 1996 - Ruiz‐Terán - Chemical and Enzymic Changes During the Fermentation of Bacteria‐Free Soya.pdf`
+- **Pages :** page imprimée = page du PDF **+ 522**.
+- **Ce qu'on en tire — la source primaire de la fermentation :** cotylédons de
+  soja dépelliculés, acidifiés, autoclavés, fermentés sans bactéries à 30 °C,
+  de 0 à 180 h. Tout est exprimé **par kg de matière sèche initiale**, donc en
+  masses absolues :
+  - lipides bruts à chaque temps [tableau 1, p. 529] ;
+  - matière sèche : −10 % à 26-60 h, −22 % à 180 h [p. 526] ;
+  - cendres constantes pendant toute la fermentation [p. 526] ;
+  - protéines oxydées : 0,5 % de la matière sèche initiale en 32 h [p. 523].
+- **Réserves :** fermentation stérile en boîte de Petri, sans bactéries ;
+  protéines estimées d'après l'ammoniac et le dosage de Coomassie, pas par
+  l'azote total ; la part « non identifiée » de la matière sèche perdue
+  (6,5 %) n'est pas élucidée.
+
+### [17] Erkan et al., 2020 — *Production and characterization of tempehs from different sources of legume by Rhizopus oligosporus*
+
+S. B. Erkan, H. N. Gürler, D. G. Bilgin, M. Germec, I. Turhan. « Production and
+characterization of tempehs from different sources of legume by *Rhizopus
+oligosporus* ». *LWT — Food Science and Technology* 119 (2020) 108880.
+<https://doi.org/10.1016/j.lwt.2019.108880>
+
+- **Statut :** lu.
+- **Fichier :** `docs/1-s2.0-S0023643819312228-main.pdf`
+- **Ce qu'on en tire :** le procédé pour sept légumineuses dont les **lentilles
+  verte et rouge** [p. 2] : trempage 2 h ; cuisson 40 min (soja, haricot blanc),
+  30 min (pois chiche, haricot noir), **1 min (lentilles)**, 10 min (fève) ;
+  fermentation 28 à 48 h à 30-34 °C, **48 h pour les lentilles** ; lentilles
+  utilisées non dépelliculées. Humidité des tempehs : 44,9 à 63,1 %
+  [tableau 1, p. 3].
+- **Réserves — peu utile au calcul :** composition des tempehs seulement, sans
+  la graine crue ; protéines (Bradford) et sucres (DNS) dosés dans un extrait
+  aqueux, en mg/mL et g/L, pas en masse. Aucun coefficient n'est calable
+  dessus.

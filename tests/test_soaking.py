@@ -19,9 +19,9 @@ def test_one_transform_serves_soy_and_lentil():
     assert carbs_loss(SOY) > 5 * carbs_loss(LENTIL)
 
 
-def test_sugars_follow_soybean_raffinose_over_a_night():
-    """[3, table II, p. 431]: soybean raffinose 60.1 mg/g raw, 26.3 after 12 h."""
-    assert Soaking()(SOY).sugars / SOY.sugars == pytest.approx(26.3 / 60.1, abs=0.01)
+def test_sugars_follow_soybean_sucrose_over_a_night():
+    """[14, table 2]: whole soybeans at 25 °C keep 74.6 % of sucrose at 12 h."""
+    assert Soaking()(SOY).sugars / SOY.sugars == pytest.approx(0.746, abs=0.02)
 
 
 def test_starch_stays_in_the_seed():
@@ -35,9 +35,9 @@ def test_fat_loses_about_one_percent():
 
 
 def test_protein_and_minerals_leach():
-    """[12, p. 188-192]: ~6 % of protein; minerals at the pace of solids, ~5 %."""
+    """[14, table 1]: ~3 % of protein; minerals at the pace of solids, ~5 %."""
     out = Soaking()(SOY)
-    assert out.protein / SOY.protein == pytest.approx(0.94)
+    assert out.protein / SOY.protein == pytest.approx(0.97)
     assert out.salt / SOY.salt == pytest.approx(0.95)
 
 

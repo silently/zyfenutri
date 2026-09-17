@@ -386,12 +386,11 @@ portent l'essentiel.
 
 #### Deux réserves, énoncées ici plutôt que tues
 
-⚠️ **Les acides gras saturés sont probablement sous-estimés.** Les trois couples donnent une
-rétention de 128 à 186 %, ce qui est impossible — on ne crée pas d'acide gras saturé. Ces chiffres
-sont donc inutilisables. Mais leur **direction** est unanime : la part saturée des lipides augmente
-de 4 à 11 points, ce qui s'explique (le mycélium oxyde de préférence les insaturés). Notre modèle
-garde ce rapport constant, faute d'une amplitude fiable. C'est le sens défavorable, et c'est assumé
-en toute connaissance.
+⚠️ **Les acides gras saturés.** Les trois couples montrent une part saturée des lipides qui augmente
+de 3,8 à 10,8 points de la graine au tempeh. Le calcul applique la moyenne, **+7,9 points**, à la
+fermentation (calage sur `official/`). Cela implique plus d'AGS en masse que dans la graine : la
+synthèse de lipides par le mycélium l'expliquerait, mais aucune source lue ne l'établit. Ce choix
+est retenu parce que sous-déclarer les AGS serait le sens défavorable.
 
 ⚠️ **Les fibres sont un majorant.** La frontière entre fibres et glucides est une convention
 d'analyse, pas une propriété du produit : la même graine en déclare 9,3 g (USDA, Nouvelle-Zélande)
