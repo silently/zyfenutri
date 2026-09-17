@@ -8,10 +8,9 @@
 #   2. servir de test à `check.py` et à `tests/test_refs.py`.
 #
 #  Les valeurs « avant fermentation » sont d'ordre de grandeur (soja cuit) ;
-#  les valeurs « après » ont été CALCULÉES en appliquant les coefficients
-#  par défaut de `zyfenutri` (−60 % de glucides, −5 % de lipides, protéines et
-#  fibres conservées). Le script doit donc retrouver exactement ces
-#  coefficients — c'est ce qui prouve que la chaîne de vérification marche.
+#  les valeurs « après » ont été CALCULÉES en appliquant `Fermentation(36)`
+#  de `zyfenutri`. Le script doit retrouver exactement ces valeurs — c'est ce
+#  qui prouve que la chaîne de vérification marche.
 #
 #  ⚠️ Ce bloc est RECALCULÉ à chaque changement des coefficients : il ne mesure
 #  rien, il suit le modèle. Une vraie analyse, elle, ne bouge jamais — c'est
@@ -24,6 +23,7 @@
 exemple: true
 
 reference: EXEMPLE-soja
+duree_fermentation_h: 36
 laboratoire:          # aucun : valeurs construites
 date_analyse:
 methode:
@@ -64,12 +64,12 @@ apres_fermentation:
   masse_g: 1900
   humidite_g_100g: 60.5
   composition_pour_100g:
-    matieres_grasses_g: 9
-    acides_gras_satures_g: 1.3
-    glucides_g: 3.5368
-    sucres_g: 0.6316
+    matieres_grasses_g: 8.4316
+    acides_gras_satures_g: 1.2179
+    glucides_g: 4.5553
+    sucres_g: 1.3776
     fibres_g: 6.3158
-    proteines_g: 17.4737
+    proteines_g: 17.196
     sel_g: 0.0105
 
 commentaire: >

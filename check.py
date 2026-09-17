@@ -12,32 +12,16 @@ Three things, in this order:
 1. **predicted vs measured**, nutrient by nutrient, next to the **regulatory
    tolerance** — the only threshold that says whether the estimate would
    stand up to an inspection;
-2. what fermentation **actually** consumed, in absolute masses, against the
-   default coefficients;
+2. what fermentation **actually** consumed, in absolute masses;
 3. the tolerances on a typical tempeh, to give a sense of scale.
 
 ⚠️ **Changes nothing.** It is a reading: deciding to carry a value over to
-`coefficients:` is the user's call. The "n" column says how many analyses each
+`zyfenutri/transforms.py` is the user's call. The "n" column says how many analyses each
 average rests on — a single measurement is not a setting.
 """
-from __future__ import annotations
-
 from zyfenutri.label import tolerance
 from zyfenutri.nutrients import NUTRIENTS
 from zyfenutri.refs_data import fermentation_deviations, load_analyses, refs_dir
-from zyfenutri.transforms import DEFAULTS
-
-#: Which coefficient each nutrient checks, at fermentation.
-FERMENTATION_COEFFICIENT = {
-    "carbs": "fermentation_carbs",
-    "sugars": "fermentation_carbs",
-    "fat": "fermentation_fat",
-    "saturates": "fermentation_fat",
-    "protein": None,   # expected 0%: protein is hydrolysed, not consumed
-    "fibre": None,     # expected 0%: not calibrated, for lack of data
-    "salt": None,      # a mineral is not consumed
-}
-
 
 def _title(text: str) -> None:
     print("\n" + "═" * 78)
@@ -95,14 +79,12 @@ def main() -> int:
 
     if losses:
         _title("Ce que la fermentation a réellement consommé (analyses réelles)")
-        print(f"\n  {'nutriment':22} {'n':>3} {'mesuré':>9} {'par défaut':>12}")
+        print(f"\n  {'nutriment':22} {'n':>3} {'mesuré':>9}")
         for name, values in losses.items():
-            key = FERMENTATION_COEFFICIENT.get(name)
-            expected = DEFAULTS.get(key) if key else 0.0
             mean = sum(values) / len(values)
-            print(f"  {name:22} {len(values):3d} {mean:+8.1f} % {expected:+11.1f} %")
+            print(f"  {name:22} {len(values):3d} {mean:+8.1f} %")
         print("\n  ⚠️  Rien n'est appliqué automatiquement. Si vous jugez l'écart fondé,")
-        print("      passez la valeur dans le bloc `coefficients:` du document.")
+        print("      reportez-le dans zyfenutri/transforms.py, avec sa source.")
 
     _title("Tolérances réglementaires, pour situer")
     print("\n  Sur un tempeh de légumineuses typique :")

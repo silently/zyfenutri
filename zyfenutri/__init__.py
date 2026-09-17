@@ -26,15 +26,23 @@ The method, and what backs it, is in `refs/methode.md`.
 """
 from zyfenutri.checks import MASS_BALANCE_MAX_G, MASS_BALANCE_SUSPECT_G, check, mass_balance
 from zyfenutri.engine import compute
-from zyfenutri.label import KCAL_PER_G, KJ_PER_G, declared, declared_label, energy, tolerance
-from zyfenutri.nutrients import LABELS, NUTRIENTS
-from zyfenutri.transforms import DEFAULTS, EXCLUDED, PIPELINE
+from zyfenutri.label import (KCAL_PER_G, KJ_PER_G, EnergyUnit, declared, declared_label, energy,
+                             energy_of, tolerance)
+from zyfenutri.mixing import Portion, mix
+from zyfenutri.nutrients import LABELS, NUTRIENTS, NutritionFacts
+from zyfenutri.recipe import Ingredient, Recipe
+from zyfenutri.transforms import (COEFFICIENTS, EXCLUDED, PIPELINE, Cooking, Dehulling, Fermentation,
+                                  Retention, Roasting, Soaking, Transform, process)
 
-__version__ = "2.0.0"
+__version__ = "1.2.0"
 
 __all__ = [
-    "compute", "NUTRIENTS", "LABELS", "DEFAULTS", "PIPELINE", "EXCLUDED",
+    "compute", "NUTRIENTS", "LABELS", "COEFFICIENTS", "PIPELINE", "EXCLUDED",
     "energy", "declared", "declared_label", "tolerance",
     "mass_balance", "check", "MASS_BALANCE_MAX_G", "MASS_BALANCE_SUSPECT_G",
     "KJ_PER_G", "KCAL_PER_G", "__version__",
+    "NutritionFacts", "energy_of", "EnergyUnit",
+    "Transform", "Retention", "process",
+    "Dehulling", "Soaking", "Cooking", "Fermentation", "Roasting",
+    "Portion", "mix", "Ingredient", "Recipe",
 ]

@@ -200,6 +200,16 @@ facteur de gonflement emprunté à la littérature.
 
 ### 3.2 La chaîne de calcul — cinq transformations, et rien d'autre
 
+> ⚠️ **En cours de révision.** Les coefficients chiffrés de cette section
+> décrivent un ancien modèle. Le calcul s'appuie
+> désormais sur des coefficients sourcés un par un, et rend « inconnu » ce qui
+> ne l'est pas encore : l'état à jour est dans
+> [`transformations.md`](transformations.md) et dans `zyfenutri/transforms.py`.
+> Cette section sera réécrite à partir de `transformations.md`. **Le calcul
+> peut désormais rendre `complete: true`, mais plusieurs coefficients restent
+> des hypothèses, et aucun n'est validé par une analyse : ne pas étiqueter
+> avant la réécriture de cette section.**
+
 Le calcul ne manipule que des **masses absolues de nutriments**, du début à la fin. On part de ce
 qui entre dans le lot, on applique à chaque ingrédient les transformations qu'il subit réellement,
 on additionne, et on divise **une seule fois** par le poids de tempeh obtenu.
@@ -296,10 +306,64 @@ Le poids de tempeh est **pesé**, et c'est ce qui donne sa solidité à la méth
 n'est pas estimée, elle est mesurée.
 
 À défaut de pesée — pour concevoir une recette avant de l'avoir produite — le calcul prédit ce
-poids en multipliant le poids brut de chaque substrat par son **facteur de rendement**. Ce facteur
-absorbe d'un coup les pertes au tri et au dépelliculage (en moins) et l'hydratation (en plus).
+poids en multipliant le poids brut de chaque substrat par son **facteur de rendement** : la masse
+de l'ingrédient dans le tempeh fini, rapportée à sa masse brute **avant toute transformation**.
+
+C'est **un seul facteur**, qui agrège tout ce qui fait varier la masse du grain sec au tempeh :
+
+- les **pertes de matière au dépelliculage** (pellicule, germe, débris), quand il est pratiqué ;
+- l'**hydratation**, forte au trempage, puis à la cuisson ;
+- la **légère perte d'eau** pendant l'incubation.
+
+Pour 1 livre de soja entier : 2,33 livres trempé, 2,02 dépelliculé, 1,90 cuit, 1,74 de tempeh
+[1, p. 80, citant Steinkraus et al. 1961]. Le facteur de rendement vaut ici 1,74. Il ne se découpe
+pas par étape, et il n'entre qu'une fois, dans la division. Les **nutriments** partis avec la
+pellicule, eux, relèvent de la transformation T1 : la masse et la composition sont comptées
+séparément, jamais deux fois.
 ⚠️ Une fiche obtenue ainsi est explicitement marquée **incomplète** : on n'étiquette pas un produit
 avec un dénominateur lui-même estimé.
+
+#### D'où vient chaque coefficient — l'ordre des sources
+
+Chaque coefficient de chaque transformation est cherché dans cet ordre, et **porte son origine**
+dans le code et dans la doc :
+
+| Ordre | Origine | Marque |
+|---|---|---|
+| **1** | **la littérature**, lue : la mesure directe de l'étape concernée | `[n, p. x]` (`references.md`) |
+| **2** | à défaut, **un calage sur les couples graine → tempeh** de `refs/official/`, pour ce que la littérature laisse ouvert | « calé sur `refs/official/` » |
+| **3** | à défaut, **une hypothèse**, présentée comme telle et jamais comme une donnée | « hypothèse » |
+
+Les **analyses de laboratoire** (`refs/analyses/`) ne sont pas un quatrième recours : elles
+**jugent** le résultat des trois autres, face aux tolérances réglementaires.
+
+**Pourquoi c'est défendable.** L'article 31 § 4 c) admet le calcul « à partir de données
+généralement établies et acceptées » ; les tables nationales de composition en sont l'exemple
+même. Caler sur elles ce que la littérature ne donne pas, c'est rester dans ce cadre, **à condition
+que le calage soit documenté, reproductible, et que ses limites soient dites**. Une valeur choisie
+sans trace, elle, ne l'est pas.
+
+**Les limites du calage sur les couples**, qui en fixent l'usage :
+
+- **Un couple ne donne qu'une équation par nutriment** : ce qui reste entre la graine et le tempeh,
+  sur toute la chaîne. Il ne peut caler **qu'une inconnue par nutriment**. Si deux transformations
+  restent inconnues pour le même nutriment, le couple ne les départage pas : on ne répartit pas la
+  perte au hasard, on l'écrit comme une hypothèse.
+- **Les rapports entre nutriments sont robustes, les pertes absolues ne le sont pas.** Le rapport
+  lipides / protéines se lit directement sur les deux fiches. Une perte en masse absolue exige, elle,
+  le rendement du tempeh de la table, qu'aucune table ne publie : on retient 1,75 [1, p. 80], et le
+  coefficient calé hérite de cette hypothèse. Sa sensibilité au rendement doit être indiquée.
+- **Le procédé du tempeh de table est inconnu** : dépelliculé ou non, durée et température
+  d'incubation. Un coefficient calé vaut pour un procédé **courant**, pas pour un réglage précis.
+- **Chaque couple vient d'une seule table** et les glucides ne se comparent que si les deux fiches
+  suivent la même convention (`convention_glucides`).
+- **Trois couples donnent trois valeurs** : on garde leur **dispersion** comme incertitude, pas
+  seulement leur moyenne.
+- **Les couples sont tous du soja.** Un coefficient calé dessus n'est pas démontré pour une lentille
+  ou une céréale. C'est pourquoi les transformations raisonnent sur des fractions (sucres, amidon…)
+  et jamais sur l'espèce.
+- **Pas de validation circulaire.** Un coefficient calé sur ces couples ne peut plus être « vérifié »
+  par ces mêmes couples. Seule une analyse de laboratoire, ou une source indépendante, le valide.
 
 #### Ce qui fonde ces coefficients
 
@@ -392,6 +456,10 @@ devient un facteur de correction réutilisable tant que le procédé ne change p
 ---
 
 ## 6. Sources
+
+Les sources scientifiques des transformations sont numérotées dans
+[`references.md`](references.md), et discutées une à une dans
+[`transformations.md`](transformations.md).
 
 **Textes**
 

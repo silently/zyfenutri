@@ -12,8 +12,6 @@ sides, and the analysis would count for nothing.
 The file keys stay in French on purpose: the files are filled in by hand, by
 the people who run the lab analyses.
 """
-from __future__ import annotations
-
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -76,6 +74,8 @@ class Analysis:
     is_example: bool = False
     recette_code: str | None = None
     lot_id: str | None = None
+    #: Incubation time, hours: what `Fermentation` needs to predict "after".
+    fermentation_h: float | None = None
     matiere_premiere: Sample = field(default_factory=Sample)
     avant: Sample = field(default_factory=Sample)
     apres: Sample = field(default_factory=Sample)
@@ -133,6 +133,7 @@ def load_analyses() -> list[Analysis]:
             is_example=bool(data.get("exemple")),
             recette_code=product.get("recette_code"),
             lot_id=product.get("lot_id"),
+            fermentation_h=data.get("duree_fermentation_h"),
             matiere_premiere=_sample(data.get("matiere_premiere"), "matiere_premiere", unknown),
             avant=_sample(data.get("avant_fermentation"), "avant_fermentation", unknown),
             apres=_sample(data.get("apres_fermentation"), "apres_fermentation", unknown),
@@ -169,6 +170,7 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
 
     result = compute({
         "harvested_g": analysis.apres.masse_g,
+        "fermentation_hours": analysis.fermentation_h,
         "ingredients": [{
             "name": analysis.reference,
             # Not `substrate`: that would apply leaching a second time to a

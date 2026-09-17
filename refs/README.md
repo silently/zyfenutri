@@ -4,6 +4,8 @@
 |---|---|
 | **`methode.md`** | la méthode et le droit : article 31 § 4, tolérances, arrondis. Version longue, à lire avant d'écrire quoi que ce soit sur le sujet |
 | **`official/`** | des compositions **officiellement publiées** par des tables nationales, recopiées telles quelles. Trois couples graine → tempeh |
+| **`references.md`** | l'**index numéroté** des sources scientifiques, et la convention pour les citer |
+| **`transformations.md`** | le document de travail : ce qu'on sait de chaque transformation, et ce qui contredit le modèle |
 | **`analyses/`** | des **analyses de laboratoire**, s'il en arrive — composition avant / après fermentation |
 
 La différence entre les deux dossiers n'est pas une nuance de rangement : dans

@@ -4,8 +4,6 @@ Physical bounds only — no product, no database, no regulation beyond common
 sense: nothing is negative, nothing exceeds 100 g inside 100 g, a "dont" line
 stays under its total, and what adds up cannot exceed 100 g.
 """
-from __future__ import annotations
-
 from zyfenutri.nutrients import NUTRIENTS, SUBSET_OF
 
 #: What actually adds up. Not all seven: saturates are part of fat and sugars

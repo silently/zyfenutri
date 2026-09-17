@@ -4,9 +4,9 @@ All three come from Regulation (EU) 1169/2011 and the Commission's December
 2012 tolerance guidance. The reasoning behind each is in `refs/methode.md`;
 this module only applies the rules.
 """
-from __future__ import annotations
+from typing import Literal
 
-from zyfenutri.nutrients import NUTRIENTS
+from zyfenutri.nutrients import NUTRIENTS, NutritionFacts
 
 #: Annex XIV conversion factors, for the four macros that carry energy.
 KJ_PER_G = {"fat": 37.0, "carbs": 17.0, "protein": 17.0, "fibre": 8.0}
@@ -41,6 +41,30 @@ _TOLERANCES: dict[str, list[tuple[float | None, float | None]]] = {
     "saturates": [(4, 0.8), (None, None)],
     "salt": [(1.25, 0.375), (None, None)],
 }
+
+
+type EnergyUnit = Literal["kJ", "kcal"]
+
+_FACTORS_BY_UNIT: dict[str, dict[str, float]] = {"kJ": KJ_PER_G, "kcal": KCAL_PER_G}
+
+
+def energy_of(facts: NutritionFacts, unit: EnergyUnit = "kJ") -> float | None:
+    """Energy of a sheet, per 100 g, in the unit asked for. Unrounded.
+
+    `None` if any of the four macros that carry energy is unknown. Each unit
+    has its own Annex XIV factors: kcal is not kJ / 4.184.
+
+    The seven values are enough for tempeh, not for every food: Annex XIV also
+    rates organic acids, polyols and alcohol, which the sheet does not hold.
+    """
+    try:
+        factors = _FACTORS_BY_UNIT[unit]
+    except KeyError:
+        raise ValueError(f"unknown energy unit {unit!r}: 'kJ' or 'kcal'") from None
+    values = {name: getattr(facts, name) for name in factors}
+    if any(value is None for value in values.values()):
+        return None
+    return sum(factor * values[name] for name, factor in factors.items())
 
 
 def energy(per_100g: dict[str, float | None]) -> tuple[float | None, float | None]:

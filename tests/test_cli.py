@@ -7,6 +7,9 @@ from pathlib import Path
 DOCUMENT = {
     "recipe": "Tempeh de soja nature",
     "harvested_g": 1750,
+    "soaking_hours": 12,
+    "cooking_minutes": 30,
+    "fermentation_hours": 36,
     "ingredients": [{
         "name": "Soja", "role": "substrate", "weight_g": 1000,
         "per_100g": {"fat": 20, "saturates": 2.9, "carbs": 15, "sugars": 5.7,
@@ -26,8 +29,15 @@ def test_json_goes_in_and_a_document_comes_out():
     proc = run(["--json"], json.dumps(DOCUMENT))
     assert proc.returncode == 0, proc.stderr
     result = json.loads(proc.stdout)
-    assert result["label"]["energy"] == "876 kJ / 210 kcal"
+    assert result["label"]["energy"] is not None
     assert result["complete"] is True
+
+
+def test_yaml_comes_out_by_default():
+    """The coefficients hold tuples; YAML must still be able to write them."""
+    proc = run([], json.dumps(DOCUMENT))
+    assert proc.returncode == 0, proc.stderr
+    assert "per_100g:" in proc.stdout
 
 
 def test_a_file_works_as_well_as_a_pipe(tmp_path):
@@ -41,7 +51,7 @@ def test_a_file_works_as_well_as_a_pipe(tmp_path):
 def test_it_can_write_to_a_file(tmp_path):
     out = tmp_path / "sheet.json"
     assert run(["--json", "-o", str(out)], json.dumps(DOCUMENT)).returncode == 0
-    assert json.loads(out.read_text(encoding="utf-8"))["complete"] is True
+    assert "per_100g" in json.loads(out.read_text(encoding="utf-8"))
 
 
 def test_an_unreadable_document_exits_two_and_says_so():

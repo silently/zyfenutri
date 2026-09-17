@@ -1,9 +1,9 @@
 [project]
 name = "zyfenutri"
-version = "2.0.0"
+version = "1.2.0"
 description = "Composition nutritionnelle du tempeh — le calcul, ses règles et ce qui les fonde"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 # La bibliothèque elle-même (`compute`) n'importe rien d'autre que la stdlib.
 # PyYAML ne sert qu'à la ligne de commande, pour lire et écrire des documents

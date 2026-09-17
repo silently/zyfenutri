@@ -3,7 +3,8 @@
 Everything downstream speaks these seven keys and nothing else. Energy is not
 one of them: it is always recomputed from the macros (see `label.py`).
 """
-from __future__ import annotations
+from collections.abc import Mapping
+from dataclasses import astuple, dataclass
 
 #: The seven values a nutrition declaration must carry, in label order.
 NUTRIENTS = ("fat", "saturates", "carbs", "sugars", "fibre", "protein", "salt")
@@ -52,3 +53,40 @@ def read_per_100g(raw: dict | None) -> dict[str, float]:
         if name in NUTRIENTS and isinstance(value, (int, float)):
             out[name] = float(value)
     return out
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class NutritionFacts:
+    """A nutrition facts sheet: the seven values, in grams per 100 g.
+
+    `None` means "not known", never "none": an unknown value stays unknown
+    through every calculation instead of quietly becoming a zero.
+
+    Energy is not stored. It follows from these values (see
+    `label.energy_of`), and storing it would let the two disagree.
+
+    Immutable: a transform returns a new sheet, it never edits one in place.
+    Constructing a sheet checks nothing — `checks.check` says whether it can
+    physically exist.
+    """
+    fat: float | None = None
+    saturates: float | None = None
+    carbs: float | None = None
+    sugars: float | None = None
+    fibre: float | None = None
+    protein: float | None = None
+    salt: float | None = None
+
+    @classmethod
+    def from_mapping(cls, raw: Mapping | None) -> NutritionFacts:
+        """Build a sheet from a `per_100g:` block, accepting the input aliases."""
+        return cls(**read_per_100g(raw))
+
+    def as_dict(self) -> dict[str, float | None]:
+        """The seven values keyed by name, in label order."""
+        return dict(zip(NUTRIENTS, astuple(self)))
+
+    @property
+    def unknown(self) -> tuple[str, ...]:
+        """Names of the values that are not known."""
+        return tuple(name for name, value in self.as_dict().items() if value is None)

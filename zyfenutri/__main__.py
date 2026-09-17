@@ -11,8 +11,6 @@ robust. The caller need not even share our Python interpreter.
 
 Exit codes: 0 done, 2 the document could not be read.
 """
-from __future__ import annotations
-
 import argparse
 import json
 import sys

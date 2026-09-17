@@ -30,6 +30,7 @@ reference:            # votre référence interne, ex. ANA-2026-001
 laboratoire:          # nom du labo
 date_analyse:         # AAAA-MM-JJ
 methode:              # norme ou méthode, si le rapport la précise
+duree_fermentation_h: # durée d'incubation en heures — nécessaire à la prédiction
 
 produit:
   nom:                # ex. Tempeh de soja nature
