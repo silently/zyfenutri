@@ -65,10 +65,8 @@ def _ingredient(raw: dict, document: dict, missing: list[str]) -> tuple[dict, In
     raw_mass = float(weight or 0.0)
     if "dehulling" in steps and raw.get("dehulled"):
         transforms.append(tf.Dehulling())
-    if "roasting" in steps and (raw.get("roasted") or raw.get("roasting_intensity") is not None):
-        transforms.append(_step(tf.Roasting, raw.get("roasting_intensity"),
-                                "Torréfaction (intensité inconnue)", missing,
-                                f"roasting intensity for {name} (roasting_intensity: 1 to 3)"))
+    if "roasting" in steps and raw.get("roasted"):
+        transforms.append(tf.Roasting())
     if "soaking" in steps:
         transforms.append(tf.Soaking())
     if "cooking" in steps:
@@ -152,6 +150,8 @@ def compute(document: dict) -> dict:
     if any(raw.get("raw_weight_g") is not None for raw in document.get("ingredients") or []):
         warnings.append("raw_weight_g is no longer read: weight_g is the weight before any "
                         "transform, hulls included, and their loss is in the yield factor")
+    if any(raw.get("roasting_intensity") is not None for raw in document.get("ingredients") or []):
+        warnings.append("roasting_intensity is no longer read: roasting is yes or no (roasted)")
     if document.get("soaking_hours") is not None:
         warnings.append("soaking_hours is no longer read: soaking is taken as one night, "
                         "10 to 15 h")

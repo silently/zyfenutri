@@ -27,7 +27,7 @@ coefficient pour chaque nutriment. Chacun est commenté dans
 | **Trempage** — **toujours une nuit, 10 à 15 h** | sucres −27 % (saccharose, 25 °C [14]) ; protéines −3 % [14] ; minéraux −5 %, au rythme des solides ([14], [13]) | lipides −1,2 % (moitié des −2,5 % à 24 h [12, p. 193]) ; azote non protéique ≈ moitié de l'azote perdu ; fibres et amidon conservés ; sodium comme les cendres | température ; acidification |
 | **Cuisson** | sucres −44 % (reste des −59 % de Shallenberger [12], après le trempage de [14]) ; protéines ~8 % ([12], [15]) ; minéraux −2 % ([15]) | fibres et amidon conservés ; τ = 20 min | — |
 | **Fermentation** | **lipides −12 % de 26 à 60 h, −59 % à 120 h, −67 % à 180 h** [16] ; part saturée des lipides +7,9 points, **calée sur `official/`** ; protéines 1-4 % ([16], [9]) ; minéraux conservés [16] ; sucres −17 % à 48 h [12, p. 194] ; amidon −75 % [8] | fibres conservées (elles montent en général [12], [15]) ; formes linéaires entre les points | sucres et amidon au-delà de 48 h ; protéines au-delà de 72 h ; lipides au-delà de 180 h ; température |
-| **Torréfaction** | intensité 1 (110 °C, 10 min) : rien ne bouge en matière sèche [13] | sucres et fibres conservés à l'intensité 1 ; lipides, protéines, sel conservés | sucres et fibres aux intensités 2 et 3 |
+| **Torréfaction** — oui ou non, sans intensité | 110 °C, 10 min : glucides totaux, protéines, lipides et cendres inchangés en matière sèche [13] | sucres et fibres inchangés ; une torréfaction plus poussée traitée comme la légère | effet d'une torréfaction forte sur les sucres (Maillard) |
 
 **Contrôle de cohérence, pas une validation.** Graine néo-zélandaise, 12 h de
 trempage, 30 min de cuisson, 36 h de fermentation, 1000 g → 1750 g de
@@ -55,8 +55,8 @@ Les trois précédentes sont lues : Ruiz-Terán & Owens 1996 [16], Wang et al. 1
 | **2** | **Robinson R. J., Kao C. (1977).** Tempeh and miso from chickpea, horse bean and soybean. *Cereal Chemistry* 54, 1192-1197. | Composition de tempehs de **pois chiche, féverole et soja**, citée par [15] : un second bilan hors soja, pour recouper [15], dont le protocole (graines concassées, trempage chaud) perd beaucoup de lipides. Les archives anciennes de *Cereal Chemistry* sont peut-être en accès libre. |
 | **3** | **Smith A. K., Rackis J. J., Hesseltine C. W., Robbins D. J., Booth A. N. (1964).** Tempeh: nutritive value in relation to processing. *Cereal Chemistry* 41, 173. | Les pertes d'azote et de solides **étape par étape**, que [12] ne reprend qu'en résumé : de quoi séparer vraiment protéines au trempage et à la cuisson (aujourd'hui −3 % et −8 %, par différence). Même archive. |
 
-**Aucune source n'a été trouvée pour la torréfaction** au-delà d'une
-torréfaction légère ; c'est le seul trou sans piste.
+**Aucune source n'a été trouvée pour une torréfaction forte** : la
+torréfaction est traitée en oui/non, comme la torréfaction légère de [13].
 
 ### À affiner — une valeur existe, mais elle est fragile
 
@@ -82,7 +82,7 @@ torréfaction légère ; c'est le seul trou sans piste.
   chiche, pois et féverole (§ 0 ter), mais il n'y a **aucune donnée pour la
   lentille, les céréales ni les oléagineux**, et [3] montre que le plafond de
   perte au trempage varie de 16 à 70 % selon la graine.
-- **Torréfaction aux intensités 2 et 3** : sucres et fibres inconnus.
+- **Torréfaction forte** : modélisée comme une torréfaction légère (aucun changement) ; l'effet de Maillard sur les sucres n'est pas mesuré.
 - **Au-delà des durées connues** : fermentation de plus de 48 h (72 h pour les
   protéines). Le trempage, lui, est toujours d'une nuit (10 à 15 h).
 - **La température** du trempage et de la fermentation : premier facteur selon

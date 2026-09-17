@@ -54,21 +54,19 @@ def test_a_support_ferments_but_never_soaks():
     assert result["per_100g"]["fat"] == pytest.approx(0.089, abs=0.01)
 
 
-def test_roasting_needs_its_intensity():
-    kinako = {**RICE, "fat": 25.0}
-    roasted = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
-        {"name": "Kinako", "role": "support", "weight_g": 100,
-         "roasting_intensity": 2, "per_100g": kinako}]})
-    assert roasted["ingredients"][0]["transforms"][0] == "Torréfaction (intensité 2)"
-    assert roasted["per_100g"]["fat"] is not None
-
-
-def test_roasted_without_intensity_is_unknown():
+def test_a_roasted_support_is_roasted_then_fermented():
     result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
         {"name": "Kinako", "role": "support", "weight_g": 100,
          "roasted": True, "per_100g": RICE}]})
-    assert result["per_100g"]["fat"] is None
-    assert any("roasting_intensity" in m for m in result["missing"])
+    assert result["ingredients"][0]["transforms"] == ["Torréfaction", "Fermentation 36 h"]
+    assert result["per_100g"]["energy_kj"] is not None
+
+
+def test_a_roasting_intensity_is_no_longer_read():
+    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
+        {"name": "Kinako", "role": "support", "weight_g": 100,
+         "roasted": True, "roasting_intensity": 2, "per_100g": RICE}]})
+    assert any("roasting_intensity" in w for w in result["warnings"])
 
 
 def test_the_pre_inoculation_acid_goes_through_untouched():
@@ -187,9 +185,7 @@ def test_a_nutrient_missing_from_one_sheet_is_unknown_in_the_product():
 
 def test_energy_is_missing_when_a_macro_is():
     """An energy short of one nutrient is worse than no energy at all."""
-    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
-        {"name": "Kinako", "role": "support", "weight_g": 100,
-         "roasting_intensity": 2, "per_100g": RICE}]})
+    result = one_substrate(harvested_g=2000, fermentation_hours=60)
     assert result["per_100g"]["carbs"] is None
     assert result["per_100g"]["energy_kj"] is None
     assert result["label"]["energy"] is None
@@ -227,7 +223,5 @@ def test_a_fully_described_soy_tempeh_can_be_labelled():
 
 
 def test_a_gap_is_spelled_out_in_the_steps():
-    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
-        {"name": "Kinako", "role": "support", "weight_g": 100,
-         "roasting_intensity": 2, "per_100g": RICE}]})
+    result = one_substrate(harvested_g=2000, fermentation_hours=60)
     assert "jamais remplacée par un zéro" in " ".join(result["steps"])

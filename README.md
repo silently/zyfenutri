@@ -58,7 +58,7 @@ ingredients:
   - name: Kinako
     role: support
     weight_g: 10
-    roasting_intensity: 2  # torréfaction : 1 légère, 2 moyenne, 3 forte
+    roasted: true          # torréfié : oui ou non
     per_100g: {fat: 25, saturates: 3.6, carbs: 14, sugars: 10, fibre: 18, protein: 37, salt: 0.01}
 
   - name: Vinaigre de cidre
@@ -127,7 +127,7 @@ fois** par le poids de tempeh.
 | `role` | Transformations |
 |---|---|
 | `substrate` | dépelliculage *(si `dehulled`)* → trempage *(toujours une nuit, 10 à 15 h)* → cuisson → fermentation |
-| `support` | torréfaction *(si `roasting_intensity`)* → fermentation |
+| `support` | torréfaction *(si `roasted`)* → fermentation |
 | `acid` | aucune — ajouté après cuisson, compté au prorata de sa masse |
 | `soaking_acid` | **exclu** — il part avec l'eau de trempage, qui est jetée |
 | `starter` | **exclu** — quelques grammes pour plusieurs kilos |
@@ -145,8 +145,7 @@ un contrôle.
 > ⚠️ **État actuel.** Un tempeh de soja décrit en entier (durées, poids,
 > fiches) sort complet. Plusieurs coefficients restent des hypothèses, et
 > aucun n'est encore validé par une analyse de laboratoire
-> (`refs/transformations.md`, § 0). Une torréfaction au-delà de l'intensité 1
-> laisse encore sucres et fibres inconnus. Ce qui est à affiner, ce qui manque,
+> (`refs/transformations.md`, § 0). Ce qui est à affiner, ce qui manque,
 > et les trois publications à obtenir en priorité :
 > `refs/transformations.md`, § 0 bis.
 

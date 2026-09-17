@@ -406,38 +406,33 @@ class Fermentation:
         )
 
 
-# --- Roasting (intensity 1 to 3) ---
-
-# Light roasting (110 °C, 10 min) leaves total carbohydrates, protein, fat and
-# ash of soybean flour unchanged on dry basis [13, table 1] — intensity 1.
+# --- Roasting (yes or no) ---
+#
+# Roasting mostly drives off water, which is not on the sheet. The only
+# measured roast (110 °C, 10 min) leaves total carbohydrates, protein, fat and
+# ash of soybean flour unchanged on dry basis [13, table 1]. Roasting is
+# therefore taken to change none of the seven values.
 # HYPOTHESIS: sugars and fibre, not measured apart, are unchanged too.
-# GAP: darker roasts; Maillard consumes reducing sugars, how much is unknown.
-ROASTING_SUGARS_KEPT: dict[int, float | None] = {1: 1.0, 2: None, 3: None}
-ROASTING_FIBRE_KEPT: dict[int, float | None] = {1: 1.0, 2: None, 3: None}
+# GAP: a darker roast; Maillard consumes reducing sugars, how much is unknown.
+ROASTING_SUGARS_KEPT = 1.0
+ROASTING_FIBRE_KEPT = 1.0
 
 
 @dataclass(frozen=True, slots=True)
 class Roasting:
-    """Dry roasting: 1 light, 2 medium, 3 dark."""
-    intensity: int
-
-    def __post_init__(self) -> None:
-        if self.intensity not in ROASTING_SUGARS_KEPT:
-            raise ValueError("a roasting intensity is 1, 2 or 3")
+    """Dry roasting, as of a support such as kinako."""
 
     @property
     def label(self) -> str:
-        return f"Torréfaction (intensité {self.intensity})"
+        return "Torréfaction"
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
-        # Roasting mostly drives off water, which is not on the sheet.
         return replace(
             facts,
             # HYPOTHESIS: starch is untouched.
-            **split_carbs(facts, ROASTING_SUGARS_KEPT[self.intensity], 1.0),
-            # Beyond intensity 1: Maillard products may be measured as fibre.
-            fibre=scaled(facts.fibre, ROASTING_FIBRE_KEPT[self.intensity]),
-            # HYPOTHESIS: fat, protein (nitrogen) and salt lose no mass.
+            **split_carbs(facts, ROASTING_SUGARS_KEPT, 1.0),
+            fibre=scaled(facts.fibre, ROASTING_FIBRE_KEPT),
+            # [13]: fat, protein and ash unchanged.
         )
 
 

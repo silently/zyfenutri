@@ -1,4 +1,4 @@
-"""A recipe runs end to end, even while most transforms are gaps."""
+"""A recipe runs end to end, and a gap anywhere leaves its nutrient unknown."""
 import pytest
 
 from zyfenutri import (Cooking, Dehulling, Fermentation, Ingredient, NutritionFacts, Recipe,
@@ -13,7 +13,7 @@ def tempeh(soy, vinegar):
         Ingredient(name="Soja", facts=soy, raw_mass=1000, yield_factor=1.75,
                    transforms=(Dehulling(), Soaking(), Cooking(30), Fermentation(36))),
         Ingredient(name="Kinako", facts=kinako, raw_mass=10,
-                   transforms=(Roasting(2), Fermentation(36))),
+                   transforms=(Roasting(), Fermentation(36))),
         Ingredient(name="Vinaigre", facts=vinegar, raw_mass=50),
     ))
 
@@ -30,18 +30,21 @@ def test_what_is_known_comes_through(soy):
     assert recipe.facts().fat is not None
 
 
-def test_for_now_roasting_leaves_carbs_and_fibre_unknown(tempeh):
-    """Roasting is the last transform with gaps. This test is meant to start
-    failing once it is sourced."""
-    known = {k for k, v in tempeh.facts().as_dict().items() if v is not None}
-    assert known == {"fat", "saturates", "protein", "salt"}
+def test_a_full_recipe_knows_every_value(tempeh):
+    assert all(v is not None for v in tempeh.facts().as_dict().values())
+    assert energy_of(tempeh.facts()) is not None
 
 
-def test_a_gap_anywhere_leaves_the_nutrient_unknown(tempeh):
-    """Carbs are a gap at roasting (the kinako): the product's carbs, and so
+def test_a_gap_anywhere_leaves_the_nutrient_unknown(soy, vinegar):
+    """Carbs are a gap past 48 h of fermentation: the product's carbs, and so
     its energy, are unknown, not a guess."""
-    assert tempeh.facts().carbs is None
-    assert energy_of(tempeh.facts()) is None
+    recipe = Recipe(name="Tempeh trop fermenté", ingredients=(
+        Ingredient(name="Soja", facts=soy, raw_mass=1000, yield_factor=1.75,
+                   transforms=(Soaking(), Cooking(30), Fermentation(60))),
+        Ingredient(name="Vinaigre", facts=vinegar, raw_mass=50),
+    ))
+    assert recipe.facts().carbs is None
+    assert energy_of(recipe.facts()) is None
 
 
 def test_an_ingredient_added_as_is_keeps_its_sheet(vinegar):

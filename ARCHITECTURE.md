@@ -283,7 +283,7 @@ disent **ce qu'il contient**. On divise l'un par l'autre, une fois.
 | `Soaking()` | aucun : toujours **une nuit, 10 à 15 h** | tout |
 | `Cooking(minutes)` | durée en minutes | tout |
 | `Fermentation(hours)` | durée en heures | tout jusqu'à 48 h ; protéines jusqu'à 72 h |
-| `Roasting(intensity)` | 1, 2 ou 3 | tout à l'intensité 1 ; lipides, protéines, sel au-delà |
+| `Roasting()` | aucun : torréfié ou non | tout — ne change aucune des sept valeurs [13] |
 
 Chacune est une `dataclass` gelée qui satisfait `Transform` : le réglage est
 un champ, l'appel prend une fiche et en rend une.
