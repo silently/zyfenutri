@@ -59,8 +59,8 @@ ingredients:
   - name: Kinako
     role: support
     weight_g: 10
-    roasted: true          # roasted: yes or no
-    per_100g: {fat: 25, saturates: 3.6, carbs: 14, sugars: 10, fibre: 18, protein: 37, salt: 0.01}
+    roasted: true          # roasted in-house: sheet and weight of the RAW flour
+    per_100g: {fat: 20, saturates: 2.9, carbs: 15, sugars: 5.7, fibre: 15, protein: 40, salt: 0.01}
 
   - name: Cider vinegar
     role: acid
@@ -93,19 +93,19 @@ harvested_g: 1750
 complete: true             # every value is known (see the current state below)
 
 per_100g:                  # the computed values; null = unknown
-  fat: 10.02
+  fat: 9.99
   saturates: 2.24
   carbs: 5.19
-  sugars: 1.42
-  fibre: 4.37
-  protein: 20.27
+  sugars: 1.4
+  fibre: 4.36
+  protein: 20.28
   salt: 0.01
-  energy_kj: 838.5
-  energy_kcal: 200.8
+  energy_kj: 837.5
+  energy_kcal: 200.5
 
 label:                     # the same, as they are written
-  energy: 838 kJ / 201 kcal
-  fat: 10 g
+  energy: 838 kJ / 200 kcal
+  fat: 10,0 g
   saturates: 2,2 g
   carbs: 5,2 g
   sugars: 1,4 g
@@ -147,6 +147,12 @@ of tempeh.
 
 Both exclusions slightly **under-declare** the product: the safe direction, the
 one that does not expose you.
+
+⚠️ **`roasted: true` means you roast it.** Give the sheet and weight of the
+**raw** product: roasting takes 8 % of the sugars and 16 % of the fibre
+(`refs/methode.md`, T3). **Bought** kinako is already roasted, and its sheet
+says so: enter it with `roasted: false`, or roasting counts twice. The water
+it loses changes nothing in the calculation: the final weighing carries it.
 
 Coefficients are no longer passed in the document: each one lives in
 `zyfenutri/transforms.py`, with its source or the mention of a gap. What is

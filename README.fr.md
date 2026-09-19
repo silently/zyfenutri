@@ -60,8 +60,8 @@ ingredients:
   - name: Kinako
     role: support
     weight_g: 10
-    roasted: true          # torréfié : oui ou non
-    per_100g: {fat: 25, saturates: 3.6, carbs: 14, sugars: 10, fibre: 18, protein: 37, salt: 0.01}
+    roasted: true          # torréfié à l'atelier : fiche et poids de la farine CRUE
+    per_100g: {fat: 20, saturates: 2.9, carbs: 15, sugars: 5.7, fibre: 15, protein: 40, salt: 0.01}
 
   - name: Vinaigre de cidre
     role: acid
@@ -94,19 +94,19 @@ harvested_g: 1750
 complete: true             # toutes les valeurs sont connues (voir l'état actuel plus bas)
 
 per_100g:                  # les valeurs calculées ; null = inconnu
-  fat: 10.02
+  fat: 9.99
   saturates: 2.24
   carbs: 5.19
-  sugars: 1.42
-  fibre: 4.37
-  protein: 20.27
+  sugars: 1.4
+  fibre: 4.36
+  protein: 20.28
   salt: 0.01
-  energy_kj: 838.5
-  energy_kcal: 200.8
+  energy_kj: 837.5
+  energy_kcal: 200.5
 
 label:                     # les mêmes, telles qu'elles s'écrivent
-  energy: 838 kJ / 201 kcal
-  fat: 10 g
+  energy: 838 kJ / 200 kcal
+  fat: 10,0 g
   saturates: 2,2 g
   carbs: 5,2 g
   sugars: 1,4 g
@@ -148,6 +148,13 @@ fois** par le poids de tempeh.
 
 Les deux exclusions **sous-déclarent** légèrement le produit : c'est le sens
 prudent, celui qui n'expose pas.
+
+⚠️ **`roasted: true`, c'est vous qui torréfiez.** On donne alors la fiche et le
+poids du produit **cru** : la torréfaction retire 8 % des sucres et 16 % des
+fibres (`refs/methode.md`, T3). Un kinako **acheté** est déjà torréfié, et sa
+fiche le dit : il s'entre avec `roasted: false`, sinon la torréfaction compte
+deux fois. La perte d'eau, elle, ne change rien au calcul : elle est dans la
+pesée finale.
 
 Les coefficients ne se passent plus dans le document : chacun vit dans
 `zyfenutri/transforms.py`, avec sa source ou la mention d'une lacune. Ce qu'on
