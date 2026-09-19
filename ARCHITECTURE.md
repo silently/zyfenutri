@@ -283,7 +283,7 @@ disent **ce qu'il contient**. On divise l'un par l'autre, une fois.
 | `Soaking()` | aucun : toujours **une nuit, 10 à 15 h** | tout |
 | `Cooking(minutes)` | durée en minutes | tout |
 | `Fermentation(hours)` | durée en heures | tout jusqu'à 48 h ; protéines jusqu'à 72 h |
-| `Roasting()` | aucun : torréfié ou non | tout — ne change aucune des sept valeurs [13] |
+| `Roasting()` | aucun : torréfié ou non | tout — sucres −8 %, fibres −16 %, le reste inchangé |
 
 Chacune est une `dataclass` gelée qui satisfait `Transform` : le réglage est
 un champ, l'appel prend une fiche et en rend une.
@@ -292,7 +292,7 @@ un champ, l'appel prend une fiche et en rend une.
 annotée de son origine : une source `[n, p. x]`, `HYPOTHESIS` ou `GAP`. Une
 lacune vaut `None`, et le nutriment ressort **inconnu**. Tant que les lacunes
 existent, un nutriment qui en traverse une ressort inconnu : c'est voulu.
-Aujourd'hui, seule la torréfaction en a encore (sucres, fibres). Combler une lacune se fait en changeant une constante.
+Combler une lacune se fait en changeant une constante.
 
 Le trempage est toujours **une nuit (10 à 15 h)** : ce n'est pas un réglage,
 et ses coefficients sont des parts conservées après une nuit. Les pertes à la

@@ -416,18 +416,26 @@ class Fermentation:
 
 # --- Roasting (yes or no) ---
 #
-# Roasting mostly drives off water, which is not on the sheet. The only
-# measured roast (110 °C, 10 min) leaves total carbohydrates, protein, fat and
-# ash of soybean flour unchanged on dry basis [13, table 1]. A strong roast
-# does not lower the sugars either: sucrose 2.94 g raw, 3.44 dry-roasted
-# (drum, 3 h), 3.38 oil-roasted (177 °C), not significantly different; only
-# the reducing sugar fructose falls, and only when oil-roasted, 0.23 → 0.21 g
-# [18, table 6, p. 43]. Maillard consumes reducing sugars, under a tenth of
-# soybean sugars [18, table 5, p. 42]. Roasting is therefore taken to change
-# none of the seven values.
-# HYPOTHESIS: fibre is unchanged — Maillard products may be measured as fibre.
-ROASTING_SUGARS_KEPT = 1.0
-ROASTING_FIBRE_KEPT = 1.0
+# Roasting drives off water, which is not on the sheet, and runs Maillard and
+# caramelisation, which are. Losses below are read on dry basis.
+# HYPOTHESIS: roasting loses no dry matter, only water — volatiles neglected.
+
+# Sugars. Soybean → kinako, both in the Japanese table (MEXT 2020, sum of
+# weighed mono- and disaccharides): 6.0 → 6.1 g as sold, 6.85 → 6.35 g per
+# 100 g of dry matter for yellow soybean (04023 → 04029), 8.57 → 7.86 for
+# green (04104 → 04082): −7 % and −8 %. Calibrated on refs/official. Reducing
+# sugars, 0.4 g in green soybean, are gone from its kinako, as Maillard would
+# have it. [18, table 6, p. 43] finds no significant loss after drum roasting
+# of soaked beans: no figure there, the couples give one.
+ROASTING_SUGARS_KEPT = 0.92
+
+# Fibre. Total dietary fibre of quinoa, whole seeds roasted 8 min at 120 °C:
+# 17.31 → 15.04 g as analysed, 18.81 → 15.83 g on dry basis, −16 %
+# [19, table 1]. Same sign on soybean → kinako, Prosky method, −8 % on dry
+# basis (MEXT 04023 → 04029, refs/official). Roasted black chickpea −7 % and
+# maize −12.5 %, cited in [19]. Taking the larger loss under-declares fibre,
+# the safe direction.
+ROASTING_FIBRE_KEPT = 0.84
 
 
 @dataclass(frozen=True, slots=True)
@@ -441,10 +449,12 @@ class Roasting:
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
         return replace(
             facts,
-            # HYPOTHESIS: starch is untouched.
+            # [19, table 1]: total starch unchanged on dry basis.
             **split_carbs(facts, ROASTING_SUGARS_KEPT, 1.0),
             fibre=scaled(facts.fibre, ROASTING_FIBRE_KEPT),
-            # [13]: fat, protein and ash unchanged.
+            # Fat, protein and ash unchanged on dry basis, 110-120 °C [13,
+            # table 1], [19, table 1]. The MEXT couples scatter by ±10 % on
+            # these (fat even rises): two samples, not one roasted twice.
         )
 
 

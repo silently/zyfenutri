@@ -1,0 +1,49 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  日本食品標準成分表2020年版（八訂） (Japon, MEXT) — kinako de soja vert, graine entière.
+
+#  Moitié « après » du couple vert soja → kinako.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: mext-kinako-vert-04082
+source: Standard Tables of Food Composition in Japan 2020 (8th ed.), MEXT
+pays: Japon
+identifiant_source: '04082'
+nom_publie: 'だいず　［全粒・全粒製品］　きな粉　青大豆　全粒大豆'
+produit: kinako de soja vert, graine entière
+url: https://www.mext.go.jp/a_menu/syokuhinseibun/mext_01110.html
+consulte_le: 2026-09-19
+convention_glucides: les_deux
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+# `glucides_assimilables_g` : 利用可能炭水化物（質量計）, amidon et sucres pesés.
+# `sucres_g` : somme des mono- et disaccharides pesés, faite ici (voir notes).
+pour_100g:
+    energie_kj: 1769
+    energie_kcal: 424
+    eau_g: 5.9
+    cendres_g: 5.0
+    proteines_g: 37.0
+    lipides_g: 22.8
+    acides_gras_satures_g: 3.21
+    glucides_par_difference_g: 29.3
+    glucides_assimilables_g: 8.2
+    fibres_g: 16.9
+    sucres_g: 7.4
+    amidon_g: 0.8
+    sodium_mg: 1
+
+notes: |
+  - Fichiers : 本表 (第2章, 01110_012), glucides (01110_042), fibres
+    (01110_043), acides gras (01110_032). Protéines : たんぱく質 (N × facteur),
+    lipides : 脂質 (extraction), pas les colonnes « acides aminés » ni
+    « triacylglycérols ».
+  - ⚠️ `glucides_par_difference_g` (炭水化物) **inclut les fibres**, comme
+    l'USDA.
+  - Fibres **Prosky modifiée** (soluble 1,9 + insoluble 15,0) : pas comparables
+    aux 20,1 g AOAC 2011.25 de la graine.
+  - Sucres = saccharose 7,4 ; glucose et galactose 0, fructose Tr. Les
+    **sucres réducteurs** de la graine (0,4 g) ont disparu : c'est ce que
+    consomme la réaction de Maillard.
+  - ⚠️ Deux échantillons : lipides +10 % en matière sèche, protéines +3 %.
+    Voir 04029.

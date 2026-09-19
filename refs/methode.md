@@ -184,7 +184,7 @@ La méthode habituelle consiste à appliquer un **facteur de gonflement estimé*
 ingrédients secs. Elle est inutile ici : **les deux bouts de la chaîne se pèsent.**
 
 ```
-  masse de chaque ingrédient (poids NET)        →  weight_g, par intrant
+  masse de chaque ingrédient, telle qu’achetée  →  weight_g, par intrant
                      ↓
               fabrication
                      ↓
@@ -200,15 +200,9 @@ facteur de gonflement emprunté à la littérature.
 
 ### 3.2 La chaîne de calcul — cinq transformations, et rien d'autre
 
-> ⚠️ **En cours de révision.** Les coefficients chiffrés de cette section
-> décrivent un ancien modèle. Le calcul s'appuie
-> désormais sur des coefficients sourcés un par un, et rend « inconnu » ce qui
-> ne l'est pas encore : l'état à jour est dans
-> [`transformations.md`](transformations.md) et dans `zyfenutri/transforms.py`.
-> Cette section sera réécrite à partir de `transformations.md`. **Le calcul
-> peut désormais rendre `complete: true`, mais plusieurs coefficients restent
-> des hypothèses, et aucun n'est validé par une analyse : ne pas étiqueter
-> avant la réécriture de cette section.**
+> ⚠️ **Aucun coefficient n'est encore validé par une analyse de laboratoire.** Plusieurs restent
+> des hypothèses, marquées comme telles ci-dessous et dans `zyfenutri/transforms.py`. Le détail,
+> source par source, est dans [`transformations.md`](transformations.md).
 
 Le calcul ne manipule que des **masses absolues de nutriments**, du début à la fin. On part de ce
 qui entre dans le lot, on applique à chaque ingrédient les transformations qu'il subit réellement,
@@ -218,12 +212,20 @@ Ce dernier point est la clé de la méthode : c'est cette division finale, et el
 l'eau reprise au trempage. Un lot qui double de poids en s'hydratant voit mécaniquement toutes ses
 valeurs divisées par deux, sans qu'aucun coefficient n'ait à le dire.
 
+Chaque transformation raisonne **pour 100 g d'ingrédient tel qu'il a été pesé, avant toute
+transformation**, et rend des grammes de nutriment, jamais une teneur « pour 100 g de ce qui
+reste ». Aucune ne touche à l'eau. Une valeur qu'une transformation ne sait pas traiter — une
+durée au-delà des mesures publiées, par exemple — ressort **inconnue**, jamais estimée.
+
+Les coefficients raisonnent **par fraction** (sucres ou amidon, soluble ou non), jamais par
+espèce : c'est la fiche de l'ingrédient qui porte la différence entre un soja et une lentille.
+
 #### Qui subit quoi
 
 | Ingrédient | Transformations appliquées |
 |---|---|
-| **Substrat** (soja, pois chiche, pois cassés…) | T1 dépelliculage *(si pratiqué)* → T2a trempage et cuisson → T2b fermentation |
-| **Support d'inoculation** (farine de riz, kinako) | T3 torréfaction *(si pratiquée)* → T2b fermentation |
+| **Substrat** (soja, pois chiche, pois cassés…) | T1 dépelliculage *(si pratiqué)* → T2a trempage → T2b cuisson → T2c fermentation |
+| **Support d'inoculation** (farine de riz, kinako) | T3 torréfaction *(si pratiquée)* → T2c fermentation |
 | **Acidifiant pré-inoculation** (vinaigre) | aucune — ajouté après cuisson, compté au prorata de sa masse |
 | **Acidifiant de trempage** | **exclu** — il part avec l'eau de trempage, qui est jetée |
 | **Starter** | **exclu** — quelques grammes pour plusieurs kilos de produit |
@@ -233,55 +235,118 @@ grain, le starter pèse quelque chose. C'est le sens prudent, celui qui n'expose
 
 Le support d'inoculation ne trempe ni ne cuit : il est ajouté **après l'égouttage**. Il fermente en
 revanche, puisqu'il est dans le bloc pendant toute l'incubation. C'est pourquoi la « tempehisation »
-se décompose en deux étapes qui ne concernent pas les mêmes ingrédients.
+se décompose en étapes qui ne concernent pas les mêmes ingrédients.
 
 #### T1 — Dépelliculage
 
-La pellicule d'une légumineuse est presque uniquement de la fibre. Retirer 8 % de la masse ne
-retire donc pas 8 % de chaque nutriment : la pesée voit la masse partir, elle ne voit pas que ce
-qui est parti n'avait pas la composition moyenne du grain.
+La pellicule d'une légumineuse est surtout de la fibre. La retirer n'enlève donc pas la même part de
+chaque nutriment. La transformation ne dit que **ce qui part avec elle** ; la **masse** de
+pellicule, elle, est portée par le facteur de rendement (T5), jamais deux fois.
 
-| | Règle |
-|---|---|
-| Fibres | on retire **85 %** de la masse de pellicule |
-| Protéines, lipides, glucides, sucres, AGS, sel | on retire les 15 % restants, au prorata de la composition |
-
-La masse de pellicule n'est **pas** supposée : c'est l'écart entre le poids brut et le poids net,
-tous deux pesés et enregistrés. Effet net : le produit fini est **plus riche** en protéines et en
-lipides qu'un calcul naïf ne le dirait.
-
-#### T2a — Trempage et cuisson
-
-L'eau de trempage et l'eau de cuisson sont **jetées**. Ce qui s'y dissout est perdu.
-
-| Nutriment | Perte | Pourquoi |
+| | Règle | Source |
 |---|---|---|
-| Glucides assimilables et sucres | **− 50 %** | les glucides du soja sont du saccharose et des oligosaccharides (raffinose, stachyose), tous très solubles |
-| Sel et minéraux | **− 35 %** | lixiviation ; les tables mesurent 25 à 42 % de cendres en moins |
-| Protéines | **− 3 %** | seule la fraction soluble part |
-| Lipides, fibres | **aucune** | insolubles |
+| Part de pellicule | 9 % de la graine | 8 à 10 % [1, p. 60] ; 7,9 % à la main, 9,5 % à la machine (Smith 1964, cité dans [12, p. 189]) |
+| Protéines | 8,8 g pour 100 g de pellicule | Cowan 1969, cité dans [12, p. 188] |
+| Lipides (et AGS, qui suivent) | 1,0 g pour 100 g de pellicule | *idem* |
+| Fibres | la **moitié** des fibres de la fiche | [1, p. 60] |
+| Sel | au prorata des cendres : 4,3 % dans la pellicule, 4,87 % dans la graine | [12, p. 188] ; hypothèse : le sodium suit les cendres |
+| Sucres, amidon | inchangés | hypothèse |
 
-Un seul coefficient couvre les deux étapes, volontairement : la pesée ne permet pas d'attribuer la
-perte à l'une plutôt qu'à l'autre, et deux nombres dont un seul écart est observable, ce sont deux
-nombres à régler pour en corriger un.
+Pour un soja à 40 g de protéines, c'est 0,8 g de protéines en moins pour 100 g de graine (− 2 %).
+Le germe (3 % du soja [1, p. 60]) part parfois aussi : non modélisé, cela dépend de la machine.
+⚠️ Ces proportions sont celles du **soja** : une lentille ou un pois chiche n'a pas la même
+pellicule, et des pois cassés sont vendus déjà dépelliculés.
 
-#### T2b — Fermentation
+#### T2a — Trempage (toujours une nuit, 10 à 15 h)
+
+L'eau de trempage est **jetée** : ce qui s'y dissout est perdu. Le trempage n'est pas un réglage —
+un tempeh trempe une nuit —, chaque coefficient est la part conservée après 10 à 15 h.
+
+| Nutriment | Perte | Source |
+|---|---|---|
+| Sucres | **− 27 %** | saccharose et fructose restant dans la graine à 25 °C [14, tableau 2, p. 1512] |
+| Protéines | **− 3 %** | protéines solubles dans l'eau de trempage [14, tableau 1, p. 1511], plus l'azote non protéique (Lo et al. 1968, cité dans [14, p. 1510]) |
+| Sel | **− 5 %** | les cendres partent au rythme des solides ([14], [13, tableau 1]) ; hypothèse : le sodium suit les cendres |
+| Lipides (et AGS) | **− 1,2 %** | hypothèse : moitié des − 2,5 % mesurés à 24 h [12, p. 193] |
+| Amidon, fibres | aucune | hypothèse : insolubles |
+
+#### T2b — Cuisson (durée)
+
+L'eau de cuisson est **jetée**. La perte monte vite puis plafonne, une fois la part soluble partie :
+`conservé = 1 − perte maximale × (1 − e^(−durée / 20 min))`. La constante de 20 min est une
+hypothèse : la cuisson usuelle dure 20 à 60 min [10, p. 1721].
+
+| Nutriment | Perte maximale | À 30 min | Source |
+|---|---|---|---|
+| Sucres | **− 44 %** | − 34 % | saccharose − 59 % sur trempage et cuisson (Shallenberger 1976, cité dans [12, p. 194]), déduction faite du trempage |
+| Protéines | **− 8 %** | − 6 % | ce qui reste des ~14 % perdus de la graine au tempeh ([12, p. 188-192], [15]), une fois retirés pellicule, trempage et fermentation |
+| Sel | **− 2 %** | − 1,6 % | cendres conservées à 92-98 % de la graine au tempeh [15], moins le trempage |
+| Lipides, amidon, fibres | aucune | — | hypothèse : insolubles |
+
+#### T2c — Fermentation (durée)
 
 Le mycélium respire : il brûle des glucides pour son énergie et entame les lipides via ses lipases.
+Entre deux durées mesurées, on interpole en ligne droite ; **au-delà de la dernière, la valeur
+ressort inconnue**.
 
-| Nutriment | Perte |
-|---|---|
-| Glucides assimilables et sucres | **− 60 %** |
-| Lipides (et AGS, qui suivent) | **− 5 %** |
-| Protéines | **aucune** — elles sont hydrolysées en peptides et acides aminés, pas consommées ; leur masse se conserve |
-| Fibres, sel | **aucune** |
+| Nutriment | Perte | Source |
+|---|---|---|
+| Lipides | **− 6 %** à 12 h, **− 12 %** de 26 à 60 h, − 59 % à 120 h, − 67 % à 180 h | [16, tableau 1, p. 529] |
+| AGS | leur part dans les lipides monte de **7,9 points**, atteints à 26 h ; au-delà de 60 h, inconnue | calé sur `refs/official/` (voir plus bas) |
+| Protéines | − 1,1 % à 28 h, − 2,2 % à 46 h, − 4,4 % à 72 h | [16, p. 523], [9, p. 797] |
+| Sucres | − 17 % à 48 h | Shallenberger 1976, cité dans [12, p. 194] ; hypothèse : linéaire |
+| Amidon | − 31 % à 37,5 h, − 39 % à 48 h | [15, tableaux 1-2], borne haute |
+| Fibres | aucune | hypothèse — elles montent dans la plupart des études [12, p. 195], [15] : les tenir constantes les sous-déclare |
+| Sel | aucune | cendres constantes pendant toute la fermentation [16, p. 526] |
+
+À 36 h : lipides − 12 %, protéines − 1,6 %, sucres − 13 %, amidon − 30 %. Les coefficients sont
+ceux de *Rhizopus oligosporus* ; la température du produit compte autant que la durée ([2], [7]),
+mais aucune source lue ne l'a encore chiffrée : ce n'est pas un réglage.
 
 #### T3 — Torréfaction (supports uniquement)
 
-Une torréfaction chasse surtout de l'**eau**, et l'eau n'est pas un nutriment : en masses absolues,
-elle ne déplace donc presque rien. Le seul effet réel sur les sept valeurs déclarées est la
-**réaction de Maillard**, qui consomme des sucres réducteurs : **− 15 % de sucres**, le reste
-inchangé.
+`roasted: true` veut dire que **l'atelier torréfie lui-même** : la composition et le poids donnés
+sont ceux du produit **cru**, avant torréfaction. Un kinako acheté tout fait est déjà torréfié —
+sa fiche le dit — et s'entre avec `roasted: false`, sans quoi la torréfaction serait comptée deux
+fois.
+
+**Pourquoi les protéines et les lipides n'augmentent pas.** La torréfaction chasse de l'eau :
+100 g de farine crue à 12 % d'eau donnent environ 92 g de farine torréfiée à 4 %. Les 34 g de
+protéines qu'elle portait sont toujours là — ils pèsent simplement dans 92 g au lieu de 100, d'où
+37 g « pour 100 g » sur la fiche d'un kinako. La **teneur** monte, la **masse** ne bouge pas. Or le
+calcul suit des masses, et ne divise qu'une fois, à la fin, par le poids de tempeh récolté. Faire
+aussi monter les protéines à la torréfaction compterait l'eau perdue deux fois — l'erreur que la
+méthode est construite pour rendre impossible (§ 3.2). L'eau chassée ici revient d'ailleurs dans le
+bloc, prise aux graines humides : seule la pesée finale sait ce qu'il en reste.
+
+**Pourquoi les sucres et les fibres baissent.** Eux ne sont pas concentrés, ils sont **détruits**.
+La réaction de Maillard lie des sucres réducteurs aux acides aminés et en fait des pigments bruns
+et des arômes — l'odeur de la torréfaction, c'est un peu de matière qui s'en va ; la caramélisation
+attaque le saccharose. La chaleur coupe aussi une part des fibres en fragments que le dosage ne
+compte plus. Les protéines, elles, restent comptées : elles se dosent par leur azote, qui reste
+dans les produits de Maillard.
+
+Pour séparer ces deux effets, on lit les mesures **en matière sèche** : l'eau n'y figure plus, et
+ce qui y bouge encore est chimique. On suppose que seule l'eau part (hypothèse : les composés
+volatils sont négligés).
+
+| Nutriment | Effet | Source |
+|---|---|---|
+| Sucres | **− 8 %** | calé sur les deux couples soja → kinako de la table japonaise (MEXT 2020, `refs/official/`) : − 7 % (soja jaune), − 8 % (soja vert). Les sucres réducteurs du soja vert (0,4 g) disparaissent de son kinako. [18] ne trouve pas de baisse significative sur du soja trempé puis grillé : la littérature ne donne pas de chiffre, les couples en donnent un |
+| Fibres | **− 16 %** | quinoa torréfié 8 min à 120 °C : 18,81 → 15,83 g pour 100 g de matière sèche [19, tableau 1]. Même sens sur le couple soja jaune → kinako, méthode Prosky des deux côtés : − 8 %. On retient la plus forte baisse, qui sous-déclare les fibres : c'est le sens prudent |
+| Amidon | aucun | amidon total inchangé en matière sèche [19, tableau 1] ; les glucides ne baissent donc que des sucres perdus |
+| Lipides (et AGS), protéines, sel | aucun | inchangés en matière sèche à 110-120 °C [13, tableau 1], [19, tableau 1] |
+
+⚠️ **Les couples japonais sont deux lots, pas un lot torréfié.** Leurs lipides montent de 10 à 19 %
+en matière sèche, ce qu'une torréfaction ne peut pas faire. Ils ne calent donc que les sucres, qui
+baissent nettement et dans le même sens sur les deux couples, avec la disparition des sucres
+réducteurs attendue de Maillard. ⚠️ Baisser les sucres est le sens **risqué** (on en déclare
+moins) : c'est pourquoi on ne retient que ce que les deux couples disent ensemble, et rien au-delà.
+
+⚠️ **Ces coefficients valent pour toute graine** : ils portent sur des fractions (sucres, fibres),
+pas sur l'espèce. La torréfaction reste un oui ou non, sans intensité : un kinako torréfié fort
+est traité comme la torréfaction à 120 °C de [19]. Sur un lot, l'effet est minime — quelques
+grammes de support pour des kilos de tempeh.
 
 #### T4 — Pasteurisation : pourquoi elle ne figure pas ici
 
@@ -331,7 +396,7 @@ dans le code et dans la doc :
 | Ordre | Origine | Marque |
 |---|---|---|
 | **1** | **la littérature**, lue : la mesure directe de l'étape concernée | `[n, p. x]` (`references.md`) |
-| **2** | à défaut, **un calage sur les couples graine → tempeh** de `refs/official/`, pour ce que la littérature laisse ouvert | « calé sur `refs/official/` » |
+| **2** | à défaut, **un calage sur les couples** de `refs/official/` (graine → tempeh, graine → kinako), pour ce que la littérature laisse ouvert | « calé sur `refs/official/` » |
 | **3** | à défaut, **une hypothèse**, présentée comme telle et jamais comme une donnée | « hypothèse » |
 
 Les **analyses de laboratoire** (`refs/analyses/`) ne sont pas un quatrième recours : elles
@@ -365,38 +430,34 @@ sans trace, elle, ne l'est pas.
 - **Pas de validation circulaire.** Un coefficient calé sur ces couples ne peut plus être « vérifié »
   par ces mêmes couples. Seule une analyse de laboratoire, ou une source indépendante, le valide.
 
-#### Ce qui fonde ces coefficients
+#### Ce que disent les couples de `refs/official/`
 
-Ils ne sont pas repris d'un manuel : ils sont **calés sur trois couples graine → tempeh** publiés
-par des tables nationales, chaque couple provenant d'une seule table pour que les conventions
-d'analyse soient les mêmes des deux côtés — USDA 174270→174272, Nouvelle-Zélande X230→X10030,
-Norvège. Les fiches sont conservées dans `refs/official/`.
+Les couples **graine → tempeh** publiés par une même table — USDA 174270 → 174272,
+Nouvelle-Zélande X230 → X10030, Norvège — et les couples **soja → kinako** de la table japonaise
+(MEXT 2020) sont conservés dans `refs/official/`. Ils servent à **deux calages seulement**, là où la
+littérature lue ne donne pas de chiffre : la part saturée des lipides à la fermentation, et les
+sucres à la torréfaction. Le reste vient de la littérature (§ 3.2, T1 à T3).
 
-Deux résultats se confirment sur les trois sources :
-
-- **le rapport lipides / protéines ne bouge pas** (0,546→0,532 · 0,514→0,517 · 0,518→0,532, soit
-  ±3 %) : protéines et lipides traversent la transformation ensemble, et presque intacts ;
-- **les minéraux partent à l'eau** : les cendres ne retiennent que 58 à 75 %.
-
-Une contradiction apparente se résout : la perte de matière sèche semblait osciller de 10 % à 23 %
-selon la source. Elle est en réalité **imposée** par l'eau du tempeh et le rendement, qui sont liés.
-Trois sources sur quatre donnent un tempeh frais à 59–60 % d'eau ; avec un facteur de rendement de
-**1,75**, la perte de matière sèche vaut nécessairement 22 %. Les glucides en
-portent l'essentiel.
+Les couples graine → tempeh montrent aussi que **le rapport lipides / protéines bouge peu**
+(0,546 → 0,532 · 0,514 → 0,517 · 0,518 → 0,532, soit ± 3 %) : protéines et lipides traversent la
+chaîne ensemble, et presque intacts. Leurs cendres, en revanche, ne retiennent que 58 à 75 %, bien
+moins que les 92-98 % mesurés par [15] : ce calage-là est **écarté** en attendant un bilan mesuré,
+les procédés des tempehs de table étant inconnus.
 
 #### Deux réserves, énoncées ici plutôt que tues
 
-⚠️ **Les acides gras saturés.** Les trois couples montrent une part saturée des lipides qui augmente
-de 3,8 à 10,8 points de la graine au tempeh. Le calcul applique la moyenne, **+7,9 points**, à la
-fermentation (calage sur `official/`). Cela implique plus d'AGS en masse que dans la graine : la
-synthèse de lipides par le mycélium l'expliquerait, mais aucune source lue ne l'établit. Ce choix
-est retenu parce que sous-déclarer les AGS serait le sens défavorable.
+⚠️ **Les acides gras saturés.** Les trois couples graine → tempeh montrent une part saturée des
+lipides qui augmente de 3,8 à 10,8 points de la graine au tempeh. Le calcul applique la moyenne,
+**+7,9 points**, à la fermentation (calage sur `official/`). Cela implique plus d'AGS en masse que
+dans la graine : la synthèse de lipides par le mycélium l'expliquerait, mais aucune source lue ne
+l'établit. Ce choix est retenu parce que sous-déclarer les AGS serait le sens défavorable.
 
-⚠️ **Les fibres sont un majorant.** La frontière entre fibres et glucides est une convention
-d'analyse, pas une propriété du produit : la même graine en déclare 9,3 g (USDA, Nouvelle-Zélande)
-ou 16,0 g (Norvège). Aucune rétention n'en est tirable, et les fibres sont donc tenues pour
-conservées. Toute allégation « source de fibres » devrait s'appuyer sur un dosage, pas sur ce
-calcul.
+⚠️ **Les fibres sont probablement sous-estimées.** La frontière entre fibres et glucides est une
+convention d'analyse, pas une propriété du produit : la même graine en déclare 9,3 g (USDA,
+Nouvelle-Zélande) ou 16,0 g (Norvège). Le calcul ne retire des fibres qu'avec la pellicule (T1) et
+à la torréfaction (T3) ; il les tient pour conservées au trempage, à la cuisson et à la
+fermentation, où les études les voient plutôt monter. Toute allégation « source de fibres »
+devrait s'appuyer sur un dosage, pas sur ce calcul.
 
 ### 3.3 Du lot à l'étiquette
 
@@ -420,8 +481,8 @@ Le calcul n'est recevable que s'il est **documenté et reproductible**. À conse
    consultation).
 2. **Les mesures** : masses des intrants et poids récoltés des lots ayant servi à la moyenne,
    datées, et protégées contre une modification après coup.
-3. **Les coefficients de perte** appliqués — ceux par défaut ou ceux passés en `coefficients` — et
-   l'historique de leurs changements.
+3. **Les coefficients de perte** appliqués — `zyfenutri` les rend dans sa sortie, sous
+   `coefficients` —, la version de `zyfenutri` qui a calculé, et l'historique de leurs changements.
 4. **Le présent document**, qui explicite la méthode.
 5. **La fiche de calcul** (`steps`) rendue par `zyfenutri`, qui déroule la chaîne pour un lot.
 
@@ -433,9 +494,10 @@ qu'assez de lots nouveaux se sont accumulés pour déplacer la moyenne.
 
 ## 5. Limites assumées
 
-- **Les sucres** sont mal couverts par le calcul : la fermentation en consomme une partie, et
-  aucune table ne le reflète. La valeur calculée est un **majorant**. Sur un produit à sucres bas,
-  la tolérance absolue (± 2 g) absorbe largement l'écart.
+- **Les sucres** sont les moins bien couverts : la perte à la fermentation n'est mesurée que
+  jusqu'à 48 h (au-delà, la valeur ressort inconnue), et la baisse à la torréfaction est calée sur
+  deux lots différents, pas mesurée sur un même lot. Sur un produit à sucres bas, la tolérance
+  absolue (± 2 g) absorbe largement l'écart.
 - **Les vitamines B, en particulier la B12**, ne sont pas calculables de façon fiable : le
   *Rhizopus* n'en produit pas, mais les bactéries qui l'accompagnent parfois si.
   **Recommandation : ne pas déclarer la B12 par le calcul.** Elle ne devrait figurer sur une
@@ -489,7 +551,8 @@ Les sources scientifiques des transformations sont numérotées dans
 
 Gardées dans `refs/official/`, en **couples graine → tempeh** issus
 d'une même table : USDA, Nouvelle-Zélande, Norvège (plus un tempeh suédois sans
-contrepartie).
+contrepartie) ; et en **couples soja → kinako** de la table japonaise (MEXT 2020), pour la
+torréfaction.
 
 > ⚠️ **La ligne « Tempeh » de Ciqual (20917) n'en fait pas partie, et c'est
 > délibéré.** Elle annonce **4,7 g de lipides** là où l'USDA et la
@@ -572,11 +635,11 @@ Une méthode qui tait ses faiblesses se défend mal. Celles-ci sont connues, ass
 
 **2. La précision affichée est supérieure à la précision réelle.** Chaque étage apporte son incertitude — la composition de l'intrant, les pesées, les coefficients de perte — et rien ne les cumule. Les arrondis réglementaires en masquent une partie, ils ne la suppriment pas.
 
-**3. Les coefficients de perte sont les mêmes pour tous les substrats.** Le soja et le pois chiche ne se comportent pas identiquement au trempage, ni à la fermentation. Sept constantes globales, donc une approximation assumée.
+**3. Les coefficients de perte sont les mêmes pour tous les substrats.** Ils raisonnent par fraction (sucres, amidon, protéines…) et non par espèce, ce que [15] appuie sur quatre légumineuses. Mais ils sont presque tous mesurés sur le soja : rien ne les établit encore pour la lentille, l'orge ou les oléagineux, et la pellicule retirée est celle du soja.
 
 **4. La composition d'un intrant est supposée constante.** Une légumineuse varie de 10 à 15 % en protéines selon l'année et l'origine. La fiche produit fige une valeur ; la réalité bouge sous elle. C'est précisément pourquoi la réglementation parle de **valeurs moyennes** et prévoit des tolérances larges.
 
-**5. Les pertes ne dépendent pas du procédé.** Durée de trempage, volume d'eau, température d'incubation changent réellement ce qui s'en va — le calcul applique pourtant les mêmes pourcentages à tous les lots.
+**5. Les pertes ne dépendent que de deux réglages.** Les durées de cuisson et de fermentation entrent dans le calcul. Le reste n'y entre pas, alors qu'il change réellement ce qui s'en va : température d'incubation, acidification, volume d'eau, graine concassée ou entière, souche. Le trempage, lui, est toujours compté comme une nuit.
 
 **6. Une seule pesée porte tout.** Les valeurs pour 100 g s'obtiennent en divisant par le poids récolté : une erreur de balance à la récolte se propage intégralement aux neuf valeurs, et rien d'autre ne vient la contredire.
 

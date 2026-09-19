@@ -391,3 +391,36 @@ University, 2007. <https://doi.org/10.31274/rtd-180813-16199>
   rend les sucres plus faciles à extraire, ce qui peut masquer une petite
   perte ; soja trempé avant torréfaction, et non farine de soja sec comme le
   kinako ; fibres non mesurées.
+
+### [19] Mukunzi & Aryee, 2025 — *Effect of Dry Roasting on the Physicochemical, Nutritional, and Techno-Functional Properties of Tri-Color Quinoa Flours*
+
+Y. Mukunzi, A. N. A. Aryee. « Effect of Dry Roasting on the Physicochemical,
+Nutritional, and Techno-Functional Properties of Tri-Color Quinoa Flours ».
+*Foods* 14 (2025) 3237. <https://doi.org/10.3390/foods14183237>
+
+- **Statut :** lu (méthode § 2.2.1-2.2.2, tableau 1, § 3.1.1-3.1.2). **Accès
+  libre** : <https://pmc.ncbi.nlm.nih.gov/articles/PMC12469911/>
+- **Fichier :** aucun — lu sur la version HTML de PMC, dont le PDF refuse le
+  téléchargement hors navigateur. À déposer dans `docs/` à la main.
+- **Pages :** article électronique, sans pagination imprimée : on cite le
+  tableau.
+- **Ce qu'on en tire :** quinoa tricolore, **graines entières torréfiées à sec**
+  8 min à 120 °C sur plaque, puis moulues ; même lot cru et torréfié
+  [§ 2.2.1]. Tableau 1, en % du produit tel qu'analysé :
+  - eau 7,99 → 4,97 ;
+  - **fibres alimentaires totales 17,31 → 15,04**, soit 18,81 → 15,83 g pour
+    100 g de matière sèche (calcul fait ici) : **− 16 %**, significatif ;
+  - lipides, protéines (Dumas, N × 6,25), cendres, amidon total : pas de
+    différence significative ;
+  - en citation : pois chiche noir torréfié − 7 % de fibres (Miraji et al.),
+    maïs − 12,5 % (Ejoh & Onyeulo), quinoa − 3 % (Marie et al.) [§ 3.1.2].
+- **Réserves :**
+  - pseudo-céréale, pas une légumineuse ; torréfaction **douce** (120 °C,
+    8 min), plus légère que celle d'un kinako ;
+  - fibres dosées par un kit, selon « le protocole du fabricant », sans le
+    nom de la méthode ;
+  - les minéraux (Ca, K, Mg, P) baissent aussi, de 5 à 9 % tels qu’analysés, ce qu’une
+    torréfaction ne peut pas faire : l'écart entre deux mesures a donc cet
+    ordre de grandeur. La baisse des fibres le dépasse ;
+  - pas de perte de matière sèche mesurée : la conversion en matière sèche
+    suppose que seule l'eau part.

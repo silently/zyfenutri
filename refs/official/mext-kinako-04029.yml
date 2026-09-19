@@ -1,0 +1,51 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  日本食品標準成分表2020年版（八訂） (Japon, MEXT) — kinako de soja jaune, graine entière.
+
+#  Moitié « après » du couple jaune soja → kinako.
+# ══════════════════════════════════════════════════════════════════════════════
+
+reference: mext-kinako-04029
+source: Standard Tables of Food Composition in Japan 2020 (8th ed.), MEXT
+pays: Japon
+identifiant_source: '04029'
+nom_publie: 'だいず　［全粒・全粒製品］　きな粉　黄大豆　全粒大豆'
+produit: kinako de soja jaune, graine entière
+url: https://www.mext.go.jp/a_menu/syokuhinseibun/mext_01110.html
+consulte_le: 2026-09-19
+convention_glucides: les_deux
+
+# Pour 100 g de produit, **tels que publiés** — aucune conversion, aucun arrondi.
+# Une valeur absente de la table reste vide : ce n'est pas un zéro.
+# `glucides_assimilables_g` : 利用可能炭水化物（質量計）, amidon et sucres pesés.
+# `sucres_g` : somme des mono- et disaccharides pesés, faite ici (voir notes).
+pour_100g:
+    energie_kj: 1877
+    energie_kcal: 451
+    eau_g: 4.0
+    cendres_g: 5.1
+    proteines_g: 36.7
+    lipides_g: 25.7
+    acides_gras_satures_g: 3.59
+    glucides_par_difference_g: 28.5
+    glucides_assimilables_g: 6.8
+    fibres_g: 18.1
+    sucres_g: 6.1
+    amidon_g: 0.7
+    sodium_mg: 1
+
+notes: |
+  - Fichiers : 本表 (第2章, 01110_012), glucides (01110_042), fibres
+    (01110_043), acides gras (01110_032). Protéines : たんぱく質 (N × facteur),
+    lipides : 脂質 (extraction), pas les colonnes « acides aminés » ni
+    « triacylglycérols ».
+  - ⚠️ `glucides_par_difference_g` (炭水化物) **inclut les fibres**, comme
+    l'USDA.
+  - Fibres **Prosky modifiée** seulement (soluble 2,7 + insoluble 15,4). Voir
+    04023 : c'est la même méthode que 17,9 g de la graine, pas que 21,5 g.
+  - Sucres = saccharose 6,1 ; glucose, fructose et maltose 0. Amidon 0,7 g.
+  - ⚠️ **Deux échantillons, pas un échantillon torréfié.** En matière sèche,
+    les lipides passent de 22,5 à 26,8 g (+19 %) : physiquement impossible pour
+    une torréfaction, c'est l'écart entre deux lots ou une meilleure
+    extraction après torréfaction. Protéines −1 %, cendres −1 %. Ce couple ne
+    cale donc que ce qui bouge nettement et dans le même sens sur les deux
+    couples : les sucres.

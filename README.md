@@ -96,15 +96,15 @@ per_100g:                  # the computed values; null = unknown
   fat: 10.02
   saturates: 2.24
   carbs: 5.19
-  sugars: 1.43
-  fibre: 4.39
+  sugars: 1.42
+  fibre: 4.37
   protein: 20.27
   salt: 0.01
-  energy_kj: 838.7
+  energy_kj: 838.5
   energy_kcal: 200.8
 
 label:                     # the same, as they are written
-  energy: 839 kJ / 201 kcal
+  energy: 838 kJ / 201 kcal
   fat: 10 g
   saturates: 2,2 g
   carbs: 5,2 g

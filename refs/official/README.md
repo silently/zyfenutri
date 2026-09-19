@@ -23,6 +23,22 @@ plutôt que deux produits.
 > navigateur serveur comme en ligne de commande. À récupérer à la main depuis un
 > navigateur, ou à laisser de côté.
 
+## Les couples soja → kinako
+
+La même logique pour la **torréfaction** : une graine et sa farine torréfiée,
+dans la même table.
+
+| Source | Graine | Kinako | Couple |
+|---|---|---|---|
+| **Japon** (MEXT 2020), soja jaune | `mext-soja-04023` | `mext-kinako-04029` | ✅ sucres ; fibres par Prosky seulement |
+| **Japon** (MEXT 2020), soja vert | `mext-soja-vert-04104` | `mext-kinako-vert-04082` | ✅ sucres ; ❌ fibres (deux méthodes) |
+
+⚠️ La torréfaction chasse de l'eau : ces couples se lisent **en matière
+sèche**, sans quoi tout semble augmenter. Et ce sont deux lots, pas un lot
+torréfié : les lipides y montent de 10 à 19 %, ce qu'une torréfaction ne peut
+pas faire. Seul ce qui bouge nettement et dans le même sens sur les deux
+couples sert de calage (`refs/methode.md`, T3).
+
 ## Ce qu'il faut lire avant de comparer deux fiches
 
 ⚠️ **« Glucides » ne veut pas dire la même chose partout.**
@@ -31,7 +47,7 @@ plutôt que deux produits.
 |---|---|---|
 | `by_difference` | 100 − eau − protéines − lipides − cendres − fibres : **les fibres en sont déduites, mais tout le reste y est** | USDA |
 | `assimilables` | amidon + sucres **pesés** ; conforme au règlement INCO | Norvège, Suède |
-| `les_deux` | les deux nombres sont publiés | Nouvelle-Zélande |
+| `les_deux` | les deux nombres sont publiés | Nouvelle-Zélande, Japon |
 
 Chaque fiche porte sa convention en tête, sous `convention_glucides`.
 

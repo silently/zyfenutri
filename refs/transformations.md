@@ -17,7 +17,7 @@ marquée comme telle.
 
 ## 0. État du modèle dans le code
 
-Après lecture de [12], toutes les transformations sauf la torréfaction ont un
+Après lecture de [12] et [19], toutes les transformations ont un
 coefficient pour chaque nutriment. Chacun est commenté dans
 `zyfenutri/transforms.py` avec sa source, ou marqué `HYPOTHESIS`.
 
@@ -27,7 +27,7 @@ coefficient pour chaque nutriment. Chacun est commenté dans
 | **Trempage** — **toujours une nuit, 10 à 15 h** | sucres −27 % (saccharose, 25 °C [14]) ; protéines −3 % [14] ; minéraux −5 %, au rythme des solides ([14], [13]) | lipides −1,2 % (moitié des −2,5 % à 24 h [12, p. 193]) ; azote non protéique ≈ moitié de l'azote perdu ; fibres et amidon conservés ; sodium comme les cendres | température ; acidification |
 | **Cuisson** | sucres −44 % (reste des −59 % de Shallenberger [12], après le trempage de [14]) ; protéines ~8 % ([12], [15]) ; minéraux −2 % ([15]) | fibres et amidon conservés ; τ = 20 min | — |
 | **Fermentation** | **lipides −12 % de 26 à 60 h, −59 % à 120 h, −67 % à 180 h** [16] ; part saturée des lipides +7,9 points, **calée sur `official/`** ; protéines 1-4 % ([16], [9]) ; minéraux conservés [16] ; sucres −17 % à 48 h [12, p. 194] ; amidon −31 % à 37,5 h, −39 % à 48 h ([15], borne haute) | fibres conservées (elles montent en général [12], [15]) ; formes linéaires entre les points | sucres et amidon au-delà de 48 h ; protéines au-delà de 72 h ; lipides au-delà de 180 h ; température |
-| **Torréfaction** — oui ou non, sans intensité | 110 °C, 10 min : glucides totaux, protéines, lipides et cendres inchangés en matière sèche [13] | sucres et fibres inchangés ; une torréfaction plus poussée traitée comme la légère | effet d'une torréfaction forte sur les sucres (Maillard) |
+| **Torréfaction** — oui ou non, sans intensité | fibres −16 % en matière sèche [19] ; sucres −8 %, **calés sur `official/`** (soja → kinako, MEXT) ; amidon, protéines, lipides, cendres inchangés en matière sèche ([13], [19]) | seule l'eau part (volatils négligés) ; une torréfaction forte traitée comme celle à 120 °C de [19] | — |
 
 **Contrôle de cohérence, pas une validation.** Graine néo-zélandaise, 12 h de
 trempage, 30 min de cuisson, 36 h de fermentation, 1000 g → 1750 g de
@@ -55,9 +55,10 @@ Les trois précédentes sont lues : Ruiz-Terán & Owens 1996 [16], Wang et al. 1
 | **2** | **Robinson R. J., Kao C. (1977).** Tempeh and miso from chickpea, horse bean and soybean. *Cereal Chemistry* 54, 1192-1197. | Composition de tempehs de **pois chiche, féverole et soja**, citée par [15] : un second bilan hors soja, pour recouper [15], dont le protocole (graines concassées, trempage chaud) perd beaucoup de lipides. Les archives anciennes de *Cereal Chemistry* sont peut-être en accès libre. |
 | **3** | **Smith A. K., Rackis J. J., Hesseltine C. W., Robbins D. J., Booth A. N. (1964).** Tempeh: nutritive value in relation to processing. *Cereal Chemistry* 41, 173. | Les pertes d'azote et de solides **étape par étape**, que [12] ne reprend qu'en résumé : de quoi séparer vraiment protéines au trempage et à la cuisson (aujourd'hui −3 % et −8 %, par différence). Même archive. |
 
-**Torréfaction forte** : [18] montre que les sucres ne baissent pas de façon
-mesurable ; le TODO restant porte sur les fibres et sur le kinako lui-même
-(voir « Manque complètement »).
+**Torréfaction** : elle a désormais un effet chiffré (§ 6) — sucres −8 %,
+calés sur les couples soja → kinako de la table japonaise, et fibres −16 %
+[19]. Reste à trouver une mesure sur **un même lot** de soja sec, cru puis
+torréfié fort.
 
 ### À affiner — une valeur existe, mais elle est fragile
 
@@ -83,17 +84,11 @@ mesurable ; le TODO restant porte sur les fibres et sur le kinako lui-même
   chiche, pois et féverole (§ 0 ter), mais il n'y a **aucune donnée pour la
   lentille, les céréales ni les oléagineux**, et [3] montre que le plafond de
   perte au trempage varie de 16 à 70 % selon la graine.
-- ⚠️ **TODO important — torréfaction forte.** Le kinako est souvent torréfié
-  fort, et la torréfaction est traitée en oui/non, sans aucun changement.
-  - **Sucres : risque en grande partie levé.** Même une torréfaction de 3 h au
-    tambour ne baisse pas le saccharose de façon mesurable ; Maillard ne
-    consomme que les sucres réducteurs, moins d'un dixième des sucres du soja
-    [18]. Reste à confirmer sur une **farine de soja sec** (kinako), et non sur
-    du soja trempé puis grillé.
-  - **Fibres : inconnu.** Les produits de Maillard (mélanoïdines) peuvent être
-    comptés dans les fibres ; aucune mesure lue.
-  - **Poids réel** : le kinako ne pèse que quelques grammes par lot, l'effet
-    sur l'étiquette reste faible.
+- **Torréfaction forte, sur un même lot.** Les sucres sont calés sur deux
+  lots japonais différents (graine et kinako), les fibres sur une
+  torréfaction douce de quinoa [19]. Une mesure crue puis torréfiée d'un même
+  soja sec, à la température d'un kinako, confirmerait les deux. Poids
+  réel : quelques grammes par lot, l'effet sur l'étiquette reste faible.
 - **Au-delà des durées connues** : fermentation de plus de 48 h (72 h pour les
   protéines). Le trempage, lui, est toujours d'une nuit (10 à 15 h).
 - **La température** du trempage et de la fermentation : premier facteur selon
@@ -188,7 +183,7 @@ l'ordre des lectures : certains « à combler » y sont désormais comblés.
 | **Trempage** | légumineuses, certaines céréales | **toujours une nuit, 10 à 15 h** ; température, acidifié ou non, graine entière, fendue ou concassée |
 | **Cuisson** | tous | durée ; eau jetée, vapeur ou absorption |
 | **Fermentation** | tous | durée, température |
-| **Torréfaction** — oui ou non | 110 °C, 10 min : glucides totaux, protéines, lipides, cendres inchangés [13] ; torréfaction forte (3 h au tambour, ou friture) : saccharose inchangé, seuls les sucres réducteurs baissent, en quantité minime [18] | fibres inchangées | fibres après une torréfaction forte |
+| **Torréfaction** | supports : farines, kinako | aucun : oui ou non |
 
 **Elle suffit** pour les sept valeurs déclarées. Les autres opérations d'un
 atelier ne changent aucune masse de nutriment, ou sont déjà prises en compte
@@ -297,8 +292,9 @@ raffinose (3) et stachyose (4) en relèvent. **Qu'ils figurent ou non dans la
 valeur « fibres » d'une fiche dépend de la méthode d'analyse** de la table.
 
 Deux conséquences :
-- `methode.md` (T2a) justifie les −50 % de **glucides** par la solubilité des
-  oligosaccharides : **c'est à revoir**, leur perte ne touche pas les glucides ;
+- l'ancienne version de `methode.md` justifiait −50 % de **glucides** par la
+  solubilité des oligosaccharides : c'est corrigé, le trempage (T2a) ne retire
+  plus que des sucres mesurés, saccharose et fructose [14] ;
 - **si la fiche compte les oligosaccharides dans ses fibres, le trempage fait
   perdre des fibres**, que le modèle tient pour conservées. **Piste à
   vérifier :** c'est peut-être ce qui sépare les 9,3 g de fibres de la graine
@@ -566,11 +562,35 @@ cuire sans tremper (grains concassés), tremper à chaud, cuire à la vapeur.
 
 ## 6. Torréfaction
 
-Rien de nouveau depuis `methode.md` (T3) : pas encore de source.
+Tout se lit **en matière sèche** : la torréfaction chasse de l'eau, et une
+teneur « telle quelle » monte mécaniquement. On suppose que seule l'eau part.
 
-**À chercher :** l'effet de la torréfaction sur les sucres réducteurs et les
-lipides des légumineuses et des oléagineux. Farine de soja torréfiée (kinako),
-sésame, arachide.
+**Sucres — calés sur `official/`.** La table japonaise (MEXT 2020) publie la
+graine sèche et son kinako, en sucres pesés :
+
+| | graine | kinako | en matière sèche |
+|---|---|---|---|
+| soja jaune (04023 → 04029) | 6,0 g (eau 12,4) | 6,1 g (eau 4,0) | 6,85 → 6,35 : **− 7 %** |
+| soja vert (04104 → 04082) | 7,5 g (eau 12,5) | 7,4 g (eau 5,9) | 8,57 → 7,86 : **− 8 %** |
+
+Les sucres réducteurs du soja vert (glucose 0,2, fructose 0,2) disparaissent
+de son kinako : c'est la signature de Maillard. Retenu : **− 8 %**. [18] ne
+trouvait pas de baisse significative du saccharose, mais sur du soja trempé
+puis grillé, et avec une extraction que la torréfaction facilite.
+
+**Fibres — [19].** Quinoa, graines entières, 8 min à 120 °C : 18,81 → 15,83 g
+pour 100 g de matière sèche, **− 16 %** [19, tableau 1]. Couple soja jaune →
+kinako, Prosky des deux côtés : 20,43 → 18,85, − 8 %. Le couple vert ne se
+compare pas (AOAC 2011.25 pour la graine, Prosky pour le kinako). Retenu :
+− 16 %, la plus forte baisse, qui sous-déclare les fibres.
+
+**Le reste — inchangé.** Protéines, lipides, cendres et amidon ne bougent pas
+de façon significative en matière sèche ([13], [19]). Les couples japonais
+disent autre chose — lipides +10 à +19 % — mais ce sont deux lots : ils ne
+calent que ce qui bouge dans le même sens sur les deux.
+
+**À chercher :** un même lot de soja sec, cru puis torréfié à la manière d'un
+kinako (150-200 °C) ; sésame, arachide.
 
 ---
 
