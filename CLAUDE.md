@@ -84,6 +84,15 @@ l'annexe XIV. Elle ne se recopie jamais d'une table. Et les **kcal ne sont pas
 les kJ ÷ 4,184** : l'annexe donne deux jeux de coefficients indépendants, et
 convertir ferait diverger les deux chiffres de l'étiquette.
 
+⚠️ **On n'arrondit qu'UNE FOIS, à l'impression.** Aucune transformation,
+aucun mélange, aucune étape du moteur n'arrondit : la valeur reste exacte
+jusqu'à `declared`, qui applique le tableau 4. Arrondir en chemin déplace le
+chiffre imprimé d'une unité — 2,449 g passe par 2,45 et s'écrit « 2,5 g » — et
+peut transformer une valeur au-dessus du seuil en un « < 0,5 g », qui n'est
+plus un arrondi mais une affirmation. C'est la même erreur que la double
+division, et quatre tests la gardent. Le `per_100g` du document est arrondi
+pour la lecture : cet arrondi-là est terminal, rien ne le relit.
+
 ⚠️ **Une valeur « dont » ne dépasse jamais son total.** Par défaut, les AGS
 suivent les lipides ; seule exception, la fermentation, où leur part augmente
 (calée sur `refs/official/`). Les sucres ont leur propre règle, découpée de

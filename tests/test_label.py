@@ -60,12 +60,43 @@ def test_salt_is_never_zero_and_is_written_below_the_threshold():
     assert declared("salt", 0.02) == "0,02 g"
 
 
+def test_energy_is_not_rounded():
+    """`declared` rounds to the whole unit. Rounding here too would move that
+    figure: 577.481 kJ through the decigram is 577.5, which prints "578 kJ"."""
+    kj, _ = energy({"fat": 3.013, "carbs": 20.0, "protein": 6.0, "fibre": 3.0})
+    assert kj == pytest.approx(577.481)
+    assert declared("energy_kj", kj) == "577 kJ"
+    assert declared("energy_kj", round(kj, 1)) == "578 kJ"  # what two rounds would give
+
+
+@pytest.mark.parametrize("name, value, written", [
+    ("protein", 2.449, "2,4 g"),   # through the centigram: 2.45, printed "2,5 g"
+    ("fibre", 3.9499, "3,9 g"),    # through the centigram: 3.95, printed "4,0 g"
+    ("fat", 0.5049, "0,5 g"),      # through the centigram: 0.50, called negligible
+])
+def test_a_value_is_rounded_once_only(name, value, written):
+    """Table 4 rounds the computed value, not a value already rounded. Two
+    rounds in a row move the figure by a decigram, and can turn a value above
+    the negligibility threshold into a "< 0,5 g" — which is a claim, not a
+    rounding."""
+    assert declared(name, value) == written
+    assert declared(name, round(value, 2)) != written  # what two rounds would give
+
+
 def test_the_label_carries_the_nine_values():
     label = declared_label({**SHEET, "saturates": 2.0, "sugars": 1.0,
                             "salt": 0.01, "energy_kj": 876.3, "energy_kcal": 210.4})
     assert label["energy"] == "876 kJ / 210 kcal"
-    assert set(label) == {"energy", "fat", "saturates", "carbs",
-                          "sugars", "fibre", "protein", "salt"}
+    assert set(label) == {"energy", "energy_kj", "energy_kcal", "fat", "saturates",
+                          "carbs", "sugars", "fibre", "protein", "salt"}
+
+
+def test_the_energy_comes_joined_and_apart():
+    """A caller holding energy in two fields takes the two mentions as they
+    are. Writing them again from a rounded value would round twice."""
+    label = declared_label({**SHEET, "energy_kj": 876.3, "energy_kcal": 210.4})
+    assert (label["energy_kj"], label["energy_kcal"]) == ("876 kJ", "210 kcal")
+    assert label["energy"] == f'{label["energy_kj"]} / {label["energy_kcal"]}'
 
 
 @pytest.mark.parametrize("name, value, expected", [

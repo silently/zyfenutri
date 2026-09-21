@@ -68,19 +68,23 @@ def energy_of(facts: NutritionFacts, unit: EnergyUnit = "kJ") -> float | None:
 
 
 def energy(per_100g: dict[str, float | None]) -> tuple[float | None, float | None]:
-    """Energy in kJ and kcal, from the macros. Never copied from a table.
+    """Energy in kJ and kcal, from the macros. Never copied from a table. Unrounded.
 
     Returns `(None, None)` if any of the four contributing macros is missing:
     an energy short of one nutrient is worse than no energy at all.
 
     kcal is *not* kJ / 4.184. Annex XIV gives two independent sets of factors,
     and converting would make the two printed figures disagree.
+
+    `declared` rounds to the whole unit, and it is the only thing that rounds:
+    a decigram on the way would move that figure. 631.46 kJ through the
+    decigram is 631.5, which then prints as "632 kJ" instead of "631 kJ".
     """
     if any(per_100g.get(k) is None for k in KJ_PER_G):
         return None, None
     kj = sum(factor * per_100g[k] for k, factor in KJ_PER_G.items())
     kcal = sum(factor * per_100g[k] for k, factor in KCAL_PER_G.items())
-    return round(kj, 1), round(kcal, 1)
+    return kj, kcal
 
 
 def _fr(value: float, decimals: int) -> str:
@@ -110,11 +114,19 @@ def declared(name: str, value: float | None) -> str | None:
 
 
 def declared_label(per_100g: dict[str, float | None]) -> dict[str, str | None]:
-    """The nine values as they are written, energy first."""
+    """The nine values as they are written, energy first.
+
+    The two energy mentions come both joined, as a label prints them, and
+    apart, for a caller that holds them in two fields. Apart matters: writing
+    them from a value this module already rounded would round twice, and a
+    second round moves the figure by a unit.
+    """
     kj, kcal = per_100g.get("energy_kj"), per_100g.get("energy_kcal")
+    written_kj, written_kcal = declared("energy_kj", kj), declared("energy_kcal", kcal)
     out: dict[str, str | None] = {
-        "energy": (f"{declared('energy_kj', kj)} / {declared('energy_kcal', kcal)}"
-                   if kj is not None else None),
+        "energy": f"{written_kj} / {written_kcal}" if kj is not None else None,
+        "energy_kj": written_kj,
+        "energy_kcal": written_kcal,
     }
     for name in NUTRIENTS:
         out[name] = declared(name, per_100g.get(name))

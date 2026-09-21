@@ -37,6 +37,37 @@ def test_water_is_never_counted_twice():
     assert a["ingredients"][0]["contributes_g"] == b["ingredients"][0]["contributes_g"]
 
 
+# --- Rounded once, to be written ----------------------------------------------
+
+def test_the_label_is_written_from_the_exact_value():
+    """`per_100g` is the calculation shown rounded for reading; the label is
+    table 4 applied to the exact value. Writing the label from `per_100g`
+    instead rounds twice, and a second round moves the figure by a unit —
+    "2,5 g" for 2,449 g, or a "< 0,01 g" on a salt that is above the threshold.
+
+    Scanned over a range of harvest weights rather than pinned to one: which
+    weights fall in that zone depends on the coefficients, which move."""
+    from zyfenutri import declared_label
+
+    twice_differs = 0
+    for weight in range(1000, 3000):
+        result = one_substrate(harvested_g=weight)
+        if result["label"] != declared_label(result["per_100g"]):
+            twice_differs += 1
+    # Self-checking: if no weight landed in the zone the assertion above would
+    # pass without proving anything. Roughly one batch in three does.
+    assert twice_differs > 100, "no weight exercised the difference: test is vacuous"
+
+
+def test_the_document_shows_its_values_rounded_for_reading():
+    """Two decimals for the nutrients, one for the energy. That rounding is
+    terminal: nothing reads it back."""
+    per_100g = one_substrate(harvested_g=1750)["per_100g"]
+    for name, value in per_100g.items():
+        decimals = 1 if name.startswith("energy_") else 2
+        assert value == round(value, decimals)
+
+
 # --- Who goes through what ----------------------------------------------------
 
 def test_a_substrate_soaks_cooks_and_ferments():

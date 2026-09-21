@@ -101,11 +101,13 @@ per_100g:                  # les valeurs calculées ; null = inconnu
   fibre: 4.36
   protein: 20.28
   salt: 0.01
-  energy_kj: 837.5
+  energy_kj: 837.6
   energy_kcal: 200.5
 
 label:                     # les mêmes, telles qu'elles s'écrivent
-  energy: 838 kJ / 200 kcal
+  energy: 838 kJ / 201 kcal
+  energy_kj: 838 kJ        # aussi séparées, pour qui les stocke en deux champs
+  energy_kcal: 201 kcal
   fat: 10,0 g
   saturates: 2,2 g
   carbs: 5,2 g

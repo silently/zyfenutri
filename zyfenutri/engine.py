@@ -130,20 +130,32 @@ def compute(document: dict) -> dict:
                     product_mass=product_mass)
     facts = recipe.facts() if counted and product_mass else NutritionFacts()
 
-    per_100g = {n: None if v is None else round(v, 2) for n, v in facts.as_dict().items()}
-    # A "dont" above its total has no physical meaning: it can only come from rounding.
+    # Exact all the way to `declared_label`, which is the only thing that rounds
+    # a value someone reads. Rounding here as well would move the printed
+    # figure: 2.449 g would go through 2.45 and come out written "2,5 g".
+    exact = facts.as_dict()
+    # A "dont" above its total has no physical meaning. Fermentation raises the
+    # share of saturates while the fat they come from stays put, and nothing
+    # upstream caps one against the other.
     for subset, total in SUBSET_OF.items():
-        if per_100g[subset] is not None and per_100g[total] is not None:
-            per_100g[subset] = min(per_100g[subset], per_100g[total])
+        if exact[subset] is not None and exact[total] is not None:
+            exact[subset] = min(exact[subset], exact[total])
     if counted and product_mass:
         missing.extend(f"{n} unknown in the product: an ingredient or a transform "
-                       "does not know it yet" for n in NUTRIENTS if per_100g[n] is None)
+                       "does not know it yet" for n in NUTRIENTS if exact[n] is None)
 
-    kj, kcal = energy(per_100g)
-    per_100g_full = {**per_100g, "energy_kj": kj, "energy_kcal": kcal}
+    kj, kcal = energy(exact)
+    exact_full = {**exact, "energy_kj": kj, "energy_kcal": kcal}
 
-    balance = (mass_balance(per_100g)
-               if all(per_100g[n] is not None for n in ADDITIVE) else None)
+    # The same values, rounded once for reading. Nothing reads them back: the
+    # label below is written from `exact_full`, not from these.
+    per_100g = {n: None if v is None else round(v, 2) for n, v in exact.items()}
+    per_100g_full = {**per_100g,
+                     "energy_kj": None if kj is None else round(kj, 1),
+                     "energy_kcal": None if kcal is None else round(kcal, 1)}
+
+    balance = (mass_balance(exact)
+               if all(exact[n] is not None for n in ADDITIVE) else None)
     if balance is not None and balance > MASS_BALANCE_SUSPECT_G:
         warnings.append(f"macronutrients add up to {balance:g} g per 100 g: "
                         "almost nothing left for water and ash")
@@ -166,7 +178,7 @@ def compute(document: dict) -> dict:
         "harvest_estimated": estimated,
         "complete": bool(counted) and bool(product_mass) and not missing,
         "per_100g": per_100g_full,
-        "label": declared_label(per_100g_full),
+        "label": declared_label(exact_full),
         "dry_matter_g": balance,
         "ingredients": lines,
         "missing": missing,
