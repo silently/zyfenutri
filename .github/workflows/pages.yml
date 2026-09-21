@@ -1,0 +1,58 @@
+# Déploiement de WEB sur GitHub Pages.
+#
+# ⚠️ Ne construit QUE `web/`. CORE n'est ni testé ni touché ici : ses tests ont
+# leur propre affaire. Ce workflow lit `zyfenutri/*.py` (via `sync-core`) et
+# n'y écrit rien — cf. CLAUDE.md § CORE et WEB.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    # Une correction dans CORE change ce que la page calcule : elle doit donc
+    # redéployer aussi, pas seulement quand `web/` bouge.
+    paths: ['web/**', 'zyfenutri/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois ; on ne coupe pas celui qui est en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run check
+        working-directory: web
+      # ⚠️ Le site vit sous `/<dépôt>/` : sans ce préfixe, la page se charge
+      # mais ne trouve aucun module de CORE, et reste muette.
+      - run: npm run build
+        working-directory: web
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4

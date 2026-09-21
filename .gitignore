@@ -11,3 +11,12 @@ dist/
 docs/
 
 .DS_Store
+
+# WEB (`web/`) — cf. CLAUDE.md § CORE et WEB
+web/node_modules/
+web/.svelte-kit/
+web/build/
+# ⚠️ Copie de CORE fabriquée par `scripts/sync-core.mjs` à chaque dev/build.
+# La versionner créerait une SECONDE source des règles, qui divergerait —
+# exactement ce que la frontière CORE / WEB interdit.
+web/static/core/

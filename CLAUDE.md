@@ -62,6 +62,81 @@ qui est utile.
 
 ---
 
+## CORE et WEB — deux chantiers, une frontière
+
+Ce dépôt porte **deux choses**, et la frontière entre elles est une règle, pas
+une habitude.
+
+| | Quoi | Où |
+|---|---|---|
+| **CORE** | le calcul et son contrat : `compute()`, la ligne de commande, les transformations, les données de `refs/` | `zyfenutri/`, `tests/`, `refs/`, les `README`, `ARCHITECTURE.md` |
+| **WEB** | le portage en application **full front**, sans back end : saisie du document dans des champs HTML, calcul dans le navigateur, rendu de l'étiquette | `web/` |
+
+⚠️ **CORE implémente le contrat avec zyfejournal.** Tout ce qui s'y touche se
+répercute sur un consommateur réel, épinglé par un SHA. C'est ce qui lui vaut
+ses invariants, ses tests et ses versions.
+
+🛑 **WEB NE TOUCHE PAS À CORE.** Aucune tâche WEB ne modifie un fichier de
+CORE — ni une signature, ni un coefficient, ni un test, ni un README. Si un
+travail WEB semble l'exiger, **on en parle d'abord** : c'est le signe soit
+qu'une règle est mal placée, soit qu'il faut vraiment changer le contrat, et
+les deux se décident, jamais en passant.
+
+⚠️ **WEB lit CORE, il ne le duplique pas.** Le calcul du navigateur est le
+**même code Python**, exécuté par Pyodide — pas une réécriture en JavaScript.
+Une seule implémentation des règles, donc aucune divergence possible entre ce
+que dit la ligne de commande et ce que montre la page. Si un jour la lenteur de
+Pyodide l'imposait, ce serait une décision à prendre, pas un glissement.
+
+⚠️ **Les dépendances de WEB restent dans WEB.** `web/package.json` lui
+appartient ; `compute()` continue de n'importer que la bibliothèque standard, et
+`pyproject.toml` ne gagne rien. Le « pas de dépendance nouvelle » ci-dessous
+vaut pour CORE.
+
+⚠️ **Pas de serveur pour autant.** WEB est une page **statique** : le serveur de
+développement est un outil de construction, pas une pièce du produit. Ce qui
+est livré est un dossier de fichiers, ouvrable sans rien lancer.
+
+```bash
+cd web && npm install
+npm run dev      # sync-core, puis le serveur de développement
+npm run build    # sync-core, puis `web/build/` — le site statique
+npm run check    # svelte-check
+```
+
+`scripts/sync-core.mjs` recopie `zyfenutri/*.py` dans `web/static/core/` avant
+chaque `dev` et chaque `build`. **Cette copie n'est pas versionnée** : la
+versionner ferait une seconde source des règles, qui divergerait.
+
+⚠️ **Pyodide 314.x embarque CPython 3.14**, la version que CORE exige. C'est ce
+qui permet d'exécuter les modules **tels quels**, sans portage ni adaptation.
+Vérifié : sur le même document, la page et `zyfenutri lot.yml` rendent la même
+étiquette, mention par mention.
+
+⚠️ **Déploiement : GitHub Pages**, par `.github/workflows/pages.yml`, à chaque
+poussée sur `main` qui touche `web/` **ou `zyfenutri/`** — une correction dans
+CORE change ce que la page calcule, elle doit donc redéployer aussi.
+
+⚠️ **Le site vit sous `/<dépôt>/`, pas à la racine.** La CI passe `BASE_PATH`,
+que `svelte.config.js` lit. Sans lui, la page se charge mais ne trouve aucun
+module de CORE et reste muette. `static/.nojekyll` est là pour la même raison :
+sans lui, Jekyll ignore les dossiers commençant par `_`, dont `_app`.
+
+⚠️ **WEB pose une question que CORE laisse ouverte : le poids de tempeh.**
+Cette page n'a **pas** de champ « poids récolté » : le poids est toujours
+**prédit** par le facteur de rendement, qui devient donc obligatoire. Une
+étiquette ne change pas d'une fournée à l'autre — le facteur est une consigne
+d'atelier, et les tolérances du tableau 1 absorbent l'écart. `src/lib/resultat.ts`
+lève **cette réserve de CORE, et elle seule** ; une composition manquante ou une
+durée absente rendent toujours la fiche incomplète. C'est le même partage que
+pour une fiche de formulation côté consommateur.
+
+⚠️ **Les messages de `missing` se traduisent dans WEB.** CORE les écrit en
+anglais — ils s'adressent à un appelant. La page s'adresse à une personne. Ce
+qui n'est pas reconnu passe **tel quel** : mieux vaut de l'anglais qu'un silence.
+
+---
+
 ## Les invariants du calcul
 
 ⚠️ **Masses absolues du début à la fin.** On ne raisonne jamais en pourcentages
@@ -240,10 +315,13 @@ et une lentille (`refs/transformations.md`, § 2).
 ## Ce qui n'entre pas dans ce dépôt
 
 ⚠️ **Pas de serveur, pas de base de données, pas de port.** Si un besoin semble
-l'exiger, c'est qu'il appartient à l'appelant.
+l'exiger, c'est qu'il appartient à l'appelant. *(`web/` ne fait pas exception :
+c'est une page statique, son serveur de développement est un outil de
+construction — cf. § CORE et WEB.)*
 
 ⚠️ **Pas de dépendance nouvelle sans très bonne raison.** Seule PyYAML est là,
 et uniquement pour la ligne de commande — `compute()` n'importe que la stdlib.
+*(Vaut pour CORE. `web/` a les siennes, dans son `package.json`.)*
 
 ⚠️ **Aucune référence à l'infrastructure d'un consommateur** : pas de chemin de
 déploiement, pas de nom de conteneur, pas de dépôt privé cité. Le dépôt est

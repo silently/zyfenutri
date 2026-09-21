@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+@plugin 'daisyui' {
+  themes: nord --default;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* L'étiquette réglementaire s'imprime : elle doit tenir seule sur la page. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
