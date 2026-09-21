@@ -15,9 +15,25 @@
   import { MODELE, depuisYaml, documentVide, intrantVide, versYaml } from '$lib/document';
   import { calculer, preparer, versionMoteur, type Etat } from '$lib/moteur';
   import { lire } from '$lib/resultat';
-  import type { Resultat } from '$lib/types';
+  import type { Document, Intrant, Resultat } from '$lib/types';
 
-  let doc = $state(documentVide());
+  /**
+   * ⚠️ Chaque ligne porte un `id` stable et son mode. Se repérer par l'INDEX
+   * casserait à la première suppression : la carte suivante hériterait du mode
+   * de celle qu'on vient de retirer.
+   */
+  type Ligne = { id: number; intrant: Intrant; edition: boolean };
+  let compteur = 0;
+
+  const vide = documentVide();
+  let entete = $state({
+    recipe: vide.recipe,
+    cooking_minutes: vide.cooking_minutes,
+    fermentation_hours: vide.fermentation_hours,
+  });
+  let lignes = $state<Ligne[]>([]);
+
+  const doc = $derived<Document>({ ...entete, ingredients: lignes.map((l) => l.intrant) });
   let etat = $state<Etat>({ phase: 'attente' });
   let resultat = $state<Resultat | null>(null);
   let erreur = $state<string | null>(null);
@@ -51,11 +67,26 @@
     }
   }
 
+  function ajouter() {
+    lignes = [...lignes, { id: ++compteur, intrant: intrantVide(), edition: true }];
+  }
+
   function importer() {
     erreur = null;
     try {
       const relu = depuisYaml(yamlColle);
-      doc = relu.document;
+      entete = {
+        recipe: relu.document.recipe,
+        cooking_minutes: relu.document.cooking_minutes,
+        fermentation_hours: relu.document.fermentation_hours,
+      };
+      // Un ingrédient relu est déjà saisi : il s'ouvre en LECTURE, pas en
+      // édition — on vient de le fournir, pas de le composer.
+      lignes = relu.document.ingredients.map((intrant) => ({
+        id: ++compteur,
+        intrant,
+        edition: false,
+      }));
       ignores = relu.ignores;
       yamlColle = '';
       resultat = null;
@@ -124,22 +155,28 @@
       <section class="flex flex-col gap-4 no-print">
         <div class="card bg-base-200 border border-base-300">
           <div class="card-body gap-3 p-4">
-            <fieldset class="fieldset">
-              <legend class="fieldset-legend">Recette</legend>
-              <input class="input input-sm w-full" bind:value={doc.recipe} placeholder="ex : Tempeh de soja nature" />
-            </fieldset>
-            <div class="grid gap-3 sm:grid-cols-2">
-              <fieldset class="fieldset">
+            <!-- Les trois réglages du lot tiennent sur une ligne : le nom prend
+                 la place restante, les deux durées gardent la leur. -->
+            <div class="flex flex-wrap items-end gap-3">
+              <fieldset class="fieldset flex-1 min-w-48">
+                <legend class="fieldset-legend">Recette</legend>
+                <input
+                  class="input input-sm w-full"
+                  bind:value={entete.recipe}
+                  placeholder="ex : Tempeh de soja nature"
+                />
+              </fieldset>
+              <fieldset class="fieldset shrink-0">
                 <legend class="fieldset-legend">Cuisson</legend>
                 <div class="join">
-                  <input type="number" min="0" step="any" class="input input-sm join-item w-20" bind:value={doc.cooking_minutes} />
+                  <input type="number" min="0" step="any" class="input input-sm join-item w-20" bind:value={entete.cooking_minutes} />
                   <span class="input input-sm join-item bg-base-200 w-auto px-3 text-base-content/60">min</span>
                 </div>
               </fieldset>
-              <fieldset class="fieldset">
+              <fieldset class="fieldset shrink-0">
                 <legend class="fieldset-legend">Fermentation</legend>
                 <div class="join">
-                  <input type="number" min="0" step="any" class="input input-sm join-item w-20" bind:value={doc.fermentation_hours} />
+                  <input type="number" min="0" step="any" class="input input-sm join-item w-20" bind:value={entete.fermentation_hours} />
                   <span class="input input-sm join-item bg-base-200 w-auto px-3 text-base-content/60">h</span>
                 </div>
               </fieldset>
@@ -147,20 +184,22 @@
           </div>
         </div>
 
-        {#each doc.ingredients as _, i (i)}
+        {#each lignes as ligne, i (ligne.id)}
           <IntrantChamps
-            bind:intrant={doc.ingredients[i]}
-            index={i}
-            supprimable={doc.ingredients.length > 1}
-            supprimer={() => (doc.ingredients = doc.ingredients.filter((_, j) => j !== i))}
+            bind:intrant={lignes[i].intrant}
+            bind:edition={lignes[i].edition}
+            supprimer={() => (lignes = lignes.filter((l) => l.id !== ligne.id))}
           />
         {/each}
 
-        <button
-          class="btn btn-sm btn-outline self-start gap-1"
-          onclick={() => (doc.ingredients = [...doc.ingredients, intrantVide()])}
-        >
-          <Plus size={14} /> Ajouter un intrant
+        {#if lignes.length === 0}
+          <p class="text-sm text-base-content/50 border border-dashed border-base-300 rounded-box p-6 text-center">
+            Aucun ingrédient. Ajoutez-en un, ou partez du modèle (panneau « Le document »).
+          </p>
+        {/if}
+
+        <button class="btn btn-sm btn-outline self-start gap-1" onclick={ajouter}>
+          <Plus size={14} /> Ajouter un ingrédient
         </button>
 
         <button class="btn btn-primary gap-2" onclick={lancer} disabled={!pret}>
