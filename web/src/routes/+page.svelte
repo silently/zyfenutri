@@ -8,6 +8,7 @@
    */
   import { onMount } from 'svelte';
   import { CircleAlert, CircleQuestionMark, Download, FileDown, Play, Plus, TriangleAlert } from '@lucide/svelte';
+  import logo from '../assets/zyfe.png';
   import Aide from '$lib/composants/Aide.svelte';
   import Etiquette from '$lib/composants/Etiquette.svelte';
   import IntrantChamps from '$lib/composants/Intrant.svelte';
@@ -79,8 +80,14 @@
 <div class="min-h-screen bg-base-100">
   <header class="border-b border-base-300 bg-base-200 no-print">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-baseline gap-3 flex-wrap">
-      <h1 class="text-xl font-bold">zyfenutri</h1>
-      <p class="text-sm text-base-content/70 flex-1">
+      <!-- « zyfe » est le logo, « nutri » s'écrit à la suite : un seul mot, deux
+           matières. La marge basse rattrape la courbe décorative sous les
+           lettres, pour que les deux moitiés partagent la même ligne de base. -->
+      <h1 class="flex items-end gap-0.5 shrink-0">
+        <img src={logo} alt="zyfe" class="h-11 w-auto" />
+        <span class="text-3xl font-bold tracking-tight text-primary mb-[0.3rem]">nutri</span>
+      </h1>
+      <p class="text-sm text-base-content/70 flex-1 min-w-48">
         Ce qu'on a mis dans un lot de tempeh → ce qu'on a le droit d'écrire sur l'étiquette
       </p>
       {#if etat.phase === 'prêt'}

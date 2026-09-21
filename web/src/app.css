@@ -1,6 +1,54 @@
 @import 'tailwindcss';
-@plugin 'daisyui' {
-  themes: nord --default;
+
+/*
+  La charte vient du logo — couleurs relevées sur `src/assets/zyfe.png`, pas
+  choisies à l'œil :
+
+    #913b48  le bordeaux des lettres      → primary
+    #9b9e24  l'olive des graines          → secondary
+    #b7b786  le sauge moyen               → accent
+    #d1d692  le sauge clair               → la courbe, les fonds
+
+  ⚠️ `warning` et `error` restent VOLONTAIREMENT hors palette. Ils portent
+  « ne pas étiqueter avec ces valeurs » : un avertissement qui se fond dans la
+  charte ne se voit pas, et c'est précisément celui-là qu'il ne faut pas rater.
+*/
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: 'zyfe';
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: #fcfbf7;
+  --color-base-200: #f3f2e9;
+  --color-base-300: #e4e4d3;
+  --color-base-content: #2b2724;
+
+  --color-primary: #913b48;
+  --color-primary-content: #fcfbf7;
+  --color-secondary: #9b9e24;
+  --color-secondary-content: #1b1c06;
+  --color-accent: #b7b786;
+  --color-accent-content: #1b1c06;
+  --color-neutral: #4a4340;
+  --color-neutral-content: #fcfbf7;
+
+  --color-info: #d1d692;
+  --color-info-content: #2b2724;
+  --color-success: #6f7a1a;
+  --color-success-content: #fcfbf7;
+  --color-warning: #c9821f;
+  --color-warning-content: #2b1c05;
+  --color-error: #9d2d24;
+  --color-error-content: #fcfbf7;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --border: 1px;
 }
 
 @layer base {
@@ -9,7 +57,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-base-300, currentcolor);
   }
 }
 

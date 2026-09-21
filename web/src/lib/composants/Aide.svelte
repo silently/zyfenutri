@@ -68,7 +68,11 @@
 
       <section>
         <h3 class="font-semibold mb-1">Cinq transformations, et rien d'autre</h3>
-        <p class="mb-1">Chacune raisonne pour 100 g d'intrant tel qu'il a été pesé, avant toute transformation.</p>
+        <p class="mb-1">
+          Torréfaction, dépelliculage, trempage, cuisson, fermentation. Chacune raisonne pour
+          100 g d'intrant tel qu'il a été pesé, avant toute transformation. Le rôle décide de
+          celles qu'un intrant traverse :
+        </p>
         <ul class="list-disc ml-5">
           <li><strong>Substrat</strong> : dépelliculage → trempage → cuisson → fermentation</li>
           <li><strong>Support d'inoculation</strong> : torréfaction (si on la fait soi-même) → fermentation</li>

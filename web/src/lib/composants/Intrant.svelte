@@ -78,43 +78,67 @@
       </fieldset>
     </div>
 
-    {#if estSubstrat || estSupport}
-      <div class="flex flex-wrap gap-4">
-        {#if estSubstrat}
-          <label class="label cursor-pointer gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" bind:checked={intrant.dehulled} />
+    {#if estSubstrat}
+      <!-- Même grille que Rôle / Poids au-dessus : chaque champ sous sa
+           légende, sinon la case flotte au milieu du texte d'à côté. -->
+      <div class="grid gap-3 sm:grid-cols-2">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Dépelliculage</legend>
+          <label class="label cursor-pointer justify-start gap-2">
+            <input
+              type="checkbox"
+              class="checkbox checkbox-sm checkbox-primary"
+              bind:checked={intrant.dehulled}
+            />
             <span class="label-text">Dépelliculé</span>
           </label>
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">
-              Facteur de rendement <span class="text-error">*</span>
-            </legend>
-            <input
-              type="number"
-              min="0"
-              step="any"
-              class="input input-sm w-24 {intrant.yield == null ? 'input-error' : ''}"
-              bind:value={intrant.yield}
-              placeholder="1.75"
-              required
-            />
-            <!-- ⚠️ OBLIGATOIRE, et c'est le seul dénominateur : la fiche ne
-                 dépend d'aucun poids de récolte. Un lot qui pèse autrement ne
-                 change pas ce qu'on imprime — c'est ce facteur qu'on règle. -->
-            <p class="label text-xs whitespace-normal">
-              kg de tempeh pour 1 kg de graines brutes. Un seul nombre, qui contient
-              <strong>tout</strong> : le dépelliculage et les pertes, le gonflement au
-              trempage et à la cuisson, la déshydratation pendant la fermentation.
-            </p>
-          </fieldset>
-        {/if}
-        {#if estSupport}
-          <label class="label cursor-pointer gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" bind:checked={intrant.roasted} />
-            <span class="label-text">Torréfié par nous</span>
-          </label>
-        {/if}
+          <p class="text-xs text-base-content/60 mt-1">
+            Le moteur retire une pellicule type. La masse perdue, elle, est dans le
+            facteur de rendement.
+          </p>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Facteur de rendement <span class="text-error">*</span>
+          </legend>
+          <input
+            type="number"
+            min="0"
+            step="any"
+            class="input input-sm w-24 {intrant.yield == null ? 'input-error' : ''}"
+            bind:value={intrant.yield}
+            placeholder="1.75"
+            required
+          />
+          <!-- ⚠️ OBLIGATOIRE, et c'est le seul dénominateur : la fiche ne dépend
+               d'aucun poids de récolte. Un lot qui pèse autrement ne change pas
+               ce qu'on imprime — c'est ce facteur qu'on règle. -->
+          <p class="text-xs text-base-content/60 mt-1">
+            kg de tempeh pour 1 kg de graines brutes. Un seul nombre, qui contient
+            <strong>tout</strong> : le dépelliculage et les pertes, le gonflement au
+            trempage et à la cuisson, la déshydratation pendant la fermentation.
+          </p>
+        </fieldset>
       </div>
+    {/if}
+
+    {#if estSupport}
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Torréfaction</legend>
+        <label class="label cursor-pointer justify-start gap-2">
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            bind:checked={intrant.roasted}
+          />
+          <span class="label-text">Torréfié par nous</span>
+        </label>
+        <p class="text-xs text-base-content/60 mt-1">
+          À cocher seulement si la torréfaction a lieu ici : une farine achetée déjà
+          torréfiée porte le résultat dans sa composition.
+        </p>
+      </fieldset>
     {/if}
 
     {#if aUneFiche}
