@@ -7,12 +7,30 @@
    * ici, rien n'est réarrondi : la page affiche ce que le moteur rend.
    */
   import { onMount } from 'svelte';
-  import { CircleAlert, CircleQuestionMark, Download, FileDown, Play, Plus, TriangleAlert } from '@lucide/svelte';
+  import {
+    CircleAlert,
+    CircleQuestionMark,
+    Download,
+    FileDown,
+    Play,
+    Plus,
+    Printer,
+    TriangleAlert,
+  } from '@lucide/svelte';
   import logo from '../assets/zyfe.png';
   import Aide from '$lib/composants/Aide.svelte';
   import Etiquette from '$lib/composants/Etiquette.svelte';
   import IntrantChamps from '$lib/composants/Intrant.svelte';
-  import { MODELE, depuisYaml, documentVide, intrantVide, versYaml } from '$lib/document';
+  import {
+    MODELE,
+    calculVersYaml,
+    depuisYaml,
+    documentVide,
+    intrantVide,
+    nomFichier,
+    versJson,
+    versYaml,
+  } from '$lib/document';
   import { calculer, preparer, versionMoteur, type Etat } from '$lib/moteur';
   import { lire } from '$lib/resultat';
   import type { Document, Intrant, Resultat } from '$lib/types';
@@ -95,8 +113,8 @@
     }
   }
 
-  function enregistrer(contenu: string, nom: string) {
-    const blob = new Blob([contenu], { type: 'text/yaml;charset=utf-8' });
+  function enregistrer(contenu: string, nom: string, type: string) {
+    const blob = new Blob([contenu], { type: `${type};charset=utf-8` });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = nom;
@@ -104,8 +122,28 @@
     URL.revokeObjectURL(a.href);
   }
 
-  const telecharger = () => enregistrer(yaml, `${doc.recipe?.trim() || 'lot'}.yml`);
-  const telechargerModele = () => enregistrer(MODELE, 'modele-lot.yml');
+  // ⚠️ Le document part avec le MIME du format : un `.json` annoncé en YAML
+  // s'ouvre dans le mauvais outil chez celui qui le reçoit.
+  const telechargerDocument = (format: 'yml' | 'json') =>
+    enregistrer(
+      format === 'yml' ? yaml : versJson(doc),
+      nomFichier(entete.recipe, `.${format}`),
+      format === 'yml' ? 'text/yaml' : 'application/json',
+    );
+
+  /**
+   * La fiche de calcul complète : valeurs, étiquette, chaîne suivie,
+   * coefficients appliqués. C'est CE document qu'on archive et qu'on présente
+   * si l'estimation est contestée — pas la page.
+   */
+  const telechargerCalcul = (format: 'yml' | 'json') =>
+    enregistrer(
+      format === 'yml' ? calculVersYaml(resultat) : JSON.stringify(resultat, null, 2) + '\n',
+      nomFichier(entete.recipe, `-calcul.${format}`),
+      format === 'yml' ? 'text/yaml' : 'application/json',
+    );
+
+  const telechargerModele = () => enregistrer(MODELE, 'modele-lot.yml', 'text/yaml');
 </script>
 
 <div class="min-h-screen bg-base-100">
@@ -116,10 +154,10 @@
            lettres, pour que les deux moitiés partagent la même ligne de base. -->
       <h1 class="flex items-end gap-0.5 shrink-0">
         <img src={logo} alt="zyfe" class="h-11 w-auto" />
-        <span class="text-3xl font-bold tracking-tight text-primary mb-[0.3rem]">nutri</span>
+        <span class="text-3xl font-bold tracking-tight nutri mb-[0.3rem]">nutri</span>
       </h1>
       <p class="text-sm text-base-content/70 flex-1 min-w-48">
-        Ce qu'on a mis dans un lot de tempeh → ce qu'on a le droit d'écrire sur l'étiquette
+        Estimation analytique de la valeur nutritionnelle de 100g de tempeh
       </p>
       {#if etat.phase === 'prêt'}
         <span class="badge badge-sm badge-ghost">moteur {etat.version}</span>
@@ -159,11 +197,13 @@
                  la place restante, les deux durées gardent la leur. -->
             <div class="flex flex-wrap items-end gap-3">
               <fieldset class="fieldset flex-1 min-w-48">
-                <legend class="fieldset-legend">Recette</legend>
+                <legend class="fieldset-legend">Identifiant recette</legend>
+                <!-- ⚠️ C'est l'entrée de niveau 1 du document (`recipe:`), et le
+                     nom des fichiers téléchargés. -->
                 <input
                   class="input input-sm w-full"
                   bind:value={entete.recipe}
-                  placeholder="ex : Tempeh de soja nature"
+                  placeholder="ex : tempeh-soja-nature"
                 />
               </fieldset>
               <fieldset class="fieldset shrink-0">
@@ -243,6 +283,19 @@
             <div role="alert" class="alert no-print"><TriangleAlert size={18} /><span class="text-sm">{w}</span></div>
           {/each}
 
+          <div class="flex flex-wrap items-center gap-2 no-print">
+            <span class="text-xs text-base-content/60">Fiche de calcul complète :</span>
+            <button class="btn btn-xs gap-1" onclick={() => telechargerCalcul('yml')}>
+              <Download size={13} /> .yml
+            </button>
+            <button class="btn btn-xs gap-1" onclick={() => telechargerCalcul('json')}>
+              <Download size={13} /> .json
+            </button>
+            <button class="btn btn-xs gap-1" onclick={() => window.print()}>
+              <Printer size={13} /> imprimer l'étiquette
+            </button>
+          </div>
+
           <div class="collapse collapse-arrow bg-base-200 border border-base-300 no-print">
             <input type="checkbox" bind:checked={detailOuvert} />
             <div class="collapse-title text-sm font-medium">Voir le détail du calcul</div>
@@ -268,8 +321,11 @@
                 <button class="btn btn-xs btn-ghost gap-1" onclick={telechargerModele}>
                   <FileDown size={14} /> modèle
                 </button>
-                <button class="btn btn-xs btn-ghost gap-1" onclick={telecharger}>
+                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('yml')}>
                   <Download size={14} /> .yml
+                </button>
+                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('json')}>
+                  <Download size={14} /> .json
                 </button>
               </div>
             </div>

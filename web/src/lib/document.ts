@@ -81,6 +81,33 @@ export function versYaml(doc: Document): string {
   return stringify(pourLeMoteur(doc), { lineWidth: 0 });
 }
 
+export function versJson(doc: Document): string {
+  return JSON.stringify(pourLeMoteur(doc), null, 2) + '\n';
+}
+
+/** Le résultat du moteur, tel quel — la fiche de calcul à archiver. */
+export function calculVersYaml(resultat: unknown): string {
+  return stringify(resultat, { lineWidth: 0 });
+}
+
+/**
+ * Un nom de fichier tiré de l'identifiant de recette.
+ *
+ * ⚠️ L'identifiant est saisi librement : il peut porter des espaces, des
+ * accents, une barre oblique. Un nom de fichier, non — et une barre oblique
+ * ferait silencieusement échouer le téléchargement sur certains navigateurs.
+ */
+export function nomFichier(identifiant: string | null | undefined, suffixe: string): string {
+  const base = (identifiant ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase()
+    .slice(0, 60);
+  return `${base || 'lot'}${suffixe}`;
+}
+
 export type Relecture = { document: Document; ignores: string[] };
 
 /**
@@ -186,7 +213,7 @@ export const MODELE = `# Modèle de lot pour zyfenutri — remplacez les valeurs
 # publiée (Ciqual, USDA). Une valeur qu'on n'a pas se laisse VIDE, jamais à 0 :
 # « on ne sait pas » et « il n'y en a pas » sont deux affirmations différentes.
 
-recipe: Tempeh de soja nature
+recipe: tempeh-soja-nature   # identifiant : c'est lui qui nomme les fichiers
 cooking_minutes: 30
 fermentation_hours: 36
 

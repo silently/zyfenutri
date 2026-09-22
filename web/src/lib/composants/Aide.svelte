@@ -14,7 +14,7 @@
 <dialog class="modal" open={ouverte}>
   <div class="modal-box max-w-3xl">
     <div class="flex items-start justify-between gap-4 mb-3">
-      <h2 class="text-lg font-bold">Comment ce calcul fonctionne</h2>
+      <h2 class="text-lg font-bold">Comment Zyfe nutri fonctionne</h2>
       <button class="btn btn-sm btn-circle btn-ghost" onclick={() => (ouverte = false)} aria-label="Fermer">
         <X size={18} />
       </button>
@@ -22,91 +22,88 @@
 
     <div class="flex flex-col gap-5 text-sm leading-relaxed">
       <section>
-        <h3 class="font-semibold mb-1">Calculer est une méthode légale</h3>
         <p>
-          Le règlement <strong>(UE) 1169/2011</strong>, article 31 §4, met trois méthodes
-          <em>à égalité</em> : l'analyse en laboratoire, le calcul à partir des ingrédients, et le
-          calcul à partir de données établies. Le « ou » n'introduit aucune hiérarchie. Un
-          laboratoire n'est donc pas obligatoire — à condition que le calcul repose sur des données
-          fiables et qu'il soit <strong>documenté</strong>.
+          Concernant la déclaration nutritionnelle, le règlement <strong><a href="https://www.senat.fr/europe/textes_europeens/ue0120.pdf" target="_blank">(UE) 1169/2011</a></strong>, article 31 §4, met trois méthodes <em>à égalité</em> : l'analyse en laboratoire, le calcul à partir des ingrédients, et le calcul à partir de données établies. Un laboratoire n'est donc pas obligatoire — à condition que le calcul repose sur des données et connaissances fiables.
         </p>
         <p class="mt-1">
-          Les valeurs déclarées sont des <strong>valeurs moyennes</strong>, pas des maxima ni des
-          garanties.
+          Zyfe nutri propose un calcul de valeur nutritionnelle moyenne pour 100g de tempeh en prenant en compte les étapes de fabrication susceptibles d'en modifier la composition. Ce calcul repose sur des références scientifiques (TODO link) ainsi que des analyses officielles comparant déclaration nutritionnelle de la graine de soja et son tempeh (TODO link), mais les coefficients appliqués n'ont pas été testés en laboratoire et demeurent donc des hypothèses au mieux des connaissances disponibles au projet.
         </p>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">Le principe : on ne divise qu'une fois</h3>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">À vos risques et périls</h3>
         <p>
-          Le calcul ne manipule que des <strong>masses absolues</strong> de nutriments, du début à
-          la fin. On part de ce qui entre dans le lot, on applique à chaque intrant les
-          transformations qu'il subit, on additionne, et on divise <strong>une seule fois</strong>
-          par le poids de tempeh obtenu.
+          Cet outil est fourni à titre indicatif, il reste améliorable (tout commentaire ou référence scientifique permettant de l'améliorer peut être proposé en <a href="https://github.com/silently/zyfenutri/issues" target="_blank">ouvrant un ticket</a>) et sans garantie. Il peut être intéressant de le confronter à des résultats en laboratoire.
         </p>
-        <p class="mt-1">
-          C'est la clé : cette division finale, et elle seule, porte l'eau reprise au trempage. Un
-          lot qui double de poids en s'hydratant voit toutes ses valeurs divisées par deux, sans
-          qu'aucun coefficient n'ait à le dire. Ajouter un « facteur d'hydratation » ailleurs
-          compterait l'eau <strong>deux fois</strong>.
+        <p>
+          Si l'outil peut induire en erreur, ne pas oublier que les déclarations nutritionnelles des ingrédients peuvent elles aussi être erronées.
         </p>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">Le facteur de rendement</h3>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">Les données nécessaires pour utiliser Zyfe nutri</h3>
         <p>
-          C'est le dénominateur, et il est <strong>obligatoire</strong> : kg de tempeh pour 1 kg de
-          graines brutes. Un seul nombre, qui contient tout — le dépelliculage et les pertes, le
-          gonflement au trempage et à la cuisson, la déshydratation pendant la fermentation.
-        </p>
-        <p class="mt-1">
-          ⚠️ <strong>La fiche ne dépend d'aucun poids de récolte.</strong> Une fournée qui pèse
-          autrement ne change pas ce qu'on imprime : le facteur est une consigne d'atelier qu'on
-          règle soi-même, et les tolérances d'étiquetage absorbent l'écart d'un lot à l'autre.
-        </p>
-      </section>
-
-      <section>
-        <h3 class="font-semibold mb-1">Cinq transformations, et rien d'autre</h3>
-        <p class="mb-1">
-          Torréfaction, dépelliculage, trempage, cuisson, fermentation. Chacune raisonne pour
-          100 g d'intrant tel qu'il a été pesé, avant toute transformation. Le rôle décide de
-          celles qu'un intrant traverse :
+          Pour fonctionner, Zyfe nutri a besoin :
         </p>
         <ul class="list-disc ml-5">
-          <li><strong>Substrat</strong> : dépelliculage → trempage → cuisson → fermentation</li>
-          <li><strong>Support d'inoculation</strong> : torréfaction (si on la fait soi-même) → fermentation</li>
-          <li><strong>Acidifiant pré-inoculation</strong> : rien — ajouté après cuisson, compté au prorata</li>
-          <li><strong>Starter</strong> : exclu — quelques grammes pour des kilos de produit</li>
+          <li>des valeurs nutritionnelles (pour 100g) de chaque ingrédient (sauf le starter, négligé)</li>
+          <li>du facteur de rendement (voir ci-après) des ingrédients de type substrat (légumineuse, céréale) dû notamment à l'hydratation des graines sèches</li>
+          <li>de quelques infos sur votre process (dépelliculage ou non, durée de cuisson et de fermentation)</li>
         </ul>
         <p class="mt-1">
-          Aucune transformation ne touche à l'eau : une torréfaction chasse de l'eau, ça ne change
-          donc <em>rien</em> aux masses de nutriments.
+          Une valeur inconnue n'est pas une valeur nulle :
         </p>
+        <ul class="list-disc ml-5">
+          <li>0 signifie "absence de"</li>
+          <li>un champ laissé vide signifie "valeur inconnue". Zyfe nutri ne pourra pas produire d'estimation sur cette dimension et indiquera un tiret en sortie</li>
+        </ul>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">L'énergie se calcule, toujours</h3>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">Le principe : des transformations...</h3>
         <p>
-          Depuis les macronutriments, avec les coefficients de l'<strong>annexe XIV</strong>. Elle
-          ne se recopie jamais d'une table. Et les <strong>kcal ne sont pas les kJ ÷ 4,184</strong> :
-          l'annexe donne deux jeux de coefficients indépendants, et convertir ferait diverger les
-          deux chiffres de l'étiquette.
+          On considère et on mesure l'effet des transformations suivantes selon le type d'ingrédient :
         </p>
+        <ul class="list-disc ml-5">
+          <li><strong>Substrat</strong> (légumineuse, céréale, oléagineux) : dépelliculage (optionnel) → trempage (dont rinçage) → cuisson (dont égouttage) → fermentation</li>
+          <li><strong>Support d'inoculation</strong> (farine ou kinako): torréfaction (optionnelle) → fermentation</li>
+          <li><strong>Acidifiant pré-inoculation</strong> : sans transformation</li>
+          <li><strong>Starter</strong> : négligeable</li>
+        </ul>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">Une valeur absente n'est jamais un zéro</h3>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">...et une règle de trois</h3>
         <p>
-          « On ne sait pas » et « il n'y en a pas » sont deux affirmations différentes, et la
-          seconde engage. Un intrant sans composition, un réglage absent : la valeur du produit est
-          <strong>inconnue</strong> (un tiret), jamais une somme partielle. C'est ce que dit
-          « ce qui manque ».
+          On génère la fiche nutritionnelle pour 100g de tempeh selon :
+        </p>
+        <ul class="list-disc ml-5">
+          <li>la proportion de chaque ingrédient (en masse sèche pour les substrats)</li>
+          <li>l'effet des transformations</li>
+          <li>mais aussi le <strong>facteur de rendement</strong> des substrats</li>
+        </ul>
+      </section>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">Le facteur de rendement</h3>
+        <p>
+          Ce facteur, obligatoire et à donner <strong>indépendamment pour chaque substrat</strong> (soja, lentille verte, pois chiche...), donne l'évolution de la masse de ce substrat sur l'ensemble de la fabrication. Il inclut : 
+        </p>
+        <ul class="list-disc ml-5">
+          <li>les pertes : dépelliculage si effectué après réception, pertes de matière pendant les opérations, perte d'eau durant pendant la fermentation</li>
+          <li>les gains, plus importants, dûs au gonflement lors du trempage et de la cuisson</li>
+        </ul>
+      </section>
+
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">L'énergie est calculée à la fin</h3>
+        <p>
+          L'énergie est calculée d'après les macronutriments estimés et grâce aux coefficients de l'<strong>annexe XIV</strong>. Les déclarations énergétiques des ingrédients ne sont donc pas utilisées.
         </p>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">Arrondis — tableau 4 du guide de décembre 2012</h3>
+      <section class="mt-2">
+        <h3 class="font-semibold mb-1">Format de la déclaration nutritionnelle générée</h3>
+        <p class="mb-1">Les valeurs sont arrondies en dernière étape (voir le tableau 4 du guide de décembre 2012) :</p>
         <table class="table table-xs">
           <tbody>
             <tr><td>Énergie</td><td>à l'unité de kJ / kcal</td></tr>
@@ -119,14 +116,7 @@
             <tr><td>Sel ≤ 0,0125 g</td><td>« &lt; 0,01 g »</td></tr>
           </tbody>
         </table>
-        <p class="mt-1">
-          ⚠️ L'arrondi n'a lieu qu'<strong>une fois</strong>, à l'impression. Arrondir en chemin
-          déplacerait le chiffre d'une unité.
-        </p>
-      </section>
-
-      <section>
-        <h3 class="font-semibold mb-1">Tolérances — non, ce n'est pas « ±20 % » partout</h3>
+        <p class="mt-2 mb-1">À noter les tolérances admises (incertitude de mesure comprise) :</p>
         <table class="table table-xs">
           <tbody>
             <tr><td>Glucides, sucres, protéines, fibres</td><td>&lt; 10 g : ± 2 g · 10–40 g : ± 20 % · &gt; 40 g : ± 8 g</td></tr>
@@ -135,23 +125,9 @@
             <tr><td>Sel</td><td>&lt; 1,25 g : ± 0,375 g · ≥ 1,25 g : ± 20 %</td></tr>
           </tbody>
         </table>
-        <p class="mt-1">Incertitude de mesure comprise. Sous les seuils, la marge est ABSOLUE, et souvent bien plus large que 20 %.</p>
       </section>
 
-      <section>
-        <h3 class="font-semibold mb-1">Ce que ce calcul ne sait pas faire</h3>
-        <p>
-          ⚠️ <strong>Aucun coefficient n'est validé par une analyse de laboratoire.</strong>
-          Plusieurs restent des hypothèses, marquées comme telles dans le code. Les coefficients
-          sont calés sur la littérature quand elle existe, sur des couples graine → tempeh publiés
-          sinon, et à défaut sur une hypothèse assumée.
-        </p>
-        <p class="mt-1">
-          La <strong>vitamine B12</strong> n'est pas déclarée : aucun calcul ne peut l'établir.
-        </p>
-      </section>
-
-      <section>
+      <section class="mt-2">
         <h3 class="font-semibold mb-1">Les sources</h3>
         <p class="mb-1">
           Dix-neuf références scientifiques, chacune avec son statut (lue, résumé, non lue) et ce
@@ -166,10 +142,9 @@
           <li>[15] Ashenafi &amp; Busse, 1991 — <em>Production of tempeh from various indigenous Ethiopian beans</em></li>
         </ul>
         <p class="mt-2">
-          Le détail — la méthode, le droit, chaque coefficient et sa source — est dans le dépôt :
+          Le détail — la méthode, chaque coefficient et sa source — est dans le dépôt :
           <code>refs/methode.md</code>, <code>refs/references.md</code> et
-          <code>refs/transformations.md</code>. <strong>C'est ce document-là qu'on présente à un
-          contrôle</strong>, pas cette page.
+          <code>refs/transformations.md</code>.
         </p>
         <p class="mt-2">
           <a

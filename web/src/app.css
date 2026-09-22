@@ -67,3 +67,13 @@
     display: none !important;
   }
 }
+
+header .nutri {
+  color: #888;
+  font-size: 1.71rem;
+  padding-left: 4px;
+}
+
+a {
+  text-decoration: underline;
+}
