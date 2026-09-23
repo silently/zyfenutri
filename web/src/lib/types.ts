@@ -60,6 +60,12 @@ export type Intrant = {
   name?: string | null;
   role?: Role | null;
   weight_g?: number | null;
+  /**
+   * ⚠️ La cuisson appartient au SUBSTRAT : un soja et une lentille ne cuisent
+   * ni le même temps ni dans la même casserole. La fermentation, elle, reste
+   * un fait du lot — tout le bloc incube ensemble.
+   */
+  cooking_minutes?: number | null;
   dehulled?: boolean;
   roasted?: boolean;
   yield?: number | null;
@@ -74,7 +80,8 @@ export type Intrant = {
  */
 export type Document = {
   recipe?: string | null;
-  cooking_minutes?: number | null;
+  /** ⚠️ Collective : tout le bloc incube ensemble. La CUISSON, elle, est sur
+   *  l'intrant — cf. `Intrant.cooking_minutes`. */
   fermentation_hours?: number | null;
   ingredients: Intrant[];
 };

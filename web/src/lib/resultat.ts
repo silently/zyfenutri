@@ -24,9 +24,11 @@ import type { Resultat } from './types';
 const RESERVE_RECOLTE = 'harvest weight predicted, not weighed';
 
 const LIBELLES: [RegExp, (m: RegExpMatchArray) => string][] = [
+  [/^no cooking time for (.+) \(/, (m) => `${m[1]} — durée de cuisson non renseignée`],
   [/^no cooking time/, () => 'Durée de cuisson non renseignée'],
   [/^no fermentation time/, () => 'Durée de fermentation non renseignée'],
-  [/^invalid cooking time: (.+)$/, (m) => `Durée de cuisson illisible : ${m[1]}`],
+  [/^invalid cooking time for (.+) \(cooking_minutes\): (.+)$/,
+    (m) => `${m[1]} — durée de cuisson illisible : ${m[2]}`],
   [/^invalid fermentation time: (.+)$/, (m) => `Durée de fermentation illisible : ${m[1]}`],
   [
     /^no harvest weight, and no yield factor/,

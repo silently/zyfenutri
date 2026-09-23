@@ -5,8 +5,9 @@
 Le calcul qui transforme *ce qu'on a mis dans un lot de tempeh* en *ce qu'on a
 le droit d'écrire sur l'étiquette*.
 
-Une bibliothèque Python et un script. Pas de serveur, pas de base de données,
-pas de port à ouvrir.
+Une bibliothèque Python, un script, et une **page web** qui fait le même calcul
+dans le navigateur : <https://silently.github.io/zyfenutri/>. Pas de serveur,
+pas de base de données, pas de port à ouvrir.
 
 ## Pourquoi ce dépôt existe
 
@@ -40,7 +41,7 @@ resultat = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients"
 ```yaml
 recipe: Tempeh de soja nature
 harvested_g: 1750          # ce qu'on a PESÉ à la récolte
-cooking_minutes: 30        # durée de cuisson des substrats
+cooking_minutes: 30        # cuisson par défaut ; un intrant peut avoir la sienne
 fermentation_hours: 36     # durée d'incubation
 
 ingredients:
@@ -48,6 +49,8 @@ ingredients:
     role: substrate        # substrate · support · acid · soaking_acid · starter
     weight_g: 1000         # poids AVANT toute transformation, pellicule comprise
     dehulled: true         # dépelliculé : sa perte de masse est dans le rendement
+    cooking_minutes: 45    # LA SIENNE — un soja et une lentille ne cuisent pas pareil,
+                           #  et pas dans la même casserole. À défaut, celle du document.
     per_100g:
       fat: 20
       saturates: 2.9
@@ -206,6 +209,27 @@ passe des masses et des compositions, il rend des valeurs pour 100 g.
 Il **ne lève jamais d'exception sur une donnée manquante** : il le dit dans
 `missing`, et `complete` répond à la seule question qui compte — est-ce que ça
 peut aller sur un emballage ?
+
+## La version web
+
+<https://silently.github.io/zyfenutri/> — une page statique, sans back end. On
+y saisit le document dans des champs, elle rend l'étiquette, et le document
+comme la fiche de calcul se téléchargent en `.yml` ou en `.json`.
+
+⚠️ **C'est le même code Python**, exécuté par [Pyodide](https://pyodide.org)
+dans le navigateur — pas une réécriture en JavaScript. Une seule implémentation
+des règles, donc la page ne peut pas dire autre chose que la ligne de commande.
+
+Elle pose une question que la bibliothèque laisse ouverte : **le poids de
+tempeh**. La page n'a pas de champ « poids récolté » — elle le **prédit**
+toujours par le facteur de rendement, qui y est donc obligatoire. Une étiquette
+porte une valeur moyenne, pas celle d'une fournée. Le détail de ce choix, et ce
+qu'il implique, est dans [`refs/methode.md`](refs/methode.md) § 3.3.
+
+Son aide en ligne (« Comment ça marche ») est la **documentation utilisateur**
+de cette page ; `refs/methode.md` reste la référence de la méthode et du droit.
+
+Le code est dans [`web/`](web/) et n'entre jamais dans celui du moteur.
 
 ## Installation et tests
 

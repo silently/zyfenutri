@@ -198,6 +198,58 @@ perdus en route — à l'eau de trempage, au mycélium —, ce que font les tran
 C'est doublement préférable : plus juste, et **défendable** — on présente des pesées, pas un
 facteur de gonflement emprunté à la littérature.
 
+⚠️ **Ce raisonnement vaut pour juger UN LOT.** Pour une **étiquette**, le poids
+de tempeh se **prédit** par le facteur de rendement, et ce n'est pas un repli :
+le § 3.3 dit pourquoi. Dans les deux cas, c'est la même division finale qui
+porte l'eau reprise — seul change ce qu'on met au dénominateur, et donc ce que
+la fiche décrit.
+
+#### Ce qu'il faut fournir
+
+| Donnée | Pour qui | Remarque |
+|---|---|---|
+| Composition pour 100 g | tout ingrédient **sauf le starter** | le starter est exclu du calcul : ni sa fiche ni son poids n'entrent nulle part |
+| Masse mise en œuvre | tout ingrédient | base de pesée ci-dessous |
+| **Dépelliculage**, oui ou non | substrat | *fait par nous*, après réception |
+| **Torréfaction**, oui ou non | support d'inoculation | *faite par nous* — une farine achetée déjà torréfiée porte le résultat dans sa composition |
+| Durée de **cuisson** | **chaque substrat** | cf. ci-dessous |
+| Durée de **fermentation** | le lot | collective par nature |
+| **Facteur de rendement** | chaque substrat | cf. § 3.3 |
+
+⚠️ **La cuisson appartient au SUBSTRAT, pas au lot.** Un soja, une lentille et
+un pois chiche ne cuisent pas le même temps, et pas dans la même casserole.
+Une durée unique appliquée à une recette mixte ferait subir à l'un une cuisson
+qu'il n'a pas eue — et tous les coefficients de cuisson sont fonction du temps.
+Le document peut porter une durée par défaut ; celle de l'intrant l'emporte.
+
+⚠️ **La fermentation, elle, est un fait du LOT.** Tout le bloc incube ensemble,
+les mêmes heures. La régler par intrant n'aurait aucun sens physique.
+
+⚠️ **Le dépelliculage et la torréfaction se déclarent sur « qui les fait », pas
+sur « l'ingrédient est-il dans cet état ».** Une graine achetée déjà décortiquée
+se déclare **non dépelliculée** : sa composition et son poids en tiennent déjà
+compte, et la déclarer dépelliculée retirerait une pellicule une seconde fois.
+
+#### Sur quelle base on pèse
+
+C'est le point où une erreur de lecture coûte le plus cher, parce qu'elle est
+invisible dans le résultat.
+
+| Rôle | Base |
+|---|---|
+| **Substrat** | la graine **telle qu'achetée**, sèche, **avant toute transformation** — pellicule comprise si on la retire soi-même |
+| Support, acidifiant | le produit **tel quel**, eau comprise |
+
+⚠️ **« Sèche » ne veut pas dire « matière sèche ».** Une légumineuse sèche
+contient encore de l'ordre de 10 % d'eau, et c'est ce poids-là qu'on saisit —
+celui de la balance, pas celui qu'on obtiendrait après dessiccation. Retirer
+cette eau fausserait tout le calcul d'autant.
+
+⚠️ **La base de la masse et celle de la composition doivent être la même.** Une
+fiche donnée pour 100 g de produit tel quel, appliquée à une masse hors eau,
+mesure deux choses différentes. C'est la raison pour laquelle un acidifiant se
+pèse tel quel : sa fiche l'est aussi.
+
 ### 3.2 La chaîne de calcul — cinq transformations, et rien d'autre
 
 > ⚠️ **Aucun coefficient n'est encore validé par une analyse de laboratoire.** Plusieurs restent
@@ -211,6 +263,11 @@ on additionne, et on divise **une seule fois** par le poids de tempeh obtenu.
 Ce dernier point est la clé de la méthode : c'est cette division finale, et elle seule, qui porte
 l'eau reprise au trempage. Un lot qui double de poids en s'hydratant voit mécaniquement toutes ses
 valeurs divisées par deux, sans qu'aucun coefficient n'ait à le dire.
+
+⚠️ **Rinçage et égouttage ne sont pas des coefficients à part.** Ils sont
+compris dans les pertes du trempage et de la cuisson, qui se font toutes deux
+« dans une eau qu'on jette » : c'est cette eau, et ce qu'elle emporte, qui est
+chiffrée. Les compter séparément compterait la même perte deux fois.
 
 Chaque transformation raisonne **pour 100 g d'ingrédient tel qu'il a été pesé, avant toute
 transformation**, et rend des grammes de nutriment, jamais une teneur « pour 100 g de ce qui
@@ -459,7 +516,67 @@ Nouvelle-Zélande) ou 16,0 g (Norvège). Le calcul ne retire des fibres qu'avec 
 fermentation, où les études les voient plutôt monter. Toute allégation « source de fibres »
 devrait s'appuyer sur un dosage, pas sur ce calcul.
 
-### 3.3 Du lot à l'étiquette
+### 3.3 Le poids de tempeh : pesé, ou prédit
+
+La division finale a besoin d'un poids de tempeh. Il s'obtient de **deux
+façons**, et le choix n'est pas cosmétique : il décide de ce que la fiche
+représente.
+
+| | D'où vient le poids | Ce que la fiche représente |
+|---|---|---|
+| **Pesé** (`harvested_g`) | la balance, après récolte | **ce lot-là**, et lui seul |
+| **Prédit** (facteur de rendement) | `masse mise en œuvre × facteur`, par substrat | **la recette**, indépendamment des fournées |
+
+#### Le facteur de rendement
+
+Un nombre par substrat : kg de tempeh pour 1 kg de graines telles qu'achetées.
+Il porte **toute** l'évolution de masse de ce substrat sur la fabrication :
+
+- les **pertes** — dépelliculage s'il est fait après réception, pertes de
+  matière aux manipulations, eau perdue pendant la fermentation ;
+- les **gains**, plus importants — l'eau reprise au trempage et à la cuisson.
+
+⚠️ **Un facteur par substrat, jamais un facteur global.** Un soja et une
+lentille ne gonflent pas pareil ; un mélange calé sur une moyenne fausserait la
+part de chacun dans le produit.
+
+⚠️ **Le facteur ne porte que la MASSE.** Ce que la pellicule emporte en
+nutriments appartient à la transformation « dépelliculage » (§ 3.2). Masse et
+composition se comptent séparément — sinon la perte est comptée deux fois.
+
+#### Pourquoi prédire vaut mieux pour une étiquette
+
+C'est contre-intuitif : une pesée est une mesure, une prédiction une hypothèse.
+Mais une étiquette ne décrit pas une fournée, elle décrit un produit.
+
+- **Le poids récolté porte sa propre incertitude** : la pesée elle-même, et
+  surtout l'humidité du jour, qui déplace le dénominateur sans que la
+  composition sèche ait bougé.
+- **Une étiquette imprimée ne change pas d'un lot à l'autre.** Recalculer par
+  fournée produirait des valeurs qui bougent sans qu'on puisse les imprimer.
+- **Le facteur de rendement est une consigne d'atelier**, réglée et relue par
+  l'exploitation ; ce n'est pas une approximation subie.
+- **Les tolérances du § 2 absorbent l'écart** d'une fournée à l'autre, très
+  largement sous les seuils absolus.
+
+⚠️ **`zyfenutri` marque quand même la fiche prédite comme incomplète** :
+`missing` porte alors « harvest weight predicted, not weighed — fine to design
+a recipe, not to label a product ». La bibliothèque a raison de le dire : elle
+ne sait pas si son appelant conçoit une recette ou étiquette un lot.
+
+**C'est à l'appelant de lever cette réserve, et à lui seul de le justifier.**
+La page web le fait — elle n'a pas de champ « poids récolté » et rend une fiche
+de recette —, et elle ne lève **que** celle-là : une composition manquante ou
+une durée absente laissent la fiche incomplète. Le rendement y devient donc
+**obligatoire**, puisqu'il est le seul dénominateur.
+
+⚠️ **Le pesé reste le bon choix pour juger une fournée** : confronter un lot
+réel à ce qu'on attendait, ou comparer à une analyse de laboratoire. Les deux
+usages coexistent ; ils ne répondent pas à la même question.
+
+---
+
+### 3.4 Du lot à l'étiquette
 
 Une étiquette porte une **valeur moyenne** (article 31, paragraphe 4), pas la valeur d'un lot.
 La valeur retenue est donc la **moyenne des lots libérés** d'une même recette, et le dossier indique

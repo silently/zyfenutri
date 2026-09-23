@@ -21,6 +21,7 @@ export function intrantVide(): Intrant {
     name: '',
     role: 'substrate',
     weight_g: null,
+    cooking_minutes: null,
     dehulled: false,
     roasted: false,
     yield: null,
@@ -31,7 +32,6 @@ export function intrantVide(): Intrant {
 export function documentVide(): Document {
   return {
     recipe: '',
-    cooking_minutes: null,
     fermentation_hours: null,
     ingredients: [intrantVide()],
   };
@@ -42,14 +42,17 @@ export function documentVide(): Document {
  * l'envoyer à zéro ou à chaîne vide. Ce qui manque, `missing` le dira.
  */
 export function pourLeMoteur(doc: Document): Document {
-  const net: Document = { ingredients: [] };
-  if (doc.recipe?.trim()) net.recipe = doc.recipe.trim();
-  for (const cle of ['cooking_minutes', 'fermentation_hours'] as const) {
+  // ⚠️ L'ordre des clés est celui de la LECTURE, pas celui du code : un
+  // document s'ouvre sur son identifiant, puis son procédé, puis ses
+  // ingrédients. En JavaScript, l'ordre d'insertion est l'ordre de sortie.
+  const entete: Document = { ingredients: [] };
+  if (doc.recipe?.trim()) entete.recipe = doc.recipe.trim();
+  for (const cle of ['fermentation_hours'] as const) {
     const v = nombre(doc[cle]);
-    if (v !== null) net[cle] = v;
+    if (v !== null) entete[cle] = v;
   }
 
-  net.ingredients = doc.ingredients.map((i) => {
+  const ingredients = doc.ingredients.map((i) => {
     const sortie: Intrant = {};
     if (i.name?.trim()) sortie.name = i.name.trim();
     if (i.role) sortie.role = i.role;
@@ -57,6 +60,8 @@ export function pourLeMoteur(doc: Document): Document {
     if (poids !== null) sortie.weight_g = poids;
     const rendement = nombre(i.yield);
     if (rendement !== null) sortie.yield = rendement;
+    const cuisson = nombre(i.cooking_minutes);
+    if (cuisson !== null) sortie.cooking_minutes = cuisson;
     // Des booléens : `false` veut bien dire « non », pas « on ne sait pas ».
     if (i.dehulled) sortie.dehulled = true;
     if (i.roasted) sortie.roasted = true;
@@ -74,7 +79,10 @@ export function pourLeMoteur(doc: Document): Document {
     }
     return sortie;
   });
-  return net;
+
+  // `ingredients` est posé en DERNIER, pour qu'il se lise en dernier.
+  const { ingredients: _vide, ...tete } = entete;
+  return { ...tete, ingredients };
 }
 
 export function versYaml(doc: Document): string {
@@ -123,6 +131,7 @@ export function depuisYaml(texte: string): Relecture {
   const lu = parse(texte) as (Partial<Document> & { harvested_g?: unknown }) | null;
   if (!lu || typeof lu !== 'object') throw new Error('Document vide ou illisible');
 
+  const cuissonDuLot = nombre((lu as { cooking_minutes?: unknown }).cooking_minutes);
   const ignores: string[] = [];
   if (lu.harvested_g != null) {
     ignores.push(
@@ -145,7 +154,6 @@ export function depuisYaml(texte: string): Relecture {
   );
   const document: Document = {
     recipe: lu.recipe ?? '',
-    cooking_minutes: nombre(lu.cooking_minutes),
     fermentation_hours: nombre(lu.fermentation_hours),
     ingredients: (intrants.length ? intrants : [intrantVide()]).map((i) => {
       const base = intrantVide();
@@ -164,6 +172,11 @@ export function depuisYaml(texte: string): Relecture {
         role: i?.role ?? 'substrate',
         weight_g: nombre(i?.weight_g),
         yield: nombre(i?.yield),
+        // ⚠️ Un document venu de la ligne de commande peut porter la cuisson au
+        // niveau du lot. On la REDESCEND sur les substrats qui n'en ont pas :
+        // le calcul est identique, et la valeur devient visible et modifiable
+        // au lieu de rester un réglage caché.
+        cooking_minutes: nombre(i?.cooking_minutes) ?? cuissonDuLot,
         dehulled: Boolean(i?.dehulled),
         roasted: Boolean(i?.roasted),
         per_100g: compo,
@@ -214,8 +227,7 @@ export const MODELE = `# Modèle de lot pour zyfenutri — remplacez les valeurs
 # « on ne sait pas » et « il n'y en a pas » sont deux affirmations différentes.
 
 recipe: tempeh-soja-nature   # identifiant : c'est lui qui nomme les fichiers
-cooking_minutes: 30
-fermentation_hours: 36
+fermentation_hours: 36       # collective : tout le bloc incube ensemble
 
 ingredients:
   # Le substrat : le seul à tremper, cuire et gonfler. Son facteur de rendement
@@ -225,6 +237,7 @@ ingredients:
     weight_g: 1000        # poids BRUT, pellicule comprise
     dehulled: true
     yield: 1.75
+    cooking_minutes: 30   # LA SIENNE : chaque substrat cuit son propre temps
     per_100g: {fat: 20, saturates: 2.9, carbs: 15, sugars: 5.7, fibre: 15, protein: 40, salt: 0.01}
 
   # L'acidifiant pré-inoculation : mélangé au substrat, il compte entièrement.

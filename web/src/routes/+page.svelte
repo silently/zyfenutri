@@ -46,7 +46,6 @@
   const vide = documentVide();
   let entete = $state({
     recipe: vide.recipe,
-    cooking_minutes: vide.cooking_minutes,
     fermentation_hours: vide.fermentation_hours,
   });
   let lignes = $state<Ligne[]>([]);
@@ -95,7 +94,6 @@
       const relu = depuisYaml(yamlColle);
       entete = {
         recipe: relu.document.recipe,
-        cooking_minutes: relu.document.cooking_minutes,
         fermentation_hours: relu.document.fermentation_hours,
       };
       // Un ingrédient relu est déjà saisi : il s'ouvre en LECTURE, pas en
@@ -148,21 +146,25 @@
 
 <div class="min-h-screen bg-base-100">
   <header class="border-b border-base-300 bg-base-200 no-print">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-baseline gap-3 flex-wrap">
-      <!-- « zyfe » est le logo, « nutri » s'écrit à la suite : un seul mot, deux
-           matières. La marge basse rattrape la courbe décorative sous les
-           lettres, pour que les deux moitiés partagent la même ligne de base. -->
-      <h1 class="flex items-end gap-0.5 shrink-0">
-        <img src={logo} alt="zyfe" class="h-11 w-auto" />
-        <span class="text-3xl font-bold tracking-tight nutri mb-[0.3rem]">nutri</span>
+    <!-- ⚠️ UNE seule rangée, jamais deux. Pas de `flex-wrap` : c'est lui qui
+         faisait retomber le sous-titre à la ligne et épaississait l'en-tête.
+         C'est le sous-titre qui absorbe le manque de place (`min-w-0` +
+         `truncate`), parce que c'est le seul élément qu'on peut couper sans
+         perdre une fonction. Les tailles sont dans `app.css`. -->
+    <div class="max-w-6xl mx-auto px-4 py-1.5 flex items-center gap-3">
+      <!-- « zyfe » est le logo, « nutri » s'écrit à la suite : un seul mot,
+           deux matières, une seule ligne de base. -->
+      <h1 class="flex items-end shrink-0">
+        <img src={logo} alt="zyfe" />
+        <span class="nutri">nutri</span>
       </h1>
-      <p class="text-sm text-base-content/70 flex-1 min-w-48">
-        Estimation analytique de la valeur nutritionnelle de 100g de tempeh
+      <p class="text-sm text-base-content/70 flex-1 min-w-0 truncate">
+        Estimation de la déclaration nutritionnelle du tempeh
       </p>
       {#if etat.phase === 'prêt'}
-        <span class="badge badge-sm badge-ghost">moteur {etat.version}</span>
+        <span class="badge badge-sm badge-ghost shrink-0">moteur {etat.version}</span>
       {/if}
-      <button class="btn btn-sm btn-ghost gap-1" onclick={() => (aideOuverte = true)}>
+      <button class="btn btn-sm btn-ghost gap-1 shrink-0" onclick={() => (aideOuverte = true)}>
         <CircleQuestionMark size={16} /> Comment ça marche
       </button>
     </div>
@@ -206,13 +208,10 @@
                   placeholder="ex : tempeh-soja-nature"
                 />
               </fieldset>
-              <fieldset class="fieldset shrink-0">
-                <legend class="fieldset-legend">Cuisson</legend>
-                <div class="join">
-                  <input type="number" min="0" step="any" class="input input-sm join-item w-20" bind:value={entete.cooking_minutes} />
-                  <span class="input input-sm join-item bg-base-200 w-auto px-3 text-base-content/60">min</span>
-                </div>
-              </fieldset>
+              <!-- ⚠️ La fermentation SEULE est un fait du lot : tout le bloc
+                   incube ensemble. La cuisson est sur chaque substrat — un soja
+                   et une lentille ne cuisent ni le même temps ni dans la même
+                   casserole. -->
               <fieldset class="fieldset shrink-0">
                 <legend class="fieldset-legend">Fermentation</legend>
                 <div class="join">
@@ -256,6 +255,57 @@
 
       <!-- ═══ CE QUI SORT ═══ -->
       <section class="flex flex-col gap-4">
+                <div class="card bg-base-200 border border-base-300 no-print">
+          <div class="card-body gap-2 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="font-medium text-sm">Données</h2>
+              <div class="flex gap-1">
+                <button class="btn btn-xs btn-ghost gap-1" onclick={telechargerModele}>
+                  <FileDown size={14} /> modèle
+                </button>
+                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('yml')}>
+                  <Download size={14} /> .yml
+                </button>
+                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('json')}>
+                  <Download size={14} /> .json
+                </button>
+              </div>
+            </div>
+            <!-- ⚠️ Hauteur bornée : le document grandit avec la recette, et
+                 « Données » étant au-dessus, un bloc libre repousserait
+                 l'étiquette hors de l'écran — on calculerait sans rien voir. -->
+            <pre class="bg-base-300 rounded p-2 text-xs overflow-auto max-h-72">{yaml}</pre>
+            <p class="text-xs text-base-content/60">
+              C'est exactement ce que reçoit <code>compute()</code>, et ce que lit
+              <code>zyfenutri lot.yml</code>.
+            </p>
+            <details>
+              <summary class="text-xs cursor-pointer">Repartir d'un document existant</summary>
+              <textarea
+                class="textarea textarea-sm w-full mt-2 font-mono text-xs"
+                rows="5"
+                bind:value={yamlColle}
+                placeholder="Collez un document YAML…"
+              ></textarea>
+              <button class="btn btn-xs mt-1" onclick={importer} disabled={!yamlColle.trim()}>
+                Charger dans les champs
+              </button>
+              {#if ignores.length}
+                <!-- ⚠️ Ce qui a été laissé de côté se dit : le perdre en silence
+                     donnerait un résultat différent sans rien pour l'expliquer. -->
+                <div class="alert alert-info mt-2 text-xs">
+                  <div>
+                    <p class="font-semibold">Laissé de côté à la lecture</p>
+                    <ul class="list-disc ml-4 mt-1">
+                      {#each ignores as i (i)}<li>{i}</li>{/each}
+                    </ul>
+                  </div>
+                </div>
+              {/if}
+            </details>
+          </div>
+        </div>
+
         {#if resultat && lecture}
           <Etiquette {resultat} complete={lecture.complete} />
 
@@ -312,54 +362,6 @@
             L'étiquette apparaîtra ici.
           </div>
         {/if}
-
-        <div class="card bg-base-200 border border-base-300 no-print">
-          <div class="card-body gap-2 p-4">
-            <div class="flex items-center justify-between gap-2">
-              <h2 class="font-medium text-sm">Le document</h2>
-              <div class="flex gap-1">
-                <button class="btn btn-xs btn-ghost gap-1" onclick={telechargerModele}>
-                  <FileDown size={14} /> modèle
-                </button>
-                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('yml')}>
-                  <Download size={14} /> .yml
-                </button>
-                <button class="btn btn-xs btn-ghost gap-1" onclick={() => telechargerDocument('json')}>
-                  <Download size={14} /> .json
-                </button>
-              </div>
-            </div>
-            <pre class="bg-base-300 rounded p-2 text-xs overflow-x-auto">{yaml}</pre>
-            <p class="text-xs text-base-content/60">
-              C'est exactement ce que reçoit <code>compute()</code>, et ce que lit
-              <code>zyfenutri lot.yml</code>.
-            </p>
-            <details>
-              <summary class="text-xs cursor-pointer">Repartir d'un document existant</summary>
-              <textarea
-                class="textarea textarea-sm w-full mt-2 font-mono text-xs"
-                rows="5"
-                bind:value={yamlColle}
-                placeholder="Collez un document YAML…"
-              ></textarea>
-              <button class="btn btn-xs mt-1" onclick={importer} disabled={!yamlColle.trim()}>
-                Charger dans les champs
-              </button>
-              {#if ignores.length}
-                <!-- ⚠️ Ce qui a été laissé de côté se dit : le perdre en silence
-                     donnerait un résultat différent sans rien pour l'expliquer. -->
-                <div class="alert alert-info mt-2 text-xs">
-                  <div>
-                    <p class="font-semibold">Laissé de côté à la lecture</p>
-                    <ul class="list-disc ml-4 mt-1">
-                      {#each ignores as i (i)}<li>{i}</li>{/each}
-                    </ul>
-                  </div>
-                </div>
-              {/if}
-            </details>
-          </div>
-        </div>
       </section>
     </div>
   </main>

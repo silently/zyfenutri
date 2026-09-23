@@ -54,9 +54,10 @@
           Une valeur inconnue n'est pas une valeur nulle :
         </p>
         <ul class="list-disc ml-5">
-          <li>0 signifie "absence de"</li>
+          <li>0 signifie "absence de" — à l'affichage il ressort « &lt; 0,5 g » (« &lt; 0,1 g » pour les AGS, « &lt; 0,01 g » pour le sel), comme l'impose le tableau 4</li>
           <li>un champ laissé vide signifie "valeur inconnue". Zyfe nutri ne pourra pas produire d'estimation sur cette dimension et indiquera un tiret en sortie</li>
         </ul>
+        <p class="mt-1">Enfin, l'énergie est calculée d'après les estimations de macronutriments et grâce aux coefficients de l'annexe XIV. Les déclarations énergétiques des ingrédients ne sont donc pas utilisées.</p>
       </section>
 
       <section class="mt-2">
@@ -86,19 +87,12 @@
       <section class="mt-2">
         <h3 class="font-semibold mb-1">Le facteur de rendement</h3>
         <p>
-          Ce facteur, obligatoire et à donner <strong>indépendamment pour chaque substrat</strong> (soja, lentille verte, pois chiche...), donne l'évolution de la masse de ce substrat sur l'ensemble de la fabrication. Il inclut : 
+          Ce facteur, obligatoire et à donner <strong>indépendamment pour chaque substrat</strong> (soja, lentille verte, pois chiche...). Il donne l'évolution de la masse de ce substrat sur l'ensemble de la fabrication et inclut : 
         </p>
         <ul class="list-disc ml-5">
-          <li>les pertes : dépelliculage si effectué après réception, pertes de matière pendant les opérations, perte d'eau durant pendant la fermentation</li>
-          <li>les gains, plus importants, dûs au gonflement lors du trempage et de la cuisson</li>
+          <li>les <strong>pertes</strong> : dépelliculage si effectué après réception, pertes de matière pendant les opérations, perte d'eau durant pendant la fermentation</li>
+          <li>les <strong>gains</strong>, plus importants, dûs au gonflement lors du trempage et de la cuisson</li>
         </ul>
-      </section>
-
-      <section class="mt-2">
-        <h3 class="font-semibold mb-1">L'énergie est calculée à la fin</h3>
-        <p>
-          L'énergie est calculée d'après les macronutriments estimés et grâce aux coefficients de l'<strong>annexe XIV</strong>. Les déclarations énergétiques des ingrédients ne sont donc pas utilisées.
-        </p>
       </section>
 
       <section class="mt-2">

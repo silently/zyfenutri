@@ -5,7 +5,9 @@
 The calculation that turns *what went into a batch of tempeh* into *what may be
 written on the label*.
 
-A Python library and a script. No server, no database, no port to open.
+A Python library, a script, and a **web page** that runs the same calculation
+in the browser: <https://silently.github.io/zyfenutri/>. No server, no
+database, no port to open.
 
 ## Why this repository exists
 
@@ -39,7 +41,7 @@ result = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": 
 ```yaml
 recipe: Plain soy tempeh
 harvested_g: 1750          # what was WEIGHED at harvest
-cooking_minutes: 30        # cooking time of the substrates
+cooking_minutes: 30        # default cooking time; an ingredient may carry its own
 fermentation_hours: 36     # incubation time
 
 ingredients:
@@ -47,6 +49,8 @@ ingredients:
     role: substrate        # substrate · support · acid · soaking_acid · starter
     weight_g: 1000         # weight BEFORE any transform, hulls included
     dehulled: true         # dehulled: its loss of mass is in the yield
+    cooking_minutes: 45    # ITS OWN — a soybean and a lentil do not cook for the
+                           #  same time, nor in the same pot. Falls back to the document's.
     per_100g:
       fat: 20
       saturates: 2.9
@@ -201,6 +205,27 @@ and compositions, and returns values per 100 g.
 
 It **never raises an exception on missing data**: it says so in `missing`, and
 `complete` answers the only question that matters — can this go on a package?
+
+## The web version
+
+<https://silently.github.io/zyfenutri/> — a static page, no back end. The
+document is typed into fields, the page renders the label, and both the
+document and the calculation sheet download as `.yml` or `.json`.
+
+⚠️ **It is the same Python code**, run by [Pyodide](https://pyodide.org) in the
+browser — not a JavaScript rewrite. One implementation of the rules, so the
+page cannot say anything the command line would not.
+
+It answers a question the library leaves open: **the weight of tempeh**. The
+page has no "harvested weight" field — it always **predicts** that weight from
+the yield factor, which is therefore required there. A label carries an average
+value, not one batch's. That choice, and what follows from it, is in
+[`refs/methode.md`](refs/methode.md) § 3.3 *(in French)*.
+
+Its in-page help is the **user documentation** for that page;
+`refs/methode.md` remains the reference for the method and the law.
+
+The code lives in [`web/`](web/) and never reaches into the engine's own.
 
 ## Installation and tests
 

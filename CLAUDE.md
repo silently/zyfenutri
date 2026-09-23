@@ -72,9 +72,10 @@ une habitude.
 | **CORE** | le calcul et son contrat : `compute()`, la ligne de commande, les transformations, les données de `refs/` | `zyfenutri/`, `tests/`, `refs/`, les `README`, `ARCHITECTURE.md` |
 | **WEB** | le portage en application **full front**, sans back end : saisie du document dans des champs HTML, calcul dans le navigateur, rendu de l'étiquette | `web/` |
 
-⚠️ **CORE implémente le contrat avec zyfejournal.** Tout ce qui s'y touche se
-répercute sur un consommateur réel, épinglé par un SHA. C'est ce qui lui vaut
-ses invariants, ses tests et ses versions.
+⚠️ **CORE porte le contrat public.** Tout ce qui s'y touche se répercute sur
+des consommateurs qu'on ne voit pas d'ici, et qui l'épinglent par un SHA. C'est
+ce qui lui vaut ses invariants, ses tests et ses versions. *(Le dépôt est
+public : il décrit ce qu'il fait, jamais qui l'utilise.)*
 
 🛑 **WEB NE TOUCHE PAS À CORE.** Aucune tâche WEB ne modifie un fichier de
 CORE — ni une signature, ni un coefficient, ni un test, ni un README. Si un
@@ -131,6 +132,12 @@ lève **cette réserve de CORE, et elle seule** ; une composition manquante ou u
 durée absente rendent toujours la fiche incomplète. C'est le même partage que
 pour une fiche de formulation côté consommateur.
 
+⚠️ **`web/src/lib/composants/Aide.svelte` est la SOURCE DE VÉRITÉ de WEB.**
+C'est la doc utilisateur de la version web : ce qu'elle affirme fait foi. Si le
+code s'en écarte, c'est le **code** qu'on corrige, pas la doc — et si c'est la
+doc qui a tort, on la change d'abord, explicitement. Elle ne se contredit pas
+non plus avec `refs/methode.md`, qui reste la référence de CORE et du droit.
+
 ⚠️ **Les messages de `missing` se traduisent dans WEB.** CORE les écrit en
 anglais — ils s'adressent à un appelant. La page s'adresse à une personne. Ce
 qui n'est pas reconnu passe **tel quel** : mieux vaut de l'anglais qu'un silence.
@@ -168,6 +175,19 @@ plus un arrondi mais une affirmation. C'est la même erreur que la double
 division, et quatre tests la gardent. Le `per_100g` du document est arrondi
 pour la lecture : cet arrondi-là est terminal, rien ne le relit.
 
+⚠️ **La masse et la composition se pèsent sur la MÊME base.** Un substrat entre
+avec le poids de la graine **telle qu'achetée**, sèche, avant toute
+transformation, pellicule comprise si on la retire soi-même ; tout le reste
+entre **tel quel**, eau comprise. ⚠️ « Sèche » n'est pas « matière sèche » : une
+légumineuse sèche porte encore ~10 % d'eau, et c'est ce poids-là qu'on saisit.
+Détail : `refs/methode.md` § 3.1.
+
+⚠️ **`dehulled` et `roasted` disent QUI le fait, pas dans quel état est
+l'ingrédient.** Une graine achetée déjà décortiquée est `dehulled: false` : sa
+fiche et son poids en tiennent déjà compte, et la déclarer dépelliculée
+retirerait une pellicule une seconde fois. Idem pour une farine achetée
+torréfiée.
+
 ⚠️ **Une valeur « dont » ne dépasse jamais son total.** Par défaut, les AGS
 suivent les lipides ; seule exception, la fermentation, où leur part augmente
 (calée sur `refs/official/`). Les sucres ont leur propre règle, découpée de
@@ -201,6 +221,12 @@ donnée, pas le code.
 
 ⚠️ **Un réglage (durée…) se lie par une fabrique** qui rend une `Transform` :
 toutes les transformations gardent la même signature d'appel.
+
+⚠️ **Un réglage se lit au bon NIVEAU.** La **cuisson** appartient à l'intrant
+(un soja et une lentille ne cuisent ni le même temps ni dans la même
+casserole), avec la valeur du document en repli. La **fermentation** appartient
+au lot : tout le bloc incube ensemble. Avant d'ajouter un réglage, se demander
+lequel des deux il est — se tromper produit un calcul faux qui ne se voit pas.
 
 ⚠️ Si une transformation a besoin de savoir *quel* ingrédient elle traite, c'est
 que la règle est mal placée.

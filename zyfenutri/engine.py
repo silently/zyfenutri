@@ -70,8 +70,19 @@ def _ingredient(raw: dict, document: dict, missing: list[str]) -> tuple[dict, In
     if "soaking" in steps:
         transforms.append(tf.Soaking())
     if "cooking" in steps:
-        transforms.append(_step(tf.Cooking, document.get("cooking_minutes"),
-                                "Cuisson (durée inconnue)", missing, "cooking time (cooking_minutes)"))
+        # ⚠️ Cooking time belongs to the INGREDIENT, with the document as a
+        # fallback. A soybean, a lentil and a chickpea do not cook for the same
+        # time, and they cook in separate pots: one duration for a mixed recipe
+        # would apply to one substrate a cooking it never had, and every
+        # coefficient here is a function of time.
+        #
+        # Fermentation is the opposite: the whole block incubates together, for
+        # the same hours. It is a fact of the batch, and stays on the document.
+        minutes = raw.get("cooking_minutes")
+        if minutes is None:
+            minutes = document.get("cooking_minutes")
+        transforms.append(_step(tf.Cooking, minutes, "Cuisson (durée inconnue)",
+                                missing, f"cooking time for {name} (cooking_minutes)"))
     if "fermentation" in steps:
         transforms.append(_step(tf.Fermentation, document.get("fermentation_hours"),
                                 "Fermentation (durée inconnue)", missing,

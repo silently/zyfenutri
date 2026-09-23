@@ -68,6 +68,67 @@ def test_the_document_shows_its_values_rounded_for_reading():
         assert value == round(value, decimals)
 
 
+# --- Cooking belongs to the ingredient -----------------------------------------
+
+def deux_substrats(**reglages):
+    """Two substrates in one recipe — the case a single duration gets wrong."""
+    return compute({
+        "harvested_g": 2000, "fermentation_hours": 36,
+        "ingredients": [
+            {"name": "Soja", "role": "substrate", "weight_g": 500, "per_100g": SOY,
+             **reglages.get("soja", {})},
+            {"name": "Lentilles", "role": "substrate", "weight_g": 500, "per_100g": SOY,
+             **reglages.get("lentilles", {})},
+        ],
+        **reglages.get("document", {}),
+    })
+
+
+def test_each_substrate_cooks_for_its_own_time():
+    """⚠️ Un soja et une lentille ne cuisent pas le même temps, et pas dans la
+    même casserole. Une durée unique appliquerait à l'un une cuisson qu'il n'a
+    pas subie — et chaque coefficient de cuisson est fonction du temps."""
+    r = deux_substrats(soja={"cooking_minutes": 60}, lentilles={"cooking_minutes": 10})
+    labels = [" ".join(l["transforms"]) for l in r["ingredients"]]
+    assert "Cuisson 60 min" in labels[0]
+    assert "Cuisson 10 min" in labels[1]
+
+    # Et ça se voit dans ce que chacun apporte : ce qui part à l'eau part avec
+    # le temps. À composition et masse égales, le moins cuit en garde plus.
+    assert r["ingredients"][1]["contributes_g"]["carbs"] > r["ingredients"][0]["contributes_g"]["carbs"]
+
+
+def test_the_document_still_sets_the_time_when_an_ingredient_has_none():
+    """Le réglage du document reste le repli : un document écrit avant que la
+    cuisson devienne un fait de l'intrant calcule exactement comme avant."""
+    r = deux_substrats(document={"cooking_minutes": 30})
+    for ligne in r["ingredients"]:
+        assert "Cuisson 30 min" in " ".join(ligne["transforms"])
+    assert not any("cooking time" in m for m in r["missing"])
+
+
+def test_an_ingredient_time_beats_the_document_one():
+    r = deux_substrats(document={"cooking_minutes": 30}, lentilles={"cooking_minutes": 10})
+    assert "Cuisson 30 min" in " ".join(r["ingredients"][0]["transforms"])
+    assert "Cuisson 10 min" in " ".join(r["ingredients"][1]["transforms"])
+
+
+def test_a_missing_cooking_time_names_the_substrate():
+    """Avec plusieurs substrats, « durée de cuisson manquante » ne suffit plus :
+    il faut dire LEQUEL."""
+    r = deux_substrats(soja={"cooking_minutes": 60})
+    assert any("Lentilles" in m and "cooking time" in m for m in r["missing"])
+    assert not any("Soja" in m and "cooking time" in m for m in r["missing"])
+
+
+def test_fermentation_stays_a_fact_of_the_batch():
+    """⚠️ Elle, elle est collective : tout le bloc incube ensemble, les mêmes
+    heures. La régler par intrant n'aurait aucun sens physique."""
+    r = deux_substrats(soja={"cooking_minutes": 30}, lentilles={"cooking_minutes": 30})
+    for ligne in r["ingredients"]:
+        assert "Fermentation 36 h" in " ".join(ligne["transforms"])
+
+
 # --- Who goes through what ----------------------------------------------------
 
 def test_a_substrate_soaks_cooks_and_ferments():

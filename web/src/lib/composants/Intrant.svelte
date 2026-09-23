@@ -28,12 +28,21 @@
   const estSupport = $derived(intrant.role === 'support');
   const aUneFiche = $derived(porteUneFiche(intrant.role));
 
-  /** Ce qui empêchera un calcul complet. Dit, jamais bloquant. */
+  /**
+   * Ce qui empêchera un calcul complet. Dit, jamais bloquant.
+   *
+   * ⚠️ Un rôle exclu du calcul ne réclame RIEN. Le moteur écarte le starter
+   * avant toute vérification : ni son poids ni sa fiche n'entrent nulle part,
+   * et aucun `missing` ne le cite. Signaler un manque chez lui ferait croire
+   * à un défaut qui ne peut pas exister.
+   */
   const lacunes = $derived.by(() => {
+    if (!aUneFiche) return [];
     const out: string[] = [];
     if (!intrant.name?.trim()) out.push('pas de nom');
     if (intrant.weight_g == null) out.push('pas de poids');
     if (estSubstrat && intrant.yield == null) out.push('pas de facteur de rendement');
+    if (estSubstrat && intrant.cooking_minutes == null) out.push('pas de durée de cuisson');
     if (aUneFiche) {
       const absents = NUTRIMENTS.filter((n) => intrant.per_100g?.[n] == null);
       if (absents.length === NUTRIMENTS.length) out.push('pas de composition');
@@ -92,6 +101,31 @@
 
       {#if estSubstrat}
         <div class="grid gap-3 sm:grid-cols-2">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">
+              Cuisson <span class="text-error">*</span>
+            </legend>
+            <div class="join">
+              <input
+                type="number"
+                min="0"
+                step="any"
+                class="input input-sm join-item w-20 {intrant.cooking_minutes == null
+                  ? 'input-error'
+                  : ''}"
+                bind:value={intrant.cooking_minutes}
+                required
+              />
+              <span class="input input-sm join-item bg-base-200 w-auto px-3 text-base-content/60">min</span>
+            </div>
+            <!-- ⚠️ Par SUBSTRAT, pas par lot : un soja et une lentille ne cuisent
+                 ni le même temps ni dans la même casserole, et tous les
+                 coefficients de cuisson sont fonction du temps. -->
+            <p class="text-xs text-base-content/60 mt-1">
+              Le temps de cuisson <strong>de cet ingrédient</strong>. Chacun cuit le sien.
+            </p>
+          </fieldset>
+
           <fieldset class="fieldset">
             <legend class="fieldset-legend">Dépelliculage</legend>
             <label class="label cursor-pointer justify-start gap-2">
@@ -222,6 +256,12 @@
             Rendement :
             <strong class={intrant.yield == null ? 'text-error' : ''}>
               {intrant.yield ?? 'manquant'}
+            </strong>
+          </span>
+          <span>
+            Cuisson :
+            <strong class={intrant.cooking_minutes == null ? 'text-error' : ''}>
+              {intrant.cooking_minutes != null ? `${intrant.cooking_minutes} min` : 'manquante'}
             </strong>
           </span>
         {/if}
