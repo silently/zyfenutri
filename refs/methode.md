@@ -1,13 +1,17 @@
 # Valeurs nutritionnelles — réglementation et méthode de calcul
 
 > **Objet.** Établir les valeurs nutritionnelles d'un tempeh **par le calcul**, sans analyse
-> de laboratoire, d'une manière qui tienne devant un contrôle. Ce document est la **méthode** :
-> il doit pouvoir être présenté tel quel à la DDPP, avec les fiches de calcul (`steps`) que
-> produit `zyfenutri`.
+> de laboratoire, d'une manière qui tienne devant un contrôle.
 >
 > Dernière vérification des sources : **11 septembre 2026**.
 
 ---
+
+## 0. À vos risques et périls
+
+Cet outil est fourni à titre indicatif, il reste améliorable (tout commentaire ou référence scientifique permettant de l'améliorer peut être proposé en ouvrant un ticket) et sans garantie. Il peut être intéressant de le confronter à des résultats en laboratoire.
+
+Si l'outil peut induire en erreur, ne pas oublier que les déclarations nutritionnelles des ingrédients peuvent elles aussi être erronées.
 
 ## 1. Ce que la réglementation impose
 
@@ -108,8 +112,6 @@ contrainte, pas l'intérêt.
 
 ## 2. Les tolérances — non, ce n'est pas « ±20 % » partout
 
-C'est la correction la plus importante de ce document.
-
 La référence est le **guide de la Commission européenne** de décembre 2012, *« Guide à l'intention
 des autorités compétentes pour le contrôle de la conformité… ayant trait à la fixation de
 tolérances pour les valeurs nutritionnelles déclarées sur les étiquettes »*.
@@ -153,7 +155,7 @@ Autrement dit : sur les nutriments **minoritaires**, la tolérance absolue est *
 que 20 %. Sur les protéines — le nutriment qui compte pour le tempeh, et celui qu'un contrôle
 dosera en premier — c'est bien ± 20 %, et c'est le plus contraignant du lot.
 
-### Deux subtilités qui jouent en notre faveur
+### Deux subtilités
 
 **La tolérance inclut l'incertitude de mesure.** Le guide le précise : inutile de la majorer pour
 en tenir compte. Mais c'est aussi dire que l'incertitude du labo de contrôle est *déjà consommée*
@@ -181,14 +183,15 @@ Une étiquette affichant « 12,3456 g » est fautive : elle suggère une précis
 ### 3.1 Le principe, et pourquoi il est plus solide que l'estimation classique
 
 La méthode habituelle consiste à appliquer un **facteur de gonflement estimé** aux valeurs des
-ingrédients secs. Elle est inutile ici : **les deux bouts de la chaîne se pèsent.**
+ingrédients secs, une fois, pour tout le produit. Ici, chaque substrat porte **son propre**
+facteur, réglé sur les fournées de l'atelier :
 
 ```
   masse de chaque ingrédient, telle qu’achetée  →  weight_g, par intrant
                      ↓
-              fabrication
+              fabrication                       →  × yield, par substrat
                      ↓
-        poids de tempeh récolté                 →  harvested_g
+        poids de tempeh                         →  tempeh_g
 ```
 
 Le rapport entre les deux **est** le facteur de dilution. Il n'est pas estimé : il est pesé, lot par
@@ -535,16 +538,20 @@ Nouvelle-Zélande) ou 16,0 g (Norvège). Le calcul ne retire des fibres qu'avec 
 fermentation, où les études les voient plutôt monter. Toute allégation « source de fibres »
 devrait s'appuyer sur un dosage, pas sur ce calcul.
 
-### 3.3 Le poids de tempeh : pesé, ou prédit
+### 3.3 Le poids de tempeh : le facteur de rendement, et lui seul
 
-La division finale a besoin d'un poids de tempeh. Il s'obtient de **deux
-façons**, et le choix n'est pas cosmétique : il décide de ce que la fiche
-représente.
+La division finale a besoin d'un poids de tempeh. Il vient **toujours** des
+facteurs de rendement — `somme des (masse mise en œuvre × facteur)` — et il
+ressort sous `tempeh_g`.
 
-| | D'où vient le poids | Ce que la fiche représente |
-|---|---|---|
-| **Pesé** (`harvested_g`) | la balance, après récolte | **ce lot-là**, et lui seul |
-| **Prédit** (facteur de rendement) | `masse mise en œuvre × facteur`, par substrat | **la recette**, indépendamment des fournées |
+⚠️ **Il n'y a pas de poids pesé à fournir, et c'est délibéré.** Une étiquette
+porte une **valeur moyenne** (article 31 § 4), pas celle d'une fournée. Faire
+dépendre la fiche d'une récolte pesée la ferait bouger d'une fabrication à
+l'autre, au gré de la pesée et de l'humidité du jour, sans que la composition
+sèche ait changé. On décrit **une recette**, pas un lot.
+
+*(Jusqu'à la version 1.13, le document acceptait un `harvested_g`. La clé a été
+retirée en 2.0 : elle servait un usage que cet outil ne poursuit pas.)*
 
 #### Le facteur de rendement
 
@@ -563,13 +570,13 @@ part de chacun dans le produit.
 nutriments appartient à la transformation « dépelliculage » (§ 3.2). Masse et
 composition se comptent séparément — sinon la perte est comptée deux fois.
 
-#### Pourquoi prédire vaut mieux pour une étiquette
+#### Pourquoi c'est le bon choix
 
-C'est contre-intuitif : une pesée est une mesure, une prédiction une hypothèse.
+C'est contre-intuitif : une pesée est une mesure, un facteur une consigne.
 Mais une étiquette ne décrit pas une fournée, elle décrit un produit.
 
-- **Le poids récolté porte sa propre incertitude** : la pesée elle-même, et
-  surtout l'humidité du jour, qui déplace le dénominateur sans que la
+- **Un poids récolté porterait sa propre incertitude** : la pesée elle-même, et
+  surtout l'humidité du jour, qui déplacerait le dénominateur sans que la
   composition sèche ait bougé.
 - **Une étiquette imprimée ne change pas d'un lot à l'autre.** Recalculer par
   fournée produirait des valeurs qui bougent sans qu'on puisse les imprimer.
@@ -578,20 +585,15 @@ Mais une étiquette ne décrit pas une fournée, elle décrit un produit.
 - **Les tolérances du § 2 absorbent l'écart** d'une fournée à l'autre, très
   largement sous les seuils absolus.
 
-⚠️ **`zyfenutri` marque quand même la fiche prédite comme incomplète** :
-`missing` porte alors « harvest weight predicted, not weighed — fine to design
-a recipe, not to label a product ». La bibliothèque a raison de le dire : elle
-ne sait pas si son appelant conçoit une recette ou étiquette un lot.
+⚠️ **Sans facteur sur un substrat, il n'y a pas de dénominateur** : `tempeh_g`
+ressort `null`, toutes les valeurs avec, et `missing` le dit. Le facteur est
+donc **obligatoire** — c'est la seule donnée du document sans laquelle rien ne
+se calcule.
 
-**C'est à l'appelant de lever cette réserve, et à lui seul de le justifier.**
-La page web le fait — elle n'a pas de champ « poids récolté » et rend une fiche
-de recette —, et elle ne lève **que** celle-là : une composition manquante ou
-une durée absente laissent la fiche incomplète. Le rendement y devient donc
-**obligatoire**, puisqu'il est le seul dénominateur.
-
-⚠️ **Le pesé reste le bon choix pour juger une fournée** : confronter un lot
-réel à ce qu'on attendait, ou comparer à une analyse de laboratoire. Les deux
-usages coexistent ; ils ne répondent pas à la même question.
+⚠️ **Une analyse de laboratoire se compare quand même.** Ses deux masses,
+avant et après, *sont* un facteur de rendement : `après / avant`. Le moteur
+n'a donc rien perdu à ne plus accepter un poids pesé — il demande la même
+grandeur, exprimée d'une seule façon (`zyfenutri/refs_data.py`).
 
 ---
 

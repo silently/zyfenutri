@@ -101,14 +101,15 @@ Il se **règle** : c'est une consigne d'atelier, qu'on relit sur ses propres
 fournées et qu'on ajuste. Deux substrats différents ont deux facteurs
 différents, et un mélange calé sur une moyenne fausserait la part de chacun.
 
-⚠️ Le moteur assortit alors la fiche d'une réserve dans `missing` — il ne sait
-pas si son appelant conçoit une recette ou décrit un lot. C'est à l'appelant de
-la lever, et de le justifier : `refs/methode.md` § 3.3 dit dans quels cas.
+⚠️ **Sans lui, pas de dénominateur** : `tempeh_g` ressort `null`, toutes les
+valeurs avec, et `missing` le dit.
 
 ### Ce qu'il rend
 
 ```yaml
 recipe: Tempeh de soja nature
+tempeh_g: 1810             # le dénominateur, donné par les facteurs de rendement
+complete: true             # toutes les valeurs sont connues
 
 per_100g:                  # les valeurs calculées ; null = inconnu
   fat: 9.66
@@ -138,11 +139,10 @@ steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Soja : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Vinaigre de cidre : tel quel"
-  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh prédits par le facteur de rendement"
+  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh, donnés par les facteurs de rendement"
   - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing:                   # ce qui empêche d'étiqueter, en clair
-  - "harvest weight predicted, not weighed — fine to design a recipe, not to label a product"
+missing: []                # ce qui empêche d'étiqueter, en clair — ici, rien
 warnings: []               # ce qui n'empêche pas, mais mérite un œil
 coefficients: {...}        # chaque coefficient des transformations ; null = lacune
 ```

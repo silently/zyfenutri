@@ -1,7 +1,7 @@
 """The calculation: one document in, one document out.
 
     from zyfenutri import compute
-    result = compute({"harvested_g": 1750, "cooking_minutes": 30, "fermentation_hours": 36,
+    result = compute({"cooking_minutes": 30, "fermentation_hours": 36,
                       "ingredients": [...]})
 
 Input and output are plain dictionaries, which is also exactly what YAML and
@@ -88,8 +88,10 @@ def _ingredient(raw: dict, document: dict, missing: list[str]) -> tuple[dict, In
                                 "Fermentation (durée inconnue)", missing,
                                 "fermentation time (fermentation_hours)"))
 
-    # Only substrates swell: every other ingredient keeps its mass.
-    yield_factor = raw.get("yield") if role == "substrate" else 1.0
+    # What this ingredient's mass becomes, from raw weight to harvest. Anything
+    # that is not a substrate keeps its mass unless the caller says otherwise —
+    # a laboratory sample, for instance, loses water while it ferments.
+    yield_factor = raw.get("yield")
     ingredient = Ingredient(name=name, facts=facts, raw_mass=raw_mass,
                             transforms=tuple(transforms), yield_factor=yield_factor or 1.0)
 
@@ -122,18 +124,19 @@ def compute(document: dict) -> dict:
     lines = [line for line, _ in pairs]
     counted = tuple(i for _, i in pairs if i is not None)
 
-    weighed = document.get("harvested_g")
-    substrates = [line for line in lines if line["role"] == "substrate"]
-    if weighed:
-        product_mass, estimated = float(weighed), False
-    elif substrates and all(line.get("yield_known", True) for line in lines):
+    # ⚠️ The weight of tempeh is ALWAYS predicted, from the yield factors. There
+    # is no weighed harvest to give: a label carries an average value, not one
+    # batch's, and a weighed batch would make the sheet move from one making to
+    # the next. The yield factor is the single denominator.
+    # ⚠️ Pas d'exigence de substrat : un échantillon de laboratoire, pris après
+    # cuisson, n'en porte pas et a pourtant un rendement mesuré. Ce qu'il faut,
+    # c'est que CHAQUE intrant compté sache ce que sa masse devient.
+    if counted and all(line.get("yield_known", True) for line in lines):
         product_mass = round(sum(i.raw_mass * i.yield_factor for i in counted), 1)
-        estimated = True
-        missing.append("harvest weight predicted, not weighed — fine to design "
-                       "a recipe, not to label a product")
     else:
-        product_mass, estimated = None, False
-        missing.append("no harvest weight, and no yield factor to predict one")
+        product_mass = None
+        missing.append("no yield factor on a substrate: the weight of tempeh "
+                       "cannot be worked out")
     for line in lines:
         line.pop("yield_known", None)
 
@@ -185,8 +188,8 @@ def compute(document: dict) -> dict:
     missing = list(dict.fromkeys(missing))
     return {
         "recipe": document.get("recipe"),
-        "harvested_g": product_mass,
-        "harvest_estimated": estimated,
+        # The denominator of the single division, in grams.
+        "tempeh_g": product_mass,
         "complete": bool(counted) and bool(product_mass) and not missing,
         "per_100g": per_100g_full,
         "label": declared_label(exact_full),
@@ -194,12 +197,12 @@ def compute(document: dict) -> dict:
         "ingredients": lines,
         "missing": missing,
         "warnings": warnings,
-        "steps": _steps(recipe, product_mass, estimated, per_100g),
+        "steps": _steps(recipe, product_mass, per_100g),
         "coefficients": _plain(tf.COEFFICIENTS),
     }
 
 
-def _steps(recipe: Recipe, product_mass: float | None, estimated: bool,
+def _steps(recipe: Recipe, product_mass: float | None,
            per_100g: dict[str, float | None]) -> list[str]:
     """The chain, spelled out. This is the sheet one shows when challenged."""
     n = len(recipe.ingredients)
@@ -209,8 +212,8 @@ def _steps(recipe: Recipe, product_mass: float | None, estimated: bool,
         # ⚠️ Le facteur de rendement porte DÉJÀ tout ce qui change la masse d'un
         # substrat, du grain brut à la récolte. La fiche n'a donc pas à détailler
         # ici ce que cette division recouvre : elle dit par quoi on divise.
-        out.append(f"Ramené à 100 g de produit fini : ÷ {product_mass:g} g de tempeh "
-                   f"{'prédits par le facteur de rendement' if estimated else 'pesés'}")
+        out.append(f"Ramené à 100 g de produit fini : ÷ {product_mass:g} g de tempeh, "
+                   "donnés par les facteurs de rendement")
         out.append("Énergie calculée depuis les macros (annexe XIV), jamais recopiée")
     if any(v is None for v in per_100g.values()):
         out.append("Une valeur inconnue d'un intrant ou d'une transformation rend la valeur "

@@ -1,27 +1,16 @@
 /**
  * Lire le résultat de CORE pour cette page.
  *
- * Deux choses s'y jouent, toutes deux **côté WEB** — aucune ne touche CORE.
+ * ⚠️ **Les manques se disent en français.** CORE les écrit en anglais — c'est
+ * sa règle, son `missing` s'adresse à un appelant, pas à un lecteur. Ici c'est
+ * une personne qui lit. Ce qu'on ne sait pas traduire est rendu tel quel :
+ * mieux vaut de l'anglais qu'un silence.
  *
- * 1. **La réserve sur le poids de récolte se lève ici.** Sans `harvested_g`,
- *    CORE prédit le poids par le facteur de rendement et dit, à raison, que
- *    ça vaut pour concevoir une recette et non pour étiqueter un produit.
- *    Cette page CONÇOIT des recettes : le facteur de rendement est une
- *    consigne d'atelier qu'on règle soi-même, et les tolérances d'étiquetage
- *    (règlement INCO, tableau 1) absorbent l'écart d'une fournée à l'autre.
- *    ⚠️ On ne lève QUE cette réserve : une composition manquante ou une durée
- *    absente rendent toujours la fiche incomplète.
- *
- * 2. **Les manques se disent en français.** CORE les écrit en anglais — c'est
- *    sa règle, son `missing` s'adresse à un appelant, pas à un lecteur. Ici
- *    c'est une personne qui lit. Ce qu'on ne sait pas traduire est rendu tel
- *    quel : mieux vaut de l'anglais qu'un silence.
+ * ⚠️ On ne juge RIEN ici. `complete` vient du moteur tel quel. Cette couche a
+ * porté, jusqu'à zyfenutri 1.13, la levée d'une réserve sur le poids de
+ * récolte ; le moteur ne l'émet plus depuis qu'il n'accepte plus de poids pesé.
  */
 import type { Resultat } from './types';
-
-/** La seule réserve qu'on lève. ⚠️ Le texte vient de `engine.py` — s'il change
- *  là-bas, la réserve réapparaît ici au lieu de disparaître en silence. */
-const RESERVE_RECOLTE = 'harvest weight predicted, not weighed';
 
 const LIBELLES: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^no cooking time for (.+) \(/, (m) => `${m[1]} — durée de cuisson non renseignée`],
@@ -31,8 +20,8 @@ const LIBELLES: [RegExp, (m: RegExpMatchArray) => string][] = [
     (m) => `${m[1]} — durée de cuisson illisible : ${m[2]}`],
   [/^invalid fermentation time: (.+)$/, (m) => `Durée de fermentation illisible : ${m[1]}`],
   [
-    /^no harvest weight, and no yield factor/,
-    () => 'Aucun facteur de rendement sur le substrat : le poids de tempeh ne peut pas être prédit',
+    /^no yield factor on a substrate/,
+    () => 'Aucun facteur de rendement sur un substrat : le poids de tempeh ne peut pas être établi',
   ],
   [/^(.+) — no composition given$/, (m) => `${m[1]} — pas de composition saisie`],
   [/^(.+) — no weight given$/, (m) => `${m[1]} — pas de poids saisi`],
@@ -62,18 +51,16 @@ function enFrancais(message: string): string {
 }
 
 export type Lecture = {
-  /** ⚠️ Recalculé : CORE compte la réserve sur la récolte, pas nous. */
   complete: boolean;
   manques: string[];
-  /** Le poids de tempeh prédit par les facteurs de rendement, en grammes. */
-  poidsPredit: number | null;
+  /** Le poids de tempeh, donné par les facteurs de rendement, en grammes. */
+  poidsTempeh: number | null;
 };
 
 export function lire(resultat: Resultat): Lecture {
-  const manques = resultat.missing.filter((m) => !m.startsWith(RESERVE_RECOLTE));
   return {
-    complete: manques.length === 0 && resultat.per_100g.energy_kj != null,
-    manques: manques.map(enFrancais),
-    poidsPredit: resultat.harvested_g,
+    complete: resultat.complete,
+    manques: resultat.missing.map(enFrancais),
+    poidsTempeh: resultat.tempeh_g,
   };
 }

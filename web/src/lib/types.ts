@@ -73,10 +73,9 @@ export type Intrant = {
 };
 
 /**
- * ⚠️ **Pas de `harvested_g`.** Le poids de tempeh est PRÉDIT par le facteur de
- * rendement du substrat. Peser une fournée ne dit rien de ce qu'on imprime :
- * ce poids porte sa propre incertitude, et une étiquette ne change pas d'une
- * fournée à l'autre. CORE accepte toujours la clé ; cette page ne l'envoie pas.
+ * ⚠️ **Pas de poids récolté.** Le poids de tempeh vient des facteurs de
+ * rendement, et de rien d'autre — le moteur n'accepte plus autre chose depuis
+ * la 2.0. Une étiquette porte une valeur moyenne, pas celle d'une fournée.
  */
 export type Document = {
   recipe?: string | null;
@@ -97,8 +96,8 @@ export type LigneIntrant = {
 
 export type Resultat = {
   recipe: string | null;
-  harvested_g: number | null;
-  harvest_estimated: boolean;
+  /** Le dénominateur de la division unique, donné par les facteurs de rendement. */
+  tempeh_g: number | null;
   complete: boolean;
   per_100g: Record<string, number | null>;
   /** Les mentions, telles qu'elles s'écrivent. ⚠️ Déjà arrondies par CORE : on

@@ -10,30 +10,36 @@ RICE = {"fat": 1.0, "saturates": 0.3, "carbs": 80.0, "sugars": 0.5,
 PROCESS = {"cooking_minutes": 30, "fermentation_hours": 36}
 
 
-def one_substrate(**document):
+def one_substrate(tempeh_g=2000.0, **document):
+    """Un substrat de 1 kg dont le rendement donne `tempeh_g` de produit.
+
+    ⚠️ Il n'y a pas de poids pesé à donner : le facteur de rendement EST le
+    dénominateur. On le règle ici pour que la division tombe sur la valeur
+    qu'un test veut éprouver."""
     return compute({
         **PROCESS,
-        "ingredients": [{"name": "Soja", "role": "substrate",
-                         "weight_g": 1000, "per_100g": SOY}],
+        "ingredients": [{"name": "Soja", "role": "substrate", "weight_g": 1000,
+                         "yield": tempeh_g / 1000, "per_100g": SOY}],
         **document,
     })
 
 
 # --- The heart: water is carried by the final division, once -----------------
 
-def test_water_uptake_halves_the_values():
-    """A batch that doubled in weight by taking up water has all its values
-    halved. The final division does that on its own."""
-    dry = one_substrate(harvested_g=1000)
-    wet = one_substrate(harvested_g=2000)
+def test_a_doubled_yield_halves_the_values():
+    """Un substrat dont le rendement double voit toutes ses valeurs divisées
+    par deux. La division finale le fait à elle seule."""
+    dry = one_substrate(tempeh_g=1000)
+    wet = one_substrate(tempeh_g=2000)
     assert wet["per_100g"]["fat"] == pytest.approx(dry["per_100g"]["fat"] / 2, rel=1e-3)
 
 
-def test_water_is_never_counted_twice():
-    """The trap: a hydration factor ON TOP of the division would count water
-    twice. So absolute masses must not depend on the harvest weight."""
-    a = one_substrate(harvested_g=1500)
-    b = one_substrate(harvested_g=3000)
+def test_the_yield_is_never_counted_twice():
+    """Le piège : un second facteur PAR-DESSUS la division compterait deux fois
+    le même changement de masse. Les masses absolues d'un intrant ne doivent
+    donc pas dépendre du rendement."""
+    a = one_substrate(tempeh_g=1500)
+    b = one_substrate(tempeh_g=3000)
     assert a["ingredients"][0]["contributes_g"] == b["ingredients"][0]["contributes_g"]
 
 
@@ -51,7 +57,7 @@ def test_the_label_is_written_from_the_exact_value():
 
     twice_differs = 0
     for weight in range(1000, 3000):
-        result = one_substrate(harvested_g=weight)
+        result = one_substrate(tempeh_g=weight)
         if result["label"] != declared_label(result["per_100g"]):
             twice_differs += 1
     # Self-checking: if no weight landed in the zone the assertion above would
@@ -62,7 +68,7 @@ def test_the_label_is_written_from_the_exact_value():
 def test_the_document_shows_its_values_rounded_for_reading():
     """Two decimals for the nutrients, one for the energy. That rounding is
     terminal: nothing reads it back."""
-    per_100g = one_substrate(harvested_g=1750)["per_100g"]
+    per_100g = one_substrate(tempeh_g=1750)["per_100g"]
     for name, value in per_100g.items():
         decimals = 1 if name.startswith("energy_") else 2
         assert value == round(value, decimals)
@@ -73,7 +79,7 @@ def test_the_document_shows_its_values_rounded_for_reading():
 def deux_substrats(**reglages):
     """Two substrates in one recipe — the case a single duration gets wrong."""
     return compute({
-        "harvested_g": 2000, "fermentation_hours": 36,
+        "fermentation_hours": 36,
         "ingredients": [
             {"name": "Soja", "role": "substrate", "weight_g": 500, "per_100g": SOY,
              **reglages.get("soja", {})},
@@ -132,7 +138,7 @@ def test_fermentation_stays_a_fact_of_the_batch():
 # --- Who goes through what ----------------------------------------------------
 
 def test_a_substrate_soaks_cooks_and_ferments():
-    line = one_substrate(harvested_g=2000)["ingredients"][0]
+    line = one_substrate(tempeh_g=2000)["ingredients"][0]
     assert line["transforms"] == ["Trempage et rinçage (une nuit)",
                                   "Cuisson 30 min (égouttage compris)",
                                   "Fermentation 36 h"]
@@ -141,15 +147,16 @@ def test_a_substrate_soaks_cooks_and_ferments():
 def test_a_support_ferments_but_never_soaks():
     """It goes in after draining: it does not soak, but it is in the block
     throughout incubation."""
-    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
+    result = compute({**PROCESS, "ingredients": [
         {"name": "Farine de riz", "role": "support", "weight_g": 100, "per_100g": RICE}]})
     assert result["ingredients"][0]["transforms"] == ["Fermentation 36 h"]
-    # 100 g × 1 % fat, 11 % of it lost to fermentation, over 1000 g.
-    assert result["per_100g"]["fat"] == pytest.approx(0.089, abs=0.01)
+    # 100 g × 1 % de lipides, dont 11 % partent à la fermentation, sur 100 g
+    # de produit : le support ne gonfle pas, sa masse est son dénominateur.
+    assert result["per_100g"]["fat"] == pytest.approx(0.88, abs=0.01)
 
 
 def test_a_roasted_support_is_roasted_then_fermented():
-    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
+    result = compute({**PROCESS, "ingredients": [
         {"name": "Kinako", "role": "support", "weight_g": 100,
          "roasted": True, "per_100g": RICE}]})
     assert result["ingredients"][0]["transforms"] == ["Torréfaction", "Fermentation 36 h"]
@@ -157,7 +164,7 @@ def test_a_roasted_support_is_roasted_then_fermented():
 
 
 def test_a_roasting_intensity_is_no_longer_read():
-    result = compute({"harvested_g": 1000, **PROCESS, "ingredients": [
+    result = compute({**PROCESS, "ingredients": [
         {"name": "Kinako", "role": "support", "weight_g": 100,
          "roasted": True, "roasting_intensity": 2, "per_100g": RICE}]})
     assert any("roasting_intensity" in w for w in result["warnings"])
@@ -165,11 +172,11 @@ def test_a_roasting_intensity_is_no_longer_read():
 
 def test_the_pre_inoculation_acid_goes_through_untouched():
     """Added after cooking: its only rule is its share of the mass."""
-    result = compute({"harvested_g": 1000, "ingredients": [
+    result = compute({"ingredients": [
         {"name": "Vinaigre", "role": "acid", "weight_g": 100,
          "per_100g": {"fat": 0.0, "saturates": 0.0, "carbs": 1.0, "sugars": 0.4,
                       "fibre": 0.0, "protein": 0.0, "salt": 0.01}}]})
-    assert result["per_100g"]["carbs"] == 0.1        # 100 g × 1 %, no loss
+    assert result["per_100g"]["carbs"] == 1.0        # 100 g × 1 %, aucune perte
     assert result["ingredients"][0]["transforms"] == []
 
 
@@ -179,7 +186,7 @@ def test_the_pre_inoculation_acid_goes_through_untouched():
 ])
 def test_what_is_left_out_says_why(role, reason):
     """Both exclusions slightly UNDER-declare, which is the safe direction."""
-    result = compute({"harvested_g": 1000, "ingredients": [
+    result = compute({"ingredients": [
         {"name": "X", "role": role, "weight_g": 10, "per_100g": RICE}]})
     line = result["ingredients"][0]
     assert line["counted"] is False
@@ -189,7 +196,7 @@ def test_what_is_left_out_says_why(role, reason):
 # --- Dehulling ----------------------------------------------------------------
 
 def test_a_dehulled_substrate_goes_through_dehulling():
-    result = compute({"harvested_g": 2000, **PROCESS, "ingredients": [
+    result = compute({**PROCESS, "ingredients": [
         {"name": "Soja", "role": "substrate", "weight_g": 1000,
          "dehulled": True, "per_100g": SOY}]})
     assert result["ingredients"][0]["transforms"][0] == "Dépelliculage"
@@ -201,50 +208,69 @@ def test_hulls_weigh_nothing_here():
     result = compute({**PROCESS, "ingredients": [
         {"name": "Soja", "role": "substrate", "weight_g": 1000, "yield": 1.75,
          "dehulled": True, "per_100g": SOY}]})
-    assert result["harvested_g"] == 1750
+    assert result["tempeh_g"] == 1750
 
 
 def test_a_raw_weight_is_no_longer_read():
-    result = one_substrate(harvested_g=2000, ingredients=[
+    result = one_substrate(tempeh_g=2000, ingredients=[
         {"name": "Soja", "role": "substrate", "weight_g": 1000, "raw_weight_g": 1100,
          "dehulled": True, "per_100g": SOY}])
     assert any("raw_weight_g" in w for w in result["warnings"])
 
 
-# --- The harvest weight -------------------------------------------------------
+# --- Le poids de tempeh : toujours donné par le rendement ---------------------
 
-def test_a_recipe_can_be_costed_before_anything_is_weighed():
-    """No weighing: the harvest is predicted from the yield factor."""
+def test_the_weight_of_tempeh_comes_from_the_yield():
+    """⚠️ Il n'y a pas de poids pesé à fournir. Une étiquette porte une valeur
+    moyenne, pas celle d'une fournée : un poids récolté ferait bouger la fiche
+    d'une fabrication à l'autre. Le rendement est le seul dénominateur."""
     result = compute({**PROCESS, "ingredients": [
         {"name": "Soja", "role": "substrate", "weight_g": 1000,
          "yield": 1.75, "per_100g": SOY}]})
-    assert result["harvested_g"] == 1750
-    assert result["harvest_estimated"] is True
+    assert result["tempeh_g"] == 1750
     assert result["per_100g"]["fat"] is not None
-    # But it is NOT complete: one does not label with an estimated denominator.
+    # Et c'est une fiche COMPLÈTE : rien ne manque plus.
+    assert result["complete"] is True, result["missing"]
+
+
+def test_each_substrate_brings_its_own_yield():
+    """Deux substrats, deux facteurs : le poids de tempeh est leur somme."""
+    result = compute({**PROCESS, "ingredients": [
+        {"name": "Soja", "role": "substrate", "weight_g": 600,
+         "yield": 1.75, "per_100g": SOY},
+        {"name": "Lentilles", "role": "substrate", "weight_g": 400,
+         "yield": 2.0, "per_100g": SOY}]})
+    assert result["tempeh_g"] == pytest.approx(600 * 1.75 + 400 * 2.0)
+
+
+def test_a_substrate_without_a_yield_gives_no_weight():
+    """Sans rendement, aucun dénominateur — et on le dit."""
+    result = compute({**PROCESS, "ingredients": [
+        {"name": "Soja", "role": "substrate", "weight_g": 1000, "per_100g": SOY}]})
+    assert result["tempeh_g"] is None
     assert result["complete"] is False
-    assert any("not to label" in m for m in result["missing"])
+    assert any("yield factor" in m for m in result["missing"])
 
 
-def test_a_weighed_harvest_always_beats_a_predicted_one():
-    result = one_substrate(harvested_g=2000)
-    assert result["harvested_g"] == 2000
-    assert result["harvest_estimated"] is False
+def test_an_ingredient_that_is_not_a_substrate_keeps_its_mass():
+    """Seul un substrat doit déclarer un rendement ; les autres gardent leur
+    masse. ⚠️ Un rendement donné explicitement est quand même honoré : un
+    échantillon de laboratoire n'est pas un substrat et en porte un."""
+    sans = compute({"ingredients": [
+        {"name": "Kinako", "role": "support", "weight_g": 30, "per_100g": RICE}]})
+    assert sans["tempeh_g"] == 30
 
-
-def test_only_substrates_carry_a_yield_factor():
-    """A support does not make the product swell: its mass simply adds."""
-    result = compute({"ingredients": [
-        {"name": "Kinako", "role": "support", "weight_g": 30,
-         "yield": 1.75, "per_100g": RICE}]})
-    assert result["harvested_g"] is None
+    avec = compute({"ingredients": [
+        {"name": "Échantillon", "role": "sample_after_cooking", "weight_g": 100,
+         "yield": 0.9, "fermentation_hours": 36, "per_100g": RICE}]})
+    assert avec["tempeh_g"] == pytest.approx(90)
 
 
 # --- Unknowns cascade ---------------------------------------------------------
 
 def test_a_missing_setting_makes_everything_unknown():
     """No cooking time: the cooking cannot be computed, so nothing after it."""
-    result = compute({"harvested_g": 2000, "fermentation_hours": 36,
+    result = compute({"fermentation_hours": 36,
                       "ingredients": [{"name": "Soja", "role": "substrate",
                                        "weight_g": 1000, "per_100g": SOY}]})
     assert all(v is None for v in result["per_100g"].values())
@@ -254,7 +280,7 @@ def test_a_missing_setting_makes_everything_unknown():
 
 def test_an_ingredient_without_composition_makes_the_product_unknown():
     """Not a partial sum over the others: an unknown ingredient, an unknown product."""
-    result = compute({"harvested_g": 1000, "ingredients": [
+    result = compute({"ingredients": [
         {"name": "Vinaigre", "role": "acid", "weight_g": 100, "per_100g": SOY},
         {"name": "Mystère", "role": "acid", "weight_g": 10}]})
     assert all(v is None for v in result["per_100g"].values())
@@ -262,14 +288,14 @@ def test_an_ingredient_without_composition_makes_the_product_unknown():
 
 
 def test_an_ingredient_without_weight_makes_the_product_unknown():
-    result = compute({"harvested_g": 1000, "ingredients": [
+    result = compute({"ingredients": [
         {"name": "Vinaigre", "role": "acid", "weight_g": 100, "per_100g": SOY},
         {"name": "Sel", "role": "acid", "per_100g": SOY}]})
     assert all(v is None for v in result["per_100g"].values())
 
 
 def test_a_nutrient_missing_from_one_sheet_is_unknown_in_the_product():
-    result = compute({"harvested_g": 1000, "ingredients": [
+    result = compute({"ingredients": [
         {"name": "Vinaigre", "role": "acid", "weight_g": 100, "per_100g": SOY},
         {"name": "Farine", "role": "acid", "weight_g": 100, "per_100g": {"fat": 1.0}}]})
     assert result["per_100g"]["protein"] is None
@@ -279,43 +305,43 @@ def test_a_nutrient_missing_from_one_sheet_is_unknown_in_the_product():
 
 def test_energy_is_missing_when_a_macro_is():
     """An energy short of one nutrient is worse than no energy at all."""
-    result = one_substrate(harvested_g=2000, fermentation_hours=60)
+    result = one_substrate(tempeh_g=2000, fermentation_hours=60)
     assert result["per_100g"]["carbs"] is None
     assert result["per_100g"]["energy_kj"] is None
     assert result["label"]["energy"] is None
 
 
 def test_an_invalid_setting_is_reported_not_raised():
-    result = one_substrate(harvested_g=2000, cooking_minutes=-3)
+    result = one_substrate(tempeh_g=2000, cooking_minutes=-3)
     assert any("invalid cooking time" in m for m in result["missing"])
 
 
 def test_a_soaking_time_is_no_longer_read():
     """Soaking is always one night, 10 to 15 h."""
-    result = one_substrate(harvested_g=2000, soaking_hours=30)
+    result = one_substrate(tempeh_g=2000, soaking_hours=30)
     assert any("one night" in w for w in result["warnings"])
 
 
 # --- What comes out -----------------------------------------------------------
 
 def test_the_steps_are_returned_so_the_result_can_be_argued_with():
-    joined = " ".join(one_substrate(harvested_g=2000)["steps"])
+    joined = " ".join(one_substrate(tempeh_g=2000)["steps"])
     assert "Trempage et rinçage (une nuit)" in joined and "Fermentation 36 h" in joined
-    assert "÷ 2000 g de tempeh pesés" in joined
+    assert "÷ 2000 g de tempeh, donnés par les facteurs de rendement" in joined
 
 
 def test_coefficients_are_shown_and_no_longer_read():
-    result = one_substrate(harvested_g=2000, coefficients={"leaching_carbs": 45})
+    result = one_substrate(tempeh_g=2000, coefficients={"leaching_carbs": 45})
     assert result["coefficients"]["soaking_sugars_kept"] == 0.73
     assert any("no longer read" in w for w in result["warnings"])
 
 
 def test_a_fully_described_soy_tempeh_can_be_labelled():
-    result = one_substrate(harvested_g=2000)
+    result = one_substrate(tempeh_g=2000)
     assert result["complete"] is True
     assert result["label"]["energy"] is not None
 
 
 def test_a_gap_is_spelled_out_in_the_steps():
-    result = one_substrate(harvested_g=2000, fermentation_hours=60)
+    result = one_substrate(tempeh_g=2000, fermentation_hours=60)
     assert "jamais remplacée par un zéro" in " ".join(result["steps"])

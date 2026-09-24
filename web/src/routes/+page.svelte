@@ -61,8 +61,8 @@
 
   const yaml = $derived(versYaml(doc));
   const pret = $derived(etat.phase === 'prêt');
-  // ⚠️ `lire` lève la réserve sur le poids de récolte et met les manques en
-  // français. Ce que CORE rend n'est pas touché — cf. `$lib/resultat`.
+  // ⚠️ `lire` met seulement les manques en français. Aucun jugement n'est
+  // repris ici : `complete` vient du moteur — cf. `$lib/resultat`.
   const lecture = $derived(resultat ? lire(resultat) : null);
 
   onMount(async () => {
@@ -309,9 +309,9 @@
         {#if resultat && lecture}
           <Etiquette {resultat} complete={lecture.complete} />
 
-          {#if lecture.poidsPredit}
+          {#if lecture.poidsTempeh}
             <p class="text-xs text-base-content/60 no-print">
-              Calculé pour <strong>{lecture.poidsPredit} g</strong> de tempeh, prédits par les
+              Calculé pour <strong>{lecture.poidsTempeh} g</strong> de tempeh, donnés par les
               facteurs de rendement. Une étiquette porte une valeur moyenne, pas celle d'une
               fournée : c'est le facteur qui se règle, pas le calcul.
             </p>

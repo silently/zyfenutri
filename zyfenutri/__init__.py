@@ -6,7 +6,6 @@ on the label*. A library with no dependencies, and a command-line script.
     from zyfenutri import compute
 
     result = compute({
-        "harvested_g": 1750,
         "ingredients": [
             {"name": "Soja", "role": "substrate", "weight_g": 1000,
              "per_100g": {"fat": 20, "saturates": 2.9, "carbs": 15,
@@ -34,7 +33,7 @@ from zyfenutri.recipe import Ingredient, Recipe
 from zyfenutri.transforms import (COEFFICIENTS, EXCLUDED, PIPELINE, Cooking, Dehulling, Fermentation,
                                   Retention, Roasting, Soaking, Transform, process)
 
-__version__ = "1.13.0"
+__version__ = "2.0.0"
 
 __all__ = [
     "compute", "NUTRIENTS", "LABELS", "COEFFICIENTS", "PIPELINE", "EXCLUDED",

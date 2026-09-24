@@ -106,15 +106,15 @@ It is **set**, not measured once: a workshop instruction, read back against
 one's own batches and adjusted. Two different substrates have two different
 factors, and a blend set on an average would skew each one's share.
 
-⚠️ The engine then attaches a reservation to the sheet, in `missing`: it cannot
-know whether its caller is designing a recipe or describing a batch. Lifting
-that reservation is the caller's call, and the caller's to justify —
-`refs/methode.md` § 3.3 says when *(in French)*.
+⚠️ **Without it there is no denominator**: `tempeh_g` comes back `null`, every
+value with it, and `missing` says so.
 
 ### What comes out
 
 ```yaml
 recipe: Plain soy tempeh
+tempeh_g: 1810             # the denominator, given by the yield factors
+complete: true             # every value is known
 
 per_100g:                  # the computed values; null = unknown
   fat: 9.66
@@ -144,11 +144,10 @@ steps:                     # the calculation sheet, in French, to show when chal
   - "Soybeans : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Cider vinegar : tel quel"
-  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh prédits par le facteur de rendement"
+  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh, donnés par les facteurs de rendement"
   - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing:                   # what stands in the way of a label, in plain words
-  - "harvest weight predicted, not weighed — fine to design a recipe, not to label a product"
+missing: []                # what stands in the way of a label — here, nothing
 warnings: []               # what does not stand in the way, but deserves a look
 coefficients: {...}        # every coefficient of the transforms; null = gap
 ```

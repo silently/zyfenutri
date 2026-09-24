@@ -169,7 +169,6 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
     from zyfenutri.engine import compute
 
     result = compute({
-        "harvested_g": analysis.apres.masse_g,
         "fermentation_hours": analysis.fermentation_h,
         "ingredients": [{
             "name": analysis.reference,
@@ -177,6 +176,11 @@ def predict_after_fermentation(analysis: Analysis) -> dict[str, float]:
             # loss the sample has already taken.
             "role": "sample_after_cooking",
             "weight_g": analysis.avant.masse_g,
+            # ⚠️ Les deux masses de l'analyse SONT le facteur de rendement de
+            # cet échantillon : après / avant. C'est la même division qu'un
+            # poids pesé donnerait, exprimée dans la seule grandeur que le
+            # moteur connaisse désormais.
+            "yield": analysis.apres.masse_g / analysis.avant.masse_g,
             "per_100g": analysis.avant.composition,
         }],
     })

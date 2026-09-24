@@ -34,7 +34,7 @@ présente à la DDPP. Ce n'est pas une inconséquence avec la règle ci-dessus.
 d'un tube ou d'un appel Python :
 
 ```python
-compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]}) -> dict
+compute({"fermentation_hours": 36, "ingredients": [...]}) -> dict
 ```
 ```bash
 zyfenutri lot.yml
@@ -148,6 +148,12 @@ qui n'est pas reconnu passe **tel quel** : mieux vaut de l'anglais qu'un silence
 
 ⚠️ **Masses absolues du début à la fin.** On ne raisonne jamais en pourcentages
 intermédiaires. Chaque transformation prend des grammes et rend des grammes.
+
+⚠️ **Le poids de tempeh vient des facteurs de rendement, et de rien d'autre.**
+Il n'y a pas de poids pesé à fournir : une étiquette porte une valeur moyenne,
+pas celle d'une fournée. `yield` est donc la seule donnée du document sans
+laquelle rien ne se calcule, et la sortie le nomme `tempeh_g`. *(`harvested_g`
+existait jusqu'en 1.13 ; retiré en 2.0.)*
 
 ⚠️ **On ne divise qu'UNE FOIS**, par le poids de tempeh, tout à la fin. C'est
 cette division, et elle seule, qui porte l'eau reprise au trempage. Ajouter un

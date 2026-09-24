@@ -122,9 +122,9 @@ export type Relecture = { document: Document; ignores: string[] };
  * Relit un document YAML dans les champs. Tolérant sur ce qui manque : un
  * document partiel se saisit aussi bien qu'un complet.
  *
- * ⚠️ Rend aussi ce qu'il a **laissé de côté**. Un document venu de la ligne de
- * commande peut porter un `harvested_g` ou un acidifiant de trempage, que
- * cette page n'utilise pas : les perdre en silence ferait un résultat
+ * ⚠️ Rend aussi ce qu'il a **laissé de côté**. Un document écrit pour une
+ * version antérieure du moteur peut porter un `harvested_g` (retiré en 2.0) ou
+ * un acidifiant de trempage : les perdre en silence ferait un résultat
  * différent sans que rien ne l'explique.
  */
 export function depuisYaml(texte: string): Relecture {
@@ -135,8 +135,8 @@ export function depuisYaml(texte: string): Relecture {
   const ignores: string[] = [];
   if (lu.harvested_g != null) {
     ignores.push(
-      `poids récolté (${lu.harvested_g} g) — cette page prédit le poids de tempeh ` +
-        'par le facteur de rendement du substrat',
+      `poids récolté (${lu.harvested_g} g) — le moteur ne l'accepte plus : ` +
+        'le poids de tempeh vient des facteurs de rendement',
     );
   }
   const trempage = (Array.isArray(lu.ingredients) ? lu.ingredients : []).filter(

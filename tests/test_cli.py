@@ -6,11 +6,10 @@ from pathlib import Path
 
 DOCUMENT = {
     "recipe": "Tempeh de soja nature",
-    "harvested_g": 1750,
     "cooking_minutes": 30,
     "fermentation_hours": 36,
     "ingredients": [{
-        "name": "Soja", "role": "substrate", "weight_g": 1000,
+        "name": "Soja", "role": "substrate", "weight_g": 1000, "yield": 1.75,
         "per_100g": {"fat": 20, "saturates": 2.9, "carbs": 15, "sugars": 5.7,
                      "fibre": 15, "protein": 40, "salt": 0.01},
     }],
