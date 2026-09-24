@@ -121,7 +121,7 @@ label:                     # les mêmes, telles qu'elles s'écrivent
 
 steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
-  - "Soja : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Soja : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Vinaigre de cidre : tel quel"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"

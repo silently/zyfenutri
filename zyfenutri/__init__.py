@@ -34,7 +34,7 @@ from zyfenutri.recipe import Ingredient, Recipe
 from zyfenutri.transforms import (COEFFICIENTS, EXCLUDED, PIPELINE, Cooking, Dehulling, Fermentation,
                                   Retention, Roasting, Soaking, Transform, process)
 
-__version__ = "1.11.0"
+__version__ = "1.12.0"
 
 __all__ = [
     "compute", "NUTRIENTS", "LABELS", "COEFFICIENTS", "PIPELINE", "EXCLUDED",

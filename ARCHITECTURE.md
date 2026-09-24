@@ -134,7 +134,7 @@ prepared = process(raw, pipeline)
 | Pourquoi une fabrique | |
 |---|---|
 | **une seule signature** à l'exécution | `(NutritionFacts) -> NutritionFacts`, quelle que soit la transformation. Une chaîne n'est qu'une liste, et `process` n'a pas à savoir quels réglages existent |
-| **le réglage est lié une fois** | la durée est fixée à la construction, visible dans `label` (« Cuisson 30 min »), et la chaîne se relit telle qu'elle a été appliquée |
+| **le réglage est lié une fois** | la durée est fixée à la construction, visible dans `label` (« Cuisson 30 min (égouttage compris) »), et la chaîne se relit telle qu'elle a été appliquée |
 | **une transformation sans paramètre** | est une fabrique sans argument, ou une constante |
 
 Les transformations réelles, et la manière dont leurs pertes dépendent de la

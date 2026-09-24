@@ -229,6 +229,17 @@ class Dehulling:
 #
 # Tempeh soybeans soak overnight. Soaking is therefore not a setting: every
 # coefficient below is the share KEPT after one night, 10 to 15 h.
+#
+# ⚠️ RINSING IS IN HERE, and so is draining the soak water. The coefficients
+# are measured in the WATER, not in the seed ([14, table 1, p. 1511] weighs the
+# solids the water carries away), so they already assume that water is removed
+# in full — which is exactly what rinsing does. A batch that is not rinsed
+# keeps the clinging film and its solutes: richer than declared, which is the
+# safe direction.
+#
+# ⚠️ The MASS of water that leaves is not here: it belongs to the yield factor
+# (refs/transformations.md, "ce qui n'est pas une transformation"). Nutrients
+# dissolved in that water are here; the water itself is not.
 
 # Sucrose left in whole soybeans soaked at 25 °C: 86.6 % at 6 h, 74.6 % at
 # 12 h, 58.2 % at 18 h; fructose 76.9 % at 12 h [14, table 2, p. 1512].
@@ -259,11 +270,14 @@ SOAKING_FAT_KEPT = 0.988
 
 @dataclass(frozen=True, slots=True)
 class Soaking:
-    """Soaking overnight (10 to 15 h) in water that is thrown away."""
+    """Soaking overnight (10 to 15 h), rinsing and draining the water away."""
 
     @property
     def label(self) -> str:
-        return "Trempage (une nuit)"
+        # ⚠️ The label names the rinsing on purpose: `steps` is the sheet one
+        # shows when challenged, and a reader must not have to guess where the
+        # rinse water's losses were counted.
+        return "Trempage et rinçage (une nuit)"
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
         return replace(
@@ -278,6 +292,11 @@ class Soaking:
 
 
 # --- Cooking (minutes, boiling water thrown away) ---
+#
+# ⚠️ DRAINING IS IN HERE. The coefficients come from seed-to-tempeh balances
+# ([12, p. 188-192], [15, tables 1-2]), and a balance across the whole chain
+# necessarily counts whatever draining carried off. As with soaking, only the
+# dissolved nutrients are here — the mass of water is in the yield factor.
 
 # Sucrose −59 % over soaking and cooking (Shallenberger 1976, [12, p. 194]);
 # soaking keeps ~73 % (SOAKING_SUGARS_KEPT), so cooking keeps 41/73, ~56 %.
@@ -306,7 +325,7 @@ COOKING_FIBRE: Loss = (0.0, 20.0)
 
 @dataclass(frozen=True, slots=True)
 class Cooking:
-    """Boiling in water that is thrown away."""
+    """Boiling in water that is thrown away, then drained."""
     minutes: float
 
     def __post_init__(self) -> None:
@@ -315,7 +334,8 @@ class Cooking:
 
     @property
     def label(self) -> str:
-        return f"Cuisson {self.minutes:g} min"
+        # ⚠️ Draining is named for the same reason as rinsing above.
+        return f"Cuisson {self.minutes:g} min (égouttage compris)"
 
     def __call__(self, facts: NutritionFacts, /) -> NutritionFacts:
         t = self.minutes

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "sync-core": "node scripts/sync-core.mjs",
+    "sync-core": "node scripts/sync-core.mjs && node scripts/sync-refs.mjs",
     "predev": "npm run sync-core",
     "dev": "vite dev",
     "prebuild": "npm run sync-core",

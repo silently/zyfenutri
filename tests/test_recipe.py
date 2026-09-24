@@ -60,8 +60,8 @@ def test_a_weighed_product_mass_is_used(soy):
 
 
 def test_steps_describe_the_chain(tempeh):
-    assert tempeh.steps()[0] == ("Soja : Dépelliculage → Trempage (une nuit)"
-                                 " → Cuisson 30 min → Fermentation 36 h")
+    assert tempeh.steps()[0] == ("Soja : Dépelliculage → Trempage et rinçage (une nuit)"
+                                 " → Cuisson 30 min (égouttage compris) → Fermentation 36 h")
     assert tempeh.steps()[2] == "Vinaigre : tel quel"
 
 

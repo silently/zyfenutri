@@ -121,7 +121,7 @@ label:                     # the same, as they are written
 
 steps:                     # the calculation sheet, in French, to show when challenged
   - "Apport de chaque intrant : masse pesée × composition pour 100 g (3 intrants)"
-  - "Soybeans : Dépelliculage → Trempage (une nuit) → Cuisson 30 min → Fermentation 36 h"
+  - "Soybeans : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Cider vinegar : tel quel"
   - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"

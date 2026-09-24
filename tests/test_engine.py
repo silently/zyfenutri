@@ -133,7 +133,9 @@ def test_fermentation_stays_a_fact_of_the_batch():
 
 def test_a_substrate_soaks_cooks_and_ferments():
     line = one_substrate(harvested_g=2000)["ingredients"][0]
-    assert line["transforms"] == ["Trempage (une nuit)", "Cuisson 30 min", "Fermentation 36 h"]
+    assert line["transforms"] == ["Trempage et rinçage (une nuit)",
+                                  "Cuisson 30 min (égouttage compris)",
+                                  "Fermentation 36 h"]
 
 
 def test_a_support_ferments_but_never_soaks():
@@ -298,7 +300,7 @@ def test_a_soaking_time_is_no_longer_read():
 
 def test_the_steps_are_returned_so_the_result_can_be_argued_with():
     joined = " ".join(one_substrate(harvested_g=2000)["steps"])
-    assert "Trempage (une nuit)" in joined and "Fermentation 36 h" in joined
+    assert "Trempage et rinçage (une nuit)" in joined and "Fermentation 36 h" in joined
     assert "÷ 2000 g récoltés" in joined
 
 

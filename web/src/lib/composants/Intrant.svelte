@@ -28,6 +28,9 @@
   const estSupport = $derived(intrant.role === 'support');
   const aUneFiche = $derived(porteUneFiche(intrant.role));
 
+  /** Les lignes « dont » : elles se renfoncent, comme sur une étiquette. */
+  const SOUS_TOTAL = new Set(['saturates', 'sugars']);
+
   /**
    * Ce qui empêchera un calcul complet. Dit, jamais bloquant.
    *
@@ -191,15 +194,22 @@
       {#if aUneFiche}
         <div>
           <p class="fieldset-legend mb-1">Composition pour 100 g de produit brut</p>
-          <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- ⚠️ UN nutriment par ligne. Recopier une fiche produit, c'est lire
+               une colonne : sur plusieurs colonnes, l'œil saute une ligne sans
+               s'en apercevoir, et une valeur se retrouve en face du mauvais
+               libellé. Les « dont » se renfoncent, comme sur une étiquette. -->
+          <div class="flex flex-col">
             {#each NUTRIMENTS as n (n)}
-              <label class="flex items-center gap-2 text-sm">
+              <label
+                class="flex items-center gap-2 text-sm border-b border-base-300/60 py-1
+                  {SOUS_TOTAL.has(n) ? 'pl-4' : ''}"
+              >
                 <span class="flex-1 text-base-content/70">{LIBELLES[n]}</span>
                 <input
                   type="number"
                   min="0"
                   step="any"
-                  class="input input-xs w-20 tabular-nums"
+                  class="input input-xs w-24 tabular-nums"
                   bind:value={intrant.per_100g![n]}
                 />
                 <span class="text-xs text-base-content/50 w-3">g</span>
@@ -272,9 +282,12 @@
 
       {#if aUneFiche}
         <p class="text-xs text-base-content/50">Composition, en g pour 100 g de produit brut</p>
-        <div class="grid gap-x-4 gap-y-0.5 sm:grid-cols-2 lg:grid-cols-3 text-xs">
+        <div class="flex flex-col text-xs">
           {#each NUTRIMENTS as n (n)}
-            <div class="flex justify-between gap-2 border-b border-base-300/60 py-0.5">
+            <div
+              class="flex justify-between gap-2 border-b border-base-300/60 py-0.5
+                {SOUS_TOTAL.has(n) ? 'pl-4' : ''}"
+            >
               <span class="text-base-content/60">{LIBELLES[n]}</span>
               <!-- ⚠️ Un tiret, jamais « 0 » : « on ne sait pas » et « il n'y en a
                    pas » sont deux affirmations différentes. -->

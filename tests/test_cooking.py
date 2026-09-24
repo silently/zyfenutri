@@ -34,7 +34,9 @@ def test_protein_and_minerals_leach(soy):
 def test_is_a_transform():
     step = Cooking(minutes=30)
     assert isinstance(step, Transform)
-    assert step.label == "Cuisson 30 min"
+    # ⚠️ Le libellé nomme l'égouttage : les coefficients viennent de bilans
+    # graine → tempeh, qui comptent déjà ce que l'eau jetée a emporté.
+    assert step.label == "Cuisson 30 min (égouttage compris)"
 
 
 def test_a_negative_time_is_refused():

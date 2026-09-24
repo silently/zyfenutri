@@ -59,7 +59,9 @@ def test_a_sheet_with_sugars_above_carbs_has_no_starch():
 def test_soaking_is_a_transform_for_one_night():
     step = Soaking()
     assert isinstance(step, Transform)
-    assert step.label == "Trempage (une nuit)"
+    # ⚠️ Le libellé nomme le rinçage : les coefficients sont mesurés DANS
+    # l'eau, donc ils supposent qu'on la retire en entier.
+    assert step.label == "Trempage et rinçage (une nuit)"
 
 
 @pytest.mark.skip(reason="GAP: protein loss on soaking not sourced (acidified vs plain)")

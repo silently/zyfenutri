@@ -7,6 +7,7 @@
    * change là-bas, il est faux ici, et c'est ici qu'on le corrige.
    */
   import { X } from '@lucide/svelte';
+  import Biblio from './Biblio.svelte';
 
   let { ouverte = $bindable(), version }: { ouverte: boolean; version: string } = $props();
 </script>
@@ -123,18 +124,16 @@
 
       <section class="mt-2">
         <h3 class="font-semibold mb-1">Les sources</h3>
-        <p class="mb-1">
-          Dix-neuf références scientifiques, chacune avec son statut (lue, résumé, non lue) et ce
-          qu'on en tire. Un chiffre n'est cité que d'une source <strong>lue</strong>. Les
-          principales :
+        <p class="mb-2">
+          Chacune avec son statut de lecture. Un chiffre n'est cité que d'une source
+          <strong>lue</strong> ; d'une source seulement résumée, on cite une tendance, pas
+          un chiffre. ⚠️ Un numéro ne se réattribue jamais : une source abandonnée reste
+          dans l'index, marquée <em>retirée</em>.
         </p>
-        <ul class="list-disc ml-5 text-xs">
-          <li>[1] Shurtleff &amp; Aoyagi, 1980 — <em>Tempeh Production</em> : rendements et pertes de solides par étape</li>
-          <li>[2] de Reu et al., 1994 — <em>Changes in soya bean lipids during tempe fermentation</em></li>
-          <li>[6] de Reu et al., 1995 — <em>Protein hydrolysis during soybean tempe fermentation</em></li>
-          <li>[11] Liu, 1997 — <em>Soybeans: Chemistry, Technology, and Utilization</em></li>
-          <li>[15] Ashenafi &amp; Busse, 1991 — <em>Production of tempeh from various indigenous Ethiopian beans</em></li>
-        </ul>
+        <!-- ⚠️ La liste vient de `refs/references.md`, extraite à la construction.
+             Rien n'est recopié ici : une seconde liste divergerait de l'index,
+             et c'est l'index qui fait foi. -->
+        <Biblio />
         <p class="mt-2">
           Le détail — la méthode, chaque coefficient et sa source — est dans le dépôt :
           <code>refs/methode.md</code>, <code>refs/references.md</code> et

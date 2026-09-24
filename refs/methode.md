@@ -264,10 +264,29 @@ Ce dernier point est la clé de la méthode : c'est cette division finale, et el
 l'eau reprise au trempage. Un lot qui double de poids en s'hydratant voit mécaniquement toutes ses
 valeurs divisées par deux, sans qu'aucun coefficient n'ait à le dire.
 
-⚠️ **Rinçage et égouttage ne sont pas des coefficients à part.** Ils sont
-compris dans les pertes du trempage et de la cuisson, qui se font toutes deux
-« dans une eau qu'on jette » : c'est cette eau, et ce qu'elle emporte, qui est
-chiffrée. Les compter séparément compterait la même perte deux fois.
+⚠️ **Rinçage et égouttage ne sont pas des étapes à part**, et ce qu'ils
+emportent se range en **deux endroits différents** :
+
+| Ce qui part | Qui le porte |
+|---|---|
+| les **nutriments dissous** dans l'eau de trempage ou de cuisson | les coefficients de `Trempage` et de `Cuisson` |
+| l'**eau elle-même**, sa masse | le **facteur de rendement** |
+
+C'est la conséquence directe de la façon dont les coefficients sont mesurés.
+Au trempage, ils viennent de ce qu'on trouve **dans l'eau** — `[14, table 1,
+p. 1511]` pèse les solides que l'eau emporte, pas ce qui reste dans la graine :
+ils supposent donc l'eau **retirée en entier**, ce que le rinçage réalise. À la
+cuisson, ils viennent de bilans **graine → tempeh** (`[12, p. 188-192]`,
+`[15, tableaux 1-2]`), et un bilan de bout en bout compte par construction ce
+que l'égouttage a emporté.
+
+⚠️ **Ne pas rincer ne rend pas la déclaration fausse, mais optimiste à
+l'envers** : la graine garde le film d'eau et ses solutés, le produit réel est
+donc un peu **plus riche** que ce qu'on déclare. L'écart va dans le sens
+prudent — celui qui sous-déclare.
+
+Les libellés de la fiche de calcul le disent : « Trempage et rinçage (une
+nuit) », « Cuisson 30 min (égouttage compris) ».
 
 Chaque transformation raisonne **pour 100 g d'ingrédient tel qu'il a été pesé, avant toute
 transformation**, et rend des grammes de nutriment, jamais une teneur « pour 100 g de ce qui

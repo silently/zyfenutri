@@ -191,7 +191,9 @@ ailleurs :
 
 | Opération | Pourquoi ce n'est pas une transformation |
 |---|---|
-| Égouttage, séchage superficiel, refroidissement | de l'eau seulement : le facteur de rendement s'en charge |
+| **Rinçage** après trempage | déjà compté : les coefficients du trempage sont mesurés DANS l'eau, ils supposent qu'on la retire en entier (`methode.md`, § 3.2) |
+| **Égouttage** après cuisson | déjà compté : les coefficients de cuisson viennent de bilans graine → tempeh, qui l'englobent |
+| Séchage superficiel, refroidissement | de l'eau seulement : le facteur de rendement s'en charge |
 | Pasteurisation | ne déplace aucune masse de nutriment (`methode.md`, T4) |
 | Vinaigre ajouté à l'inoculation | un ingrédient du **mélange** |
 | Vinaigre du trempage ou de la cuisson | part avec l'eau jetée : c'est un **réglage** du trempage ou de la cuisson, pas un ingrédient |
