@@ -2,12 +2,23 @@
 
 *Version française : [README.fr.md](README.fr.md)*
 
-The calculation that turns *what went into a batch of tempeh* into *what may be
-written on the label*.
+Zyfe nutri is a tool that estimates the nutrition declaration of tempeh from
+those of its ingredients and from variables of the making (cooking time of the
+substrates, fermentation time).
 
 A Python library, a script, and a **web page** that runs the same calculation
 in the browser: <https://silently.github.io/zyfenutri/>. No server, no
 database, no port to open.
+
+## At your own risk
+
+This tool is provided **for guidance only**. It can be improved (any comment or
+scientific reference that would help is welcome — please
+[open an issue](https://github.com/silently/zyfenutri/issues)) and it comes with
+no warranty. It may be worth checking it against laboratory results.
+
+If the tool can mislead, do not forget that the nutrition declarations of the
+ingredients can be wrong too.
 
 ## Why this repository exists
 
@@ -33,14 +44,13 @@ zyfenutri batch.yml --json          # or as JSON, if that is handier
 
 ```python
 from zyfenutri import compute
-result = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]})
+result = compute({"fermentation_hours": 36, "ingredients": [...]})
 ```
 
 ### What goes in
 
 ```yaml
 recipe: Plain soy tempeh
-harvested_g: 1750          # what was WEIGHED at harvest
 cooking_minutes: 30        # default cooking time; an ingredient may carry its own
 fermentation_hours: 36     # incubation time
 
@@ -48,8 +58,9 @@ ingredients:
   - name: Soybeans
     role: substrate        # substrate · support · acid · soaking_acid · starter
     weight_g: 1000         # weight BEFORE any transform, hulls included
-    dehulled: true         # dehulled: its loss of mass is in the yield
-    cooking_minutes: 45    # ITS OWN — a soybean and a lentil do not cook for the
+    dehulled: true         # dehulled BY US, after delivery
+    yield: 1.75            # yield factor — required, see below
+    cooking_minutes: 30    # ITS OWN — a soybean and a lentil do not cook for the
                            #  same time, nor in the same pot. Falls back to the document's.
     per_100g:
       fat: 20
@@ -83,39 +94,48 @@ duration, a transform that cannot yet handle a nutrient: the product's value
 comes out `null`, and `missing` says why. **Never a zero, never a partial
 sum.**
 
-> **Not weighed?** Leave out `harvested_g` and give the substrate a
-> `yield: 1.75`: the tempeh weight will be **predicted**. That is what lets a
-> recipe be costed before it has been made. ⚠️ The result is then marked
-> `complete: false` — a product is not labelled with a denominator that is
-> itself an estimate.
+### `yield` — the yield factor
+
+**One number per substrate, required**: kg of tempeh per 1 kg of raw grain.
+
+⚠️ It carries **every gain and every loss of that substrate, from the raw grain
+through to harvest** — a single number for the whole making. It alone gives the
+weight of tempeh the final division uses.
+
+It is **set**, not measured once: a workshop instruction, read back against
+one's own batches and adjusted. Two different substrates have two different
+factors, and a blend set on an average would skew each one's share.
+
+⚠️ The engine then attaches a reservation to the sheet, in `missing`: it cannot
+know whether its caller is designing a recipe or describing a batch. Lifting
+that reservation is the caller's call, and the caller's to justify —
+`refs/methode.md` § 3.3 says when *(in French)*.
 
 ### What comes out
 
 ```yaml
 recipe: Plain soy tempeh
-harvested_g: 1750
-complete: true             # every value is known (see the current state below)
 
 per_100g:                  # the computed values; null = unknown
-  fat: 9.99
-  saturates: 2.24
-  carbs: 5.19
-  sugars: 1.4
-  fibre: 4.36
-  protein: 20.28
+  fat: 9.66
+  saturates: 2.16
+  carbs: 5.02
+  sugars: 1.36
+  fibre: 4.21
+  protein: 19.61
   salt: 0.01
-  energy_kj: 837.6
-  energy_kcal: 200.5
+  energy_kj: 809.8
+  energy_kcal: 193.9
 
 label:                     # the same, as they are written
-  energy: 838 kJ / 201 kcal
-  energy_kj: 838 kJ        # apart too, for a caller holding two fields
-  energy_kcal: 201 kcal
-  fat: 10,0 g
+  energy: 810 kJ / 194 kcal
+  energy_kj: 810 kJ        # apart too, for a caller holding two fields
+  energy_kcal: 194 kcal
+  fat: 9,7 g
   saturates: 2,2 g
-  carbs: 5,2 g
+  carbs: 5,0 g
   sugars: 1,4 g
-  fibre: 4,4 g
+  fibre: 4,2 g
   protein: 20 g
   salt: < 0,01 g
 
@@ -124,10 +144,11 @@ steps:                     # the calculation sheet, in French, to show when chal
   - "Soybeans : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Cider vinegar : tel quel"
-  - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
+  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh prédits par le facteur de rendement"
   - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing: []                # what stands in the way of a label, in plain words — here, nothing
+missing:                   # what stands in the way of a label, in plain words
+  - "harvest weight predicted, not weighed — fine to design a recipe, not to label a product"
 warnings: []               # what does not stand in the way, but deserves a look
 coefficients: {...}        # every coefficient of the transforms; null = gap
 ```
@@ -138,10 +159,9 @@ It applies to each ingredient the transforms it actually goes through, staying
 expressed per **100 g of raw ingredient**, then divides **once** by the weight
 of tempeh.
 
-> ⚠️ That final division, and it alone, carries the water taken up while
-> soaking. A batch that doubles in weight by taking up water sees all its values
-> halved, without any coefficient having to say so. Adding a "hydration factor"
-> on top would count water twice.
+> ⚠️ That final division is the **only** one. The yield factor already carries
+> everything that changes a substrate's mass, from the raw grain through to
+> harvest: adding a second factor on top would count the same change twice.
 
 | `role` | Transforms |
 |---|---|
@@ -179,6 +199,38 @@ The calculation rests on three building blocks — the **sheet**
 (`NutritionFacts`), the **transform** (`Transform`) and the **mix** (`mix`).
 Their types, their signatures and what justifies them are in
 **[`ARCHITECTURE.md`](ARCHITECTURE.md)** (in French).
+
+## An example: what ten hours of fermentation change
+
+The same batch — 1 kg of dehulled soybeans, `yield: 1.75`, cooked 30 min —
+fermented 30 h, then 40 h:
+
+| per 100 g | 30 h | 40 h | gap | tolerance allowed |
+|---|---|---|---|---|
+| Fat | 9,9 g | 9,9 g | **none** | ± 1.5 g |
+| of which saturates | 2,2 g | 2,2 g | **none** | ± 0.8 g |
+| Carbohydrate | 5,4 g | 4,9 g | **− 0.49 g** | ± 2 g |
+| of which sugars | 1,4 g | 1,3 g | − 0.06 g | ± 2 g |
+| Fibre | 4,3 g | 4,3 g | **none** | ± 2 g |
+| Protein | 20 g | 20 g | − 0.12 g | ± 4 g |
+| Energy | 834 kJ | 824 kJ | − 10 kJ | — |
+
+On the label, **only two lines move**: carbohydrate and sugars. The largest gap
+is **a quarter of its tolerance** — ten hours of fermentation therefore do not
+put a declaration at risk.
+
+Fat does not move at all: the model holds it on a plateau between 26 and 60 h,
+the loss being complete before 30 h.
+
+⚠️ **The break is at 48 h, not between 30 and 40.** Past that, the loss of
+sugars is no longer covered by the literature that has been read: the engine
+returns `null` rather than extrapolate, and energy becomes unknown with them,
+since it is computed from the macronutrients.
+
+```
+48 h : carbs 4.54   sugars 1.30   energy_kj 815.8
+50 h : carbs null   sugars null   energy_kj null
+```
 
 ## Reference data
 

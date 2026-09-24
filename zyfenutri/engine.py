@@ -206,9 +206,11 @@ def _steps(recipe: Recipe, product_mass: float | None, estimated: bool,
     out = [f"Apport de chaque intrant : masse pesée × composition pour 100 g "
            f"({n} intrant{'s' if n > 1 else ''})", *recipe.steps()]
     if product_mass:
-        out.append(f"Ramené à 100 g de produit fini : ÷ {product_mass:g} g "
-                   f"{'PRÉDITS par le facteur de rendement' if estimated else 'récoltés'}. "
-                   "C'est cette division qui porte l'eau reprise")
+        # ⚠️ Le facteur de rendement porte DÉJÀ tout ce qui change la masse d'un
+        # substrat, du grain brut à la récolte. La fiche n'a donc pas à détailler
+        # ici ce que cette division recouvre : elle dit par quoi on divise.
+        out.append(f"Ramené à 100 g de produit fini : ÷ {product_mass:g} g de tempeh "
+                   f"{'prédits par le facteur de rendement' if estimated else 'pesés'}")
         out.append("Énergie calculée depuis les macros (annexe XIV), jamais recopiée")
     if any(v is None for v in per_100g.values()):
         out.append("Une valeur inconnue d'un intrant ou d'une transformation rend la valeur "

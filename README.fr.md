@@ -2,12 +2,17 @@
 
 *English: [README.md](README.md)*
 
-Le calcul qui transforme *ce qu'on a mis dans un lot de tempeh* en *ce qu'on a
-le droit d'écrire sur l'étiquette*.
+Zyfe nutri est un outil qui estime la déclaration nutritionnelle du tempeh en fonction de celles des ingrédients et de variables liées à la fabrication (durée de cuisson des substrats, durée de fermentation).
 
 Une bibliothèque Python, un script, et une **page web** qui fait le même calcul
 dans le navigateur : <https://silently.github.io/zyfenutri/>. Pas de serveur,
 pas de base de données, pas de port à ouvrir.
+
+## À vos risques et périls
+
+Cet outil est fourni à titre indicatif, il reste améliorable (tout commentaire ou référence scientifique permettant de l'améliorer peut être proposé en ouvrant un ticket) et sans garantie. Il peut être intéressant de le confronter à des résultats en laboratoire.
+
+Si l'outil peut induire en erreur, ne pas oublier que les déclarations nutritionnelles des ingrédients peuvent elles aussi être erronées.
 
 ## Pourquoi ce dépôt existe
 
@@ -33,14 +38,13 @@ zyfenutri lot.yml --json          # ou en JSON, si c'est plus commode
 
 ```python
 from zyfenutri import compute
-resultat = compute({"harvested_g": 1750, "fermentation_hours": 36, "ingredients": [...]})
+resultat = compute({"fermentation_hours": 36, "ingredients": [...]})
 ```
 
 ### Ce qu'on lui donne
 
 ```yaml
 recipe: Tempeh de soja nature
-harvested_g: 1750          # ce qu'on a PESÉ à la récolte
 cooking_minutes: 30        # cuisson par défaut ; un intrant peut avoir la sienne
 fermentation_hours: 36     # durée d'incubation
 
@@ -48,8 +52,9 @@ ingredients:
   - name: Soja
     role: substrate        # substrate · support · acid · soaking_acid · starter
     weight_g: 1000         # poids AVANT toute transformation, pellicule comprise
-    dehulled: true         # dépelliculé : sa perte de masse est dans le rendement
-    cooking_minutes: 45    # LA SIENNE — un soja et une lentille ne cuisent pas pareil,
+    dehulled: true         # dépelliculé PAR NOUS, après réception
+    yield: 1.75            # facteur de rendement — obligatoire, cf. plus bas
+    cooking_minutes: 30    # LA SIENNE — un soja et une lentille ne cuisent pas pareil,
                            #  et pas dans la même casserole. À défaut, celle du document.
     per_100g:
       fat: 20
@@ -84,38 +89,47 @@ transformation qui ne sait pas encore traiter un nutriment : la valeur du
 produit ressort `null`, et `missing` dit pourquoi. **Jamais de zéro, jamais de
 somme partielle.**
 
-> **Sans pesée ?** Omettez `harvested_g` et donnez un `yield: 1.75` au substrat :
-> le poids de tempeh sera **prédit**. C'est ce qui permet de chiffrer une recette
-> avant de l'avoir faite. ⚠️ Le résultat est alors marqué `complete: false` — on
-> n'étiquette pas un produit avec un dénominateur lui-même estimé.
+### `yield` — le facteur de rendement
+
+**Un nombre par substrat, obligatoire** : kg de tempeh pour 1 kg de grain brut.
+
+⚠️ Il porte **l'ensemble des gains et des pertes de ce substrat, du grain brut
+jusqu'à la récolte** — un seul nombre pour toute la fabrication. C'est lui, et
+lui seul, qui donne le poids de tempeh par lequel on divise à la fin.
+
+Il se **règle** : c'est une consigne d'atelier, qu'on relit sur ses propres
+fournées et qu'on ajuste. Deux substrats différents ont deux facteurs
+différents, et un mélange calé sur une moyenne fausserait la part de chacun.
+
+⚠️ Le moteur assortit alors la fiche d'une réserve dans `missing` — il ne sait
+pas si son appelant conçoit une recette ou décrit un lot. C'est à l'appelant de
+la lever, et de le justifier : `refs/methode.md` § 3.3 dit dans quels cas.
 
 ### Ce qu'il rend
 
 ```yaml
 recipe: Tempeh de soja nature
-harvested_g: 1750
-complete: true             # toutes les valeurs sont connues (voir l'état actuel plus bas)
 
 per_100g:                  # les valeurs calculées ; null = inconnu
-  fat: 9.99
-  saturates: 2.24
-  carbs: 5.19
-  sugars: 1.4
-  fibre: 4.36
-  protein: 20.28
+  fat: 9.66
+  saturates: 2.16
+  carbs: 5.02
+  sugars: 1.36
+  fibre: 4.21
+  protein: 19.61
   salt: 0.01
-  energy_kj: 837.6
-  energy_kcal: 200.5
+  energy_kj: 809.8
+  energy_kcal: 193.9
 
 label:                     # les mêmes, telles qu'elles s'écrivent
-  energy: 838 kJ / 201 kcal
-  energy_kj: 838 kJ        # aussi séparées, pour qui les stocke en deux champs
-  energy_kcal: 201 kcal
-  fat: 10,0 g
+  energy: 810 kJ / 194 kcal
+  energy_kj: 810 kJ        # aussi séparées, pour qui les stocke en deux champs
+  energy_kcal: 194 kcal
+  fat: 9,7 g
   saturates: 2,2 g
-  carbs: 5,2 g
+  carbs: 5,0 g
   sugars: 1,4 g
-  fibre: 4,4 g
+  fibre: 4,2 g
   protein: 20 g
   salt: < 0,01 g
 
@@ -124,10 +138,11 @@ steps:                     # la fiche de calcul, à montrer si on la conteste
   - "Soja : Dépelliculage → Trempage et rinçage (une nuit) → Cuisson 30 min (égouttage compris) → Fermentation 36 h"
   - "Kinako : Torréfaction → Fermentation 36 h"
   - "Vinaigre de cidre : tel quel"
-  - "Ramené à 100 g de produit fini : ÷ 1750 g récoltés. C'est cette division qui porte l'eau reprise"
+  - "Ramené à 100 g de produit fini : ÷ 1810 g de tempeh prédits par le facteur de rendement"
   - "Énergie calculée depuis les macros (annexe XIV), jamais recopiée"
 
-missing: []                # ce qui empêche d'étiqueter, en clair — ici, rien
+missing:                   # ce qui empêche d'étiqueter, en clair
+  - "harvest weight predicted, not weighed — fine to design a recipe, not to label a product"
 warnings: []               # ce qui n'empêche pas, mais mérite un œil
 coefficients: {...}        # chaque coefficient des transformations ; null = lacune
 ```
@@ -138,10 +153,10 @@ Il applique à chaque ingrédient les transformations qu'il subit réellement,
 en restant rapporté à **100 g d'ingrédient brut**, puis divise **une seule
 fois** par le poids de tempeh.
 
-> ⚠️ C'est cette division finale, et elle seule, qui porte l'eau reprise au
-> trempage. Un lot qui double de poids en s'hydratant voit toutes ses valeurs
-> divisées par deux, sans qu'aucun coefficient n'ait à le dire. Ajouter un
-> « facteur d'hydratation » par-dessus compterait l'eau deux fois.
+> ⚠️ Cette division finale est la **seule**. Le facteur de rendement porte déjà
+> tout ce qui change la masse d'un substrat, du grain brut à la récolte :
+> ajouter un second facteur par-dessus compterait deux fois le même
+> changement.
 
 | `role` | Transformations |
 |---|---|
@@ -182,6 +197,38 @@ Le calcul repose sur trois briques — la **fiche** (`NutritionFacts`), la
 **transformation** (`Transform`) et le **mélange** (`mix`). Leurs types, leurs
 signatures et ce qui les justifie sont dans
 **[`ARCHITECTURE.md`](ARCHITECTURE.md)**.
+
+## Un exemple : ce que dix heures de fermentation changent
+
+Le même lot — 1 kg de soja dépelliculé, `yield: 1.75`, cuisson 30 min —
+fermenté 30 h puis 40 h :
+
+| pour 100 g | 30 h | 40 h | écart | tolérance admise |
+|---|---|---|---|---|
+| Matières grasses | 9,9 g | 9,9 g | **aucun** | ± 1,5 g |
+| dont acides gras saturés | 2,2 g | 2,2 g | **aucun** | ± 0,8 g |
+| Glucides | 5,4 g | 4,9 g | **− 0,49 g** | ± 2 g |
+| dont sucres | 1,4 g | 1,3 g | − 0,06 g | ± 2 g |
+| Fibres alimentaires | 4,3 g | 4,3 g | **aucun** | ± 2 g |
+| Protéines | 20 g | 20 g | − 0,12 g | ± 4 g |
+| Énergie | 834 kJ | 824 kJ | − 10 kJ | — |
+
+Sur l'étiquette, **deux lignes seulement bougent** : les glucides et les
+sucres. Le plus gros écart vaut **le quart de sa tolérance** — dix heures de
+fermentation ne mettent donc pas une déclaration en danger.
+
+Les lipides ne bougent pas du tout : le modèle les tient en plateau entre 26 et
+60 h, la perte étant atteinte avant 30 h.
+
+⚠️ **La rupture est à 48 h, pas entre 30 et 40.** Au-delà, la perte de sucres
+n'est plus couverte par la littérature lue : le moteur rend `null` plutôt que
+d'extrapoler, et l'énergie devient inconnue avec eux puisqu'elle se calcule
+depuis les macronutriments.
+
+```
+48 h : carbs 4.54   sugars 1.30   energy_kj 815.8
+50 h : carbs null   sugars null   energy_kj null
+```
 
 ## Les données de référence
 

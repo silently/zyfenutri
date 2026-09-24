@@ -301,7 +301,7 @@ def test_a_soaking_time_is_no_longer_read():
 def test_the_steps_are_returned_so_the_result_can_be_argued_with():
     joined = " ".join(one_substrate(harvested_g=2000)["steps"])
     assert "Trempage et rinçage (une nuit)" in joined and "Fermentation 36 h" in joined
-    assert "÷ 2000 g récoltés" in joined
+    assert "÷ 2000 g de tempeh pesés" in joined
 
 
 def test_coefficients_are_shown_and_no_longer_read():
