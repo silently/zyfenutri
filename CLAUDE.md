@@ -152,8 +152,7 @@ intermédiaires. Chaque transformation prend des grammes et rend des grammes.
 ⚠️ **Le poids de tempeh vient des facteurs de rendement, et de rien d'autre.**
 Il n'y a pas de poids pesé à fournir : une étiquette porte une valeur moyenne,
 pas celle d'une fournée. `yield` est donc la seule donnée du document sans
-laquelle rien ne se calcule, et la sortie le nomme `tempeh_g`. *(`harvested_g`
-existait jusqu'en 1.13 ; retiré en 2.0.)*
+laquelle rien ne se calcule, et la sortie le nomme `tempeh_g`.
 
 ⚠️ **On ne divise qu'UNE FOIS**, par le poids de tempeh, tout à la fin. C'est
 cette division, et elle seule, qui porte l'eau reprise au trempage. Ajouter un

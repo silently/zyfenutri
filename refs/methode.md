@@ -180,32 +180,37 @@ Une étiquette affichant « 12,3456 g » est fautive : elle suggère une précis
 
 ## 3. La méthode de calcul retenue
 
-### 3.1 Le principe, et pourquoi il est plus solide que l'estimation classique
+### 3.1 Le principe
 
-La méthode habituelle consiste à appliquer un **facteur de gonflement estimé** aux valeurs des
-ingrédients secs, une fois, pour tout le produit. Ici, chaque substrat porte **son propre**
-facteur, réglé sur les fournées de l'atelier :
+On ne raisonne qu'en **masses absolues de nutriments**, du début à la fin :
 
 ```
   masse de chaque ingrédient, telle qu’achetée  →  weight_g, par intrant
                      ↓
-              fabrication                       →  × yield, par substrat
+              transformations                   →  ce que chacune fait perdre
                      ↓
-        poids de tempeh                         →  tempeh_g
+              facteur de rendement              →  × yield, par substrat
+                     ↓
+              poids de tempeh                   →  tempeh_g
+                     ↓
+              une seule division                →  les valeurs pour 100 g
 ```
 
-Le rapport entre les deux **est** le facteur de dilution. Il n'est pas estimé : il est pesé, lot par
-lot, et il porte à lui seul l'eau reprise à l'hydratation. Restent à chiffrer les **nutriments**
-perdus en route — à l'eau de trempage, au mycélium —, ce que font les transformations du § 3.2.
+Deux grandeurs suffisent, et elles ne se mélangent pas :
 
-C'est doublement préférable : plus juste, et **défendable** — on présente des pesées, pas un
-facteur de gonflement emprunté à la littérature.
+- le **facteur de rendement** dit ce que devient la **masse** d'un substrat, du grain brut jusqu'à
+  la récolte. Un facteur **par substrat** : un soja et une lentille ne se comportent pas pareil,
+  et un nombre unique pour tout le produit ferait perdre cette différence ;
+- les **transformations** (§ 3.2) disent ce que chaque étape fait perdre en **nutriments** — à
+  l'eau de trempage, à l'eau de cuisson, au mycélium.
 
-⚠️ **Ce raisonnement vaut pour juger UN LOT.** Pour une **étiquette**, le poids
-de tempeh se **prédit** par le facteur de rendement, et ce n'est pas un repli :
-le § 3.3 dit pourquoi. Dans les deux cas, c'est la même division finale qui
-porte l'eau reprise — seul change ce qu'on met au dénominateur, et donc ce que
-la fiche décrit.
+⚠️ **Ne jamais mêler les deux.** Ce que la pellicule pèse appartient au facteur de rendement ; ce
+qu'elle emporte en nutriments appartient à la transformation T1. Compter la même perte des deux
+côtés est l'erreur que ce découpage rend impossible.
+
+Le facteur se **règle** sur ses propres fournées : c'est une consigne d'atelier, relue et ajustée,
+pas un chiffre emprunté à la littérature. C'est ce qui rend le calcul défendable — on présente ce
+qu'on a constaté chez soi.
 
 #### Ce qu'il faut fournir
 
@@ -427,18 +432,12 @@ pas sur l'espèce. La torréfaction reste un oui ou non, sans intensité : un ki
 est traité comme la torréfaction à 120 °C de [19]. Sur un lot, l'effet est minime — quelques
 grammes de support pour des kilos de tempeh.
 
-#### T4 — Pasteurisation : pourquoi elle ne figure pas ici
+#### T4 — Pasteurisation : hors jeu
 
-La pasteurisation n'est pas une étape systématique du tempeh. La question mérite pourtant d'être
-tranchée : **une pasteurisation ne modifie aucune des sept valeurs déclarées**.
-
-Une chauffe douce ne déplace aucune masse de protéines, de lipides, de glucides, de fibres ni de
-sel — elle dénature des protéines, ce qui change leur structure et non leur masse. Elle détruit en
-revanche des vitamines thermosensibles (B1, B9, C) et réduit la flore : ni les unes ni l'autre ne
-figurent parmi les valeurs déclarées. Si elle se pratiquait à découvert, elle ferait perdre de l'eau, donc
-concentrerait le produit — mais cette concentration serait déjà portée par la pesée finale.
-
-Qu'elle soit pratiquée ou non, il n'y a donc rien à modéliser sur les sept valeurs.
+**Elle ne modifie aucune des sept valeurs déclarées.** Une chauffe douce dénature des protéines —
+elle change leur structure, pas leur masse —, détruit des vitamines thermosensibles et réduit la
+flore : rien de tout cela ne figure sur l'étiquette. Qu'elle soit pratiquée ou non, il n'y a rien
+à modéliser.
 
 #### T5 — La dilution : division par le poids de tempeh
 
@@ -535,8 +534,8 @@ l'établit. Ce choix est retenu parce que sous-déclarer les AGS serait le sens 
 convention d'analyse, pas une propriété du produit : la même graine en déclare 9,3 g (USDA,
 Nouvelle-Zélande) ou 16,0 g (Norvège). Le calcul ne retire des fibres qu'avec la pellicule (T1) et
 à la torréfaction (T3) ; il les tient pour conservées au trempage, à la cuisson et à la
-fermentation, où les études les voient plutôt monter. Toute allégation « source de fibres »
-devrait s'appuyer sur un dosage, pas sur ce calcul.
+fermentation, où les études les voient plutôt monter. L'écart va donc dans le sens prudent : la
+valeur calculée est un plancher.
 
 ### 3.3 Le poids de tempeh : le facteur de rendement, et lui seul
 
@@ -549,9 +548,6 @@ porte une **valeur moyenne** (article 31 § 4), pas celle d'une fournée. Faire
 dépendre la fiche d'une récolte pesée la ferait bouger d'une fabrication à
 l'autre, au gré de la pesée et de l'humidité du jour, sans que la composition
 sèche ait changé. On décrit **une recette**, pas un lot.
-
-*(Jusqu'à la version 1.13, le document acceptait un `harvested_g`. La clé a été
-retirée en 2.0 : elle servait un usage que cet outil ne poursuit pas.)*
 
 #### Le facteur de rendement
 
@@ -647,10 +643,10 @@ qu'assez de lots nouveaux se sont accumulés pour déplacer la moyenne.
 - La **teneur en eau du substrat sec** varie (une légumineuse stockée en cave n'est pas celle d'un
   entrepôt sec). L'effet est faible mais il joue dans le même sens que les autres approximations.
 
-**Si une valeur doit être exacte — pour une allégation, ou parce qu'un client la demande —
-c'est un dosage en laboratoire, pas un calcul.** Un dosage sur un lot représentatif (de l'ordre de
-500 à 1 000 €) permet ensuite de **caler** le modèle : l'écart mesuré entre calcul et dosage
-devient un facteur de correction réutilisable tant que le procédé ne change pas.
+**Un dosage en laboratoire reste le seul moyen d'obtenir une valeur exacte** — quand un client la
+demande, ou pour lever une des réserves ci-dessus. Sur un lot représentatif (de l'ordre de 500 à
+1 000 €), il permet en outre de **caler** le modèle : l'écart mesuré entre calcul et dosage devient
+un facteur de correction réutilisable tant que le procédé ne change pas.
 
 ---
 
@@ -720,8 +716,6 @@ torréfaction.
 2. Renseigner la **composition** de chaque intrant — fiche fournisseur ou Ciqual —, avec sa source.
 3. Accumuler **au moins trois lots libérés** par recette.
 4. Générer la fiche de calcul et la **classer avec le PMS**.
-5. Si une allégation est envisagée (« riche en protéines » : ≥ 20 % de l'énergie apportée par les
-   protéines) : **dosage en laboratoire**, l'exemption tombe et la tolérance se resserre.
 
 
 ---

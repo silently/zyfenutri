@@ -122,23 +122,16 @@ export type Relecture = { document: Document; ignores: string[] };
  * Relit un document YAML dans les champs. Tolérant sur ce qui manque : un
  * document partiel se saisit aussi bien qu'un complet.
  *
- * ⚠️ Rend aussi ce qu'il a **laissé de côté**. Un document écrit pour une
- * version antérieure du moteur peut porter un `harvested_g` (retiré en 2.0) ou
- * un acidifiant de trempage : les perdre en silence ferait un résultat
- * différent sans que rien ne l'explique.
+ * ⚠️ Rend aussi ce qu'il a **laissé de côté** : un acidifiant de trempage, par
+ * exemple, que le moteur exclut de toute façon. Le perdre en silence ferait un
+ * document différent de celui qu'on a fourni, sans que rien ne l'explique.
  */
 export function depuisYaml(texte: string): Relecture {
-  const lu = parse(texte) as (Partial<Document> & { harvested_g?: unknown }) | null;
+  const lu = parse(texte) as Partial<Document> | null;
   if (!lu || typeof lu !== 'object') throw new Error('Document vide ou illisible');
 
   const cuissonDuLot = nombre((lu as { cooking_minutes?: unknown }).cooking_minutes);
   const ignores: string[] = [];
-  if (lu.harvested_g != null) {
-    ignores.push(
-      `poids récolté (${lu.harvested_g} g) — le moteur ne l'accepte plus : ` +
-        'le poids de tempeh vient des facteurs de rendement',
-    );
-  }
   const trempage = (Array.isArray(lu.ingredients) ? lu.ingredients : []).filter(
     (i) => (i as { role?: string })?.role === 'soaking_acid',
   );
